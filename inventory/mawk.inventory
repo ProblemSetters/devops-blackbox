@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+blackbox.inventory.mawk() {
+  typeset -a with_packages=("$@")
+
+  local package_name=mawk
+
+  if ( dpkg-query -W "$package_name" "${with_packages[@]}" >/dev/null 2>&1 ); then
+    false
+
+    return
+  fi
+
+  if [ -z "$(find /var/lib/apt/lists -amin -60)" ]; then
+    apt-get update
+  fi
+
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common && {
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package_name" "${with_packages[@]}"
+  }
+}; blackbox.inventory.mawk "$@"

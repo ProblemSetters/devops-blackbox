@@ -1,0 +1,7 @@
+---
+- import_playbook: /etc/blackbox/ansible/playbook.yml # DO NOT MODIFY THIS LINE
+- hosts: "{{ lookup('env','BLACKBOX_SPAWN') | default('localhost', true) }}" # DO NOT MODIFY THIS LINE
+  gather_facts: false # DO NOT MODIFY THIS LINE
+  tasks:
+    - debug:
+        msg: "Good luck! :)"

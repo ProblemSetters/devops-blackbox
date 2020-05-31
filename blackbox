@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+
+blackbox() {
+  export BLACKBOX_HOST=${BLACKBOX_HOST:-localhost}
+  export BLACKBOX_HOST_USER=${BLACKBOX_HOST_USER:-1000:1000}
+  export BLACKBOX_HOST_USERNAME=${BLACKBOX_HOST_USERNAME:-ubuntu}
+  export BLACKBOX_SPAWN=${BLACKBOX_SPAWN:-$(cat /proc/sys/kernel/random/uuid 2>/dev/null || head /dev/urandom | tr -cd "[:alnum:]" | head -c 36)}
+  export BLACKBOX_FLAG__DEBUG_MODE=${BLACKBOX_FLAG__DEBUG_MODE:-no}
+  export BLACKBOX_FLAG__MODULES_DO_PROVISION=${BLACKBOX_FLAG__MODULES_DO_PROVISION:-yes}
+  export BLACKBOX_FLAG__MODULES_DO_BUILD=${BLACKBOX_FLAG__MODULES_DO_BUILD:-with-blackbox}
+  export BLACKBOX_FLAG__MODULES_DO_EVALUATE=${BLACKBOX_FLAG__MODULES_DO_EVALUATE:-yes}
+
+  readonly BLACKBOX_MODULE=$1
+  readonly BLACKBOX_MODULE_ACTION=$2
+
+  blackbox.exception() {
+    function blackbox.exception.raise() {
+      typeset exception_message=$1
+      typeset -a exception_args=("${@:2}")
+
+      printf "[ERROR]: %s.\n" "$(printf "$exception_message" "${exception_args[@]}")" >&2 && {
+        kill $$
+      }
+    }
+  }; blackbox.exception
+
+  blackbox.expector() {
+    function blackbox.expector.load() {
+      source <(blackbox.transport.fetch "module/${BLACKBOX_MODULE}/${BLACKBOX_MODULE_ACTION}/expector.score")
+    }
+
+    function blackbox.expector.expect() {
+      typeset expect_namespace="$(declare -f "blackbox.module.${BLACKBOX_MODULE}.${BLACKBOX_MODULE_ACTION}.expector.expect.${1}")"
+
+      eval "function $(printf %s "blackbox.expect.$1") ${expect_namespace#*"()"}"
+    }
+  }; blackbox.expector
+
+  blackbox.flag() {
+    function blackbox.flag.enabled() {
+      typeset flag_name=$1
+
+      local flag_real_value=$(eval echo "\$BLACKBOX_FLAG__${1}")
+
+      if [ -z "$flag_real_value" ]; then
+        blackbox.exception.raise 'flag "%s" not found' "$flag_name"
+      fi
+
+      [[ "$flag_real_value" != "no" ]]
+    }
+
+    function blackbox.flag.is() {
+      typeset flag_name=$1
+      typeset flag_value=$2
+
+      local flag_real_value=$(eval echo "\$BLACKBOX_FLAG__${flag_name}")
+
+      if [ -z "$flag_real_value" ]; then
+        blackbox.exception.raise 'flag "%s" not found' "$flag_name"
+      fi
+
+      [[ "$flag_real_value" == "$flag_value" ]]
+    }
+  }; blackbox.flag
+
+  blackbox.inventory() {
+    function blackbox.inventory.provision() {
+      typeset inventory_name=$1
+      typeset -a inventory_args=("${@:2}")
+
+      source <(blackbox.transport.fetch "inventory/${inventory_name}.inventory") "${inventory_args[@]}"
+    }
+
+    function blackbox.inventory.service() {
+      typeset service_name=$1
+      typeset service_action=$2
+
+      service "$service_name" "$service_action"
+    }
+  }; blackbox.inventory
+
+  blackbox.module() {
+    function blackbox.module.load() {
+      typeset module_name=$1
+      typeset -a module_args=("${@:2}")
+
+      source <(blackbox.transport.fetch "module/${module_name}.module") "${module_args[@]}"
+    }
+  }; blackbox.module
+
+  blackbox.transport() {
+    function blackbox.transport.fetch() {
+      typeset resource_uri=$1
+
+      cat "/blackbox/${resource_uri}" 2>/dev/null || wget -qO- "https://raw.githubusercontent.com/ProblemSetters/devops-blackbox/master/${resource_uri}" || blackbox.exception.raise 'resource "%s" not found' "$resource_uri"
+    }
+  }; blackbox.transport
+
+  blackbox.__init() {
+    typeset -a args=("$@")
+
+    if ( blackbox.flag.enabled DEBUG_MODE ); then
+      printf "%s\n%s\n\n" "--" "$(printenv | sort)"
+    fi
+
+    blackbox.module.load "${BLACKBOX_MODULE}/${BLACKBOX_MODULE_ACTION}" "${args[@]}"
+  } && blackbox.__init "${@:3}"
+}; blackbox "$@"

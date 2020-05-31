@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+blackbox.inventory.docker() {
+  typeset -a with_packages=("$@")
+
+  local package_name=docker-ce
+
+  if ( dpkg-query -W "$package_name" "${with_packages[@]}" >/dev/null 2>&1 ); then
+    false
+
+    return
+  fi
+
+  if [ -z "$(find /var/lib/apt/lists -amin -60)" ]; then
+    apt-get update
+  fi
+
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget && {
+    wget -qO- https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+    add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package_name" "${with_packages[@]}" && {
+      echo '{ "storage-driver": "vfs" }' | install -m 0644 -D /dev/stdin /etc/docker/daemon.json
+    }
+  }
+}; blackbox.inventory.docker "$@"

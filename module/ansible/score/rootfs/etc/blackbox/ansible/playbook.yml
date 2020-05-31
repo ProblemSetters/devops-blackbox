@@ -1,0 +1,44 @@
+---
+- hosts: localhost
+  strategy: "{{ 'debug' if (lookup('env','BLACKBOX_FLAG__DEBUG_MODE') == 'yes') else 'linear' }}"
+  gather_facts: false
+  tasks:
+    - shell: printenv
+      register: printenv
+    - debug:
+        msg: "{{ printenv.stdout_lines | sort }}"
+      when: lookup("env","BLACKBOX_FLAG__DEBUG_MODE") == "yes"
+    - shell: |
+        docker ps -aq | xargs --no-run-if-empty docker stop
+        docker system prune -af --volumes
+      when: lookup("env","BLACKBOX_FLAG__MODULES_DO_BUILD") != "without-blackbox"
+    - docker_container:
+        image: ubuntu:bionic
+        name: "{{ lookup('env','BLACKBOX_SPAWN') }}"
+        hostname: "{{ lookup('env','BLACKBOX_SPAWN') }}"
+        detach: true
+        interactive: true
+        privileged: true
+        volumes:
+          - "/blackbox:/blackbox/:ro"
+          - "/home/{{ lookup('env','BLACKBOX_HOST_USERNAME') }}:/home/{{ lookup('env','BLACKBOX_HOST_USERNAME') }}"
+    - add_host:
+        name: "{{ lookup('env','BLACKBOX_SPAWN') }}"
+        ansible_connection: docker
+- hosts: "{{ lookup('env','BLACKBOX_SPAWN') if (lookup('env','BLACKBOX_FLAG__MODULES_DO_BUILD') != 'without-blackbox') else 'nowhere' }}"
+  gather_facts: false
+  tasks:
+    - raw: apt -y update
+    - raw: apt -y install python
+    - apt:
+        pkg:
+          - sudo
+          - wget
+        state: latest
+    - shell: source <(cat "/blackbox/inventory/docker.inventory" 2>/dev/null || wget -qO- https://raw.githubusercontent.com/ProblemSetters/devops-blackbox/master/inventory/docker.inventory)
+      args:
+        executable: /bin/bash
+    - command: service docker start
+    - apt:
+        pkg:
+          - python-docker

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+blackbox.module.ansible.score() {
+  typeset playbook_path=$1
+
+  if ( blackbox.flag.enabled MODULES_DO_PROVISION ); then
+    blackbox.transport.fetch module/ansible/score/rootfs/etc/blackbox/ansible/playbook.yml | install -D /dev/stdin /etc/blackbox/ansible/playbook.yml
+  fi
+
+  if ( blackbox.flag.enabled MODULES_DO_BUILD ); then
+    local -a ansible_playbook_flags=()
+
+    if ( blackbox.flag.enabled DEBUG_MODE ); then
+      ansible_playbook_flags+=("-v")
+    fi
+
+    ansible-playbook "${ansible_playbook_flags[@]}" "$playbook_path"
+  fi
+
+  if ( blackbox.flag.enabled MODULES_DO_EVALUATE ); then
+    blackbox.expector.load && {
+      blackbox.expector.expect docker.container
+      blackbox.expector.expect debug.shell
+      blackbox.expector.expect file.exists
+      blackbox.expector.expect shell.success
+    }
+  else
+    exit 0
+  fi
+}; blackbox.module.ansible.score "$@"
