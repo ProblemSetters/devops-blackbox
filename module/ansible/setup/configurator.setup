@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+blackbox.module.ansible.setup.configurator() {
+  function blackbox.module.ansible.setup.configurator.configure() {
+    declare configuration_instruction=$(</dev/stdin)
+
+    echo "$configuration_instruction" | source /dev/stdin
+  }
+}; blackbox.module.ansible.setup.configurator "$@"

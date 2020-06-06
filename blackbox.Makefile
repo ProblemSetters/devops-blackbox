@@ -12,12 +12,12 @@ BLACKBOX_SPAWN:=blackbox-spawn-$(shell basename $(PWD) | cut -c 1-36)
 BLACKBOX_FLAG__DEBUG_MODE:=no
 BLACKBOX_FLAG__MODULES_DO_PROVISION:=yes
 BLACKBOX_FLAG__MODULES_DO_BUILD:=with-blackbox
+BLACKBOX_FLAG__MODULES_DO_CONFIGURE:=yes
 BLACKBOX_FLAG__MODULES_DO_EVALUATE:=yes
 
 override BLACKBOX_FLAGS=$(foreach flag, $(filter BLACKBOX_%,$(filter-out BLACKBOX_FLAGS,$(.VARIABLES))),--env="$(flag)=$(if $(filter BLACKBOX_PATH,$(flag)),/etc/blackbox,$(if $(filter BLACKBOX_QUESTION_PATH,$(flag)),/home/$(BLACKBOX_HOST_USERNAME),$($(flag))))")
 
-all:
-	$(error Usage: make [debug] install | setup | solution | score | shell | shell:spawn | uninstall | clean)
+all: uninstall clean install setup solution score
 
 debug:
 	$(foreach flag,$(filter BLACKBOX_%,$(sort $(.VARIABLES))),$(info $(flag) = $($(flag))))

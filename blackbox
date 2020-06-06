@@ -8,10 +8,23 @@ blackbox() {
   export BLACKBOX_FLAG__DEBUG_MODE=${BLACKBOX_FLAG__DEBUG_MODE:-no}
   export BLACKBOX_FLAG__MODULES_DO_PROVISION=${BLACKBOX_FLAG__MODULES_DO_PROVISION:-yes}
   export BLACKBOX_FLAG__MODULES_DO_BUILD=${BLACKBOX_FLAG__MODULES_DO_BUILD:-with-blackbox}
+  export BLACKBOX_FLAG__MODULES_DO_CONFIGURE=${BLACKBOX_FLAG__MODULES_DO_CONFIGURE:-yes}
   export BLACKBOX_FLAG__MODULES_DO_EVALUATE=${BLACKBOX_FLAG__MODULES_DO_EVALUATE:-yes}
 
   readonly BLACKBOX_MODULE=$1
   readonly BLACKBOX_MODULE_ACTION=$2
+
+  blackbox.configurator() {
+    function blackbox.configurator.load() {
+      source <(blackbox.transport.fetch "module/${BLACKBOX_MODULE}/${BLACKBOX_MODULE_ACTION}/configurator.${BLACKBOX_MODULE_ACTION}")
+    }
+
+    function blackbox.configurator.configure() {
+      typeset configuration_definition="$(declare -f "blackbox.module.${BLACKBOX_MODULE}.${BLACKBOX_MODULE_ACTION}.configurator.configure")"
+
+      eval "function $(printf %s "blackbox.configure") ${configuration_definition#*"()"}"
+    }
+  }; blackbox.configurator
 
   blackbox.exception() {
     function blackbox.exception.raise() {
@@ -26,13 +39,15 @@ blackbox() {
 
   blackbox.expector() {
     function blackbox.expector.load() {
-      source <(blackbox.transport.fetch "module/${BLACKBOX_MODULE}/${BLACKBOX_MODULE_ACTION}/expector.score")
+      source <(blackbox.transport.fetch "module/${BLACKBOX_MODULE}/score/expector.score")
     }
 
     function blackbox.expector.expect() {
-      typeset expect_namespace="$(declare -f "blackbox.module.${BLACKBOX_MODULE}.${BLACKBOX_MODULE_ACTION}.expector.expect.${1}")"
+      typeset expect_alias=$1
 
-      eval "function $(printf %s "blackbox.expect.$1") ${expect_namespace#*"()"}"
+      local expect_definition="$(declare -f "blackbox.module.${BLACKBOX_MODULE}.score.expector.expect.${expect_alias}")"
+
+      eval "function $(printf %s "blackbox.expect.${expect_alias}") ${expect_definition#*"()"}"
     }
   }; blackbox.expector
 

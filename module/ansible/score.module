@@ -17,6 +17,12 @@ blackbox.module.ansible.score() {
     ansible-playbook "${ansible_playbook_flags[@]}" "$playbook_path"
   fi
 
+  if ( blackbox.flag.enabled MODULES_DO_CONFIGURE ); then
+    blackbox.configurator.load && {
+      blackbox.configurator.configure
+    }
+  fi
+
   if ( blackbox.flag.enabled MODULES_DO_EVALUATE ); then
     blackbox.expector.load && {
       blackbox.expector.expect docker.container
