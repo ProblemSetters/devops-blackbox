@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+blackbox.module.ansible.score() {
+  typeset -a action_args=("$@")
+
+  if ( blackbox.flag.enabled STEP_PROVISION ); then
+    blackbox.module.load ansible/score/provision.step
+  fi
+
+  if ( blackbox.flag.enabled STEP_CONFIGURE ); then
+    blackbox.module.load ansible/score/configure.step
+  fi
+
+  if ( blackbox.flag.enabled STEP_BUILD ); then
+    blackbox.module.load ansible/score/build.step "${action_args[@]}"
+  fi
+
+  blackbox.module.load ansible/score/evaluate.step && {
+    local -a override_from=(
+      blackbox.module.ansible.score.evaluate.expect.debug.shell
+      blackbox.module.ansible.score.evaluate.expect.docker.container
+      blackbox.module.ansible.score.evaluate.expect.file.exists
+      blackbox.module.ansible.score.evaluate.expect.shell.success
+    )
+
+    for override_definition in "${override_from[@]}"; do
+      local override_to=${override_definition/module.ansible.score.evaluate./}
+
+      if ( ! blackbox.flag.enabled STEP_EVALUATE ); then
+        override_definition=
+      fi
+
+      blackbox.module.override "$override_to" "$override_definition"
+    done
+  }
+}; blackbox.module.ansible.score "$@"

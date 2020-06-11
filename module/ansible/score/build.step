@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+blackbox.module.ansible.score.build() {
+  typeset playbook_path=$1
+
+  if ( blackbox.flag.enabled DEBUG_MODE ); then
+    printf "\n"
+    printf "\033[0;37m%s < BLACKBOX_FLAG__STEP_BUILD=%s %s\033[0m\n" "${FUNCNAME[0]}" "$BLACKBOX_FLAG__STEP_BUILD" "$playbook_path"
+    printf "\033[0;34m[BUILD]\033[0m\n"
+  else
+    printf "\n"
+    printf "[BUILD]\n"
+  fi
+
+  local -a ansible_playbook_flags=()
+
+  if ( blackbox.flag.enabled DEBUG_MODE ); then
+    ansible_playbook_flags+=("-v")
+  fi
+
+  ansible-playbook "${ansible_playbook_flags[@]}" "$playbook_path"
+}; blackbox.module.ansible.score.build "$@"

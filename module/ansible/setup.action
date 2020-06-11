@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+blackbox.module.ansible.setup() {
+  if ( blackbox.flag.enabled STEP_PROVISION ); then
+    blackbox.module.load ansible/setup/provision.step
+  fi
+
+  if ( blackbox.flag.enabled STEP_CONFIGURE ); then
+    blackbox.module.load ansible/setup/configure.step
+  fi
+}; blackbox.module.ansible.setup

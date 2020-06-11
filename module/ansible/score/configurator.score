@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-blackbox.module.ansible.score.configurator() {
-  function blackbox.module.ansible.score.configurator.configure() {
-    declare configuration_instruction=$(</dev/stdin)
-
-    echo "$configuration_instruction" | docker exec -i "$BLACKBOX_SPAWN" "$BASH"
-  }
-}; blackbox.module.ansible.score.configurator "$@"

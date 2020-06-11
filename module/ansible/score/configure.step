@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+blackbox.module.ansible.score.configure() {
+  if ( blackbox.flag.enabled DEBUG_MODE ); then
+    printf "\n"
+    printf "\033[0;37m%s < BLACKBOX_HOST_WITH_OPTS=%s\033[0m\n" "${FUNCNAME[0]}" "$BLACKBOX_HOST_WITH_OPTS"
+    printf "\033[0;34m[CONFIGURE]\033[0m\n"
+  else
+    printf "\n"
+    printf "[CONFIGURE]\n"
+  fi
+
+  if [ -z "$BLACKBOX_HOST_WITH_OPTS" ]; then
+    echo "nothing to configure"
+
+    return
+  fi
+
+  echo "$BLACKBOX_HOST_WITH_OPTS" | source /dev/stdin 2>&1
+}; blackbox.module.ansible.score.configure
