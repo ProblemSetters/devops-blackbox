@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+blackbox.module.ansible.score.provision() {
+  if ( blackbox.flag.enabled DEBUG_MODE ); then
+    printf "\n"
+    printf "\033[0;37m%s\033[0m\n" "${FUNCNAME[0]}"
+    printf "\033[0;34m[PROVISION]\033[0m\n"
+  else
+    printf "\n"
+    printf "[PROVISION]\n"
+  fi
+
+  blackbox.transport.fetch module/ansible/score/rootfs/etc/blackbox/ansible/playbook.yml | install -D /dev/stdin /etc/blackbox/ansible/playbook.yml
+}; blackbox.module.ansible.score.provision

@@ -1,44 +1,49 @@
 ---
 - hosts: localhost
-  strategy: "{{ 'debug' if (lookup('env','BLACKBOX_FLAG__DEBUG_MODE') == 'yes') else 'linear' }}"
+  strategy: "{{ 'debug' if (lookup('env', 'BLACKBOX_FLAG__DEBUG_MODE') == 'yes') else 'linear' }}"
   gather_facts: false
   tasks:
     - shell: printenv
       register: printenv
     - debug:
         msg: "{{ printenv.stdout_lines | sort }}"
-      when: lookup("env","BLACKBOX_FLAG__DEBUG_MODE") == "yes"
+      when: lookup("env", "BLACKBOX_FLAG__DEBUG_MODE") == "yes"
     - shell: |
         docker ps -aq | xargs --no-run-if-empty docker stop
         docker system prune -af --volumes
-      when: lookup("env","BLACKBOX_FLAG__MODULES_DO_BUILD") != "without-blackbox"
+      when: lookup("env", "BLACKBOX_FLAG__STEP_BUILD") == "yes"
     - docker_container:
         image: ubuntu:bionic
-        name: "{{ lookup('env','BLACKBOX_SPAWN') }}"
-        hostname: "{{ lookup('env','BLACKBOX_SPAWN') }}"
+        name: "{{ lookup('env', 'BLACKBOX_SPAWN') }}"
+        hostname: "{{ lookup('env', 'BLACKBOX_SPAWN') }}"
         detach: true
         interactive: true
         privileged: true
         volumes:
-          - "/blackbox:/blackbox/:ro"
-          - "/home/{{ lookup('env','BLACKBOX_HOST_USERNAME') }}:/home/{{ lookup('env','BLACKBOX_HOST_USERNAME') }}"
+          - /blackbox:/blackbox/:ro
+          - "/home/{{ lookup('env', 'BLACKBOX_HOST_USERNAME') }}:/home/{{ lookup('env', 'BLACKBOX_HOST_USERNAME') }}"
     - add_host:
         name: "{{ lookup('env','BLACKBOX_SPAWN') }}"
         ansible_connection: docker
-- hosts: "{{ lookup('env','BLACKBOX_SPAWN') if (lookup('env','BLACKBOX_FLAG__MODULES_DO_BUILD') != 'without-blackbox') else 'nowhere' }}"
+- hosts: "{{ lookup('env', 'BLACKBOX_SPAWN') if (lookup('env', 'BLACKBOX_FLAG__STEP_BUILD') == 'yes') else 'dead' }}"
   gather_facts: false
   tasks:
-    - raw: apt -y update
-    - raw: apt -y install python
+    - raw: ln -s /blackbox/blackbox /dev/blackbox
+    - raw: apt-get update
+    - raw: DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common python
     - apt:
         pkg:
           - sudo
           - wget
         state: latest
-    - shell: source <(cat "/blackbox/inventory/docker.inventory" 2>/dev/null || wget -qO- https://raw.githubusercontent.com/ProblemSetters/devops-blackbox/master/inventory/docker.inventory)
+        update_cache: no
+        install_recommends: no
+- hosts: "{{ lookup('env', 'BLACKBOX_SPAWN') if (lookup('env', 'BLACKBOX_FLAG__STEP_CONFIGURE') == 'yes') else 'dead' }}"
+  gather_facts: false
+  tasks:
+    - shell: |
+        source <(cat /dev/blackbox 2>/dev/null || wget -qO- https://raw.githubusercontent.com/ProblemSetters/devops-blackbox/{{ lookup('env', 'BLACKBOX_VERSION') }}/blackbox)
+        echo "{{ lookup('env', 'BLACKBOX_SPAWN_WITH_OPTS') }}" | source /dev/stdin
       args:
         executable: /bin/bash
-    - command: service docker start
-    - apt:
-        pkg:
-          - python-docker
+      when: lookup('env', 'BLACKBOX_SPAWN_WITH_OPTS')

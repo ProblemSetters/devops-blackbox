@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+blackbox.module.ansible.setup.provision() {
+  if ( blackbox.flag.enabled DEBUG_MODE ); then
+    printf "\n"
+    printf "\033[0;37m%s\033[0m\n" "${FUNCNAME[0]}"
+    printf "\033[0;34m[PROVISION]\033[0m\n"
+  else
+    printf "\n"
+    printf "[PROVISION]\n"
+  fi
+
+  blackbox.inventory.provision docker && {
+    usermod -aG docker "$BLACKBOX_HOST_USERNAME"
+    service docker start
+  }
+
+  blackbox.inventory.provision ansible python-docker && {
+    blackbox.transport.fetch module/ansible/setup/rootfs/etc/blackbox/ansible/playbook.yml | install -m 0644 -D /dev/stdin /etc/blackbox/ansible/playbook.yml
+
+    if [ ! -e "/home/${BLACKBOX_HOST_USERNAME}/solution/playbook.yml" ]; then
+      install -o "$BLACKBOX_HOST_USERNAME" -g "$(getent group "$BLACKBOX_HOST_USERNAME" | cut -d ":" -f 1)" -m 0775 -d "/home/${BLACKBOX_HOST_USERNAME}/solution" && {
+        blackbox.transport.fetch module/ansible/setup/rootfs/home/%/solution/playbook.yml | install -o "$BLACKBOX_HOST_USERNAME" -g "$(getent group "$BLACKBOX_HOST_USERNAME" | cut -d ":" -f 1)" -m 0664 /dev/stdin "/home/${BLACKBOX_HOST_USERNAME}/solution/playbook.yml"
+      }
+    fi
+  }
+}; blackbox.module.ansible.setup.provision
