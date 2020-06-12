@@ -11,8 +11,6 @@ blackbox.module.ansible.score.configure() {
   fi
 
   if [ -z "$BLACKBOX_HOST_WITH_OPTS" ]; then
-    echo "nothing to configure"
-
     return
   fi
 

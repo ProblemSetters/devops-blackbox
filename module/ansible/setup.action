@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
 blackbox.module.ansible.setup() {
+  typeset question_id=$1
+
   if ( blackbox.flag.enabled STEP_PROVISION ); then
-    blackbox.module.load ansible/setup/provision.step
+    blackbox.module.load ansible/setup/provision.step "$question_id"
   fi
 
   if ( blackbox.flag.enabled STEP_CONFIGURE ); then
     blackbox.module.load ansible/setup/configure.step
   fi
-}; blackbox.module.ansible.setup
+}; blackbox.module.ansible.setup "$@"
