@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 blackbox.module.ansible.score.evaluate() {
-  export BLACKBOX_SCORE_EVALUATE_SCENARIO=$0
+  export BLACKBOX_SCORE_EVALUATE_SCENARIO_PATH=$0
+  export BLACKBOX_SCORE_EVALUATE_QUESTION_ID=$1
   export BLACKBOX_SCORE_EVALUATE_CACHE="/tmp/evaluate.cache-${RANDOM}"
 
   blackbox.module.ansible.score.evaluate.assert() {
@@ -11,9 +12,9 @@ blackbox.module.ansible.score.evaluate() {
         typeset assert_score=$3
         typeset assert_message=$4
 
-        assert_score=$(blackbox.module.ansible.score.evaluate.score.calculate "$assert_score")
-
         local assert_linear=$(echo "$assert" | awk '{ printf "%s%s", EOL, $0; EOL="; " }')
+
+        assert_message=$(printf "$assert_message" "$assert")
 
         if ( blackbox.flag.enabled DEBUG_MODE ); then
           printf "\033[0;37m%s < %s\033[0m\n" "$assert_source" "$assert_linear"
@@ -22,7 +23,7 @@ blackbox.module.ansible.score.evaluate() {
           printf "[SUCCESS] %s\n" "${assert_message:-$assert_linear}"
         fi
 
-        printf "Partial Credit: %s\n" "$assert_score"
+        printf "Partial Credit: %s\n" "$(blackbox.module.ansible.score.evaluate.score.calculate "$assert_score")"
         printf "\n"
 
         true
@@ -34,9 +35,9 @@ blackbox.module.ansible.score.evaluate() {
       typeset assert_score=$3
       typeset assert_message=$4
 
-      assert_score=$(blackbox.module.ansible.score.evaluate.score.calculate "$assert_score")
-
       local assert_linear=$(echo "$assert" | awk '{ printf "%s%s", EOL, $0; EOL="; " }')
+
+      assert_message=$(printf "$assert_message" "$assert")
 
       if ( blackbox.flag.enabled DEBUG_MODE ); then
         printf "\033[0;37m%s < %s\033[0m\n" "$assert_source" "$assert_linear"
@@ -45,7 +46,7 @@ blackbox.module.ansible.score.evaluate() {
         printf "[FAIL] %s\n" "${assert_message:-$assert_linear}"
       fi
 
-      printf "Partial Credit: 0\n"
+      printf "Partial Credit: 0\n" "$(blackbox.module.ansible.score.evaluate.score.calculate "$assert_score")"
       printf "\n"
 
       false
@@ -68,11 +69,13 @@ blackbox.module.ansible.score.evaluate() {
 
     blackbox.module.ansible.score.evaluate.expect.docker() {
       function blackbox.module.ansible.score.evaluate.expect.docker.container() {
-        declare assert="docker ps -aq -f "name=$(</dev/stdin)""
+        declare assert=$(</dev/stdin)
 
         typeset assert_score=$1
         typeset assert_message_true=$2
         typeset assert_message_false=$3
+
+        assert="docker ps -aq -f "name=${assert}""
 
         if [ -n "$(echo "$assert" | docker exec -i "$BLACKBOX_SPAWN" "$BASH" 2>/dev/null )" ]; then
           blackbox.module.ansible.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$assert_score" "$assert_message_true"
@@ -123,7 +126,7 @@ blackbox.module.ansible.score.evaluate() {
         if [[ "$assert_score" == "-" ]]; then
           assert_score=0
         else
-          local expect_total=$(awk "/^cat <<ASSERT/ { asserts++ } END { print asserts }" "$BLACKBOX_SCORE_EVALUATE_SCENARIO")
+          local expect_total=$(sed "/^source <(cat \/dev\/blackbox .*${BLACKBOX_SCORE_EVALUATE_QUESTION_ID}\$/,/^exit 0\$/!d;//d" "$BLACKBOX_SCORE_EVALUATE_SCENARIO_PATH" | awk "/^cat <<ASSERT/ { asserts_count++ } END { print asserts_count }")
 
           assert_score=$(awk -v expect_total="$expect_total" '{ current_score += $1 } END { expect_current=NR; print int((100 - current_score) / (expect_total - expect_current) + 0.5) }' "$BLACKBOX_SCORE_EVALUATE_CACHE")
         fi

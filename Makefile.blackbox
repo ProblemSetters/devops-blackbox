@@ -37,7 +37,7 @@ setup:
 	docker exec -it $(BLACKBOX_FLAGS) $(BLACKBOX_HOST) $(SHELL) /home/$(BLACKBOX_HOST_USERNAME)/setup.sh
 
 solution:
-	docker exec -it --user $(BLACKBOX_HOST_USERNAME) $(BLACKBOX_HOST) cp -rT /home/$(BLACKBOX_HOST_USERNAME)/.solution /home/$(BLACKBOX_HOST_USERNAME)/solution
+	docker exec -it --user $(BLACKBOX_HOST_USERNAME) $(BLACKBOX_HOST) cp -rT /home/$(BLACKBOX_HOST_USERNAME)/.solution /home/$(BLACKBOX_HOST_USERNAME)/$(shell basename $(PWD))
 
 score:
 	docker exec -it $(BLACKBOX_FLAGS) $(BLACKBOX_HOST) $(SHELL) /home/$(BLACKBOX_HOST_USERNAME)/score.sh
@@ -52,11 +52,11 @@ uninstall: .confirm
 	docker ps -aq -f "name=$(BLACKBOX_HOST)" -f "name=$(BLACKBOX_SPAWN)" | xargs --no-run-if-empty docker rm -f >/dev/null
 
 prune: .confirm
-	docker ps -aq -f "name=blackbox-" | xargs --no-run-if-empty docker stop
+	docker ps -aq -f "name=blackbox-" | xargs -r docker stop | awk '{ print "stopped: " $$0 }' && echo
 	docker system prune -a --volumes
 
 clean: .confirm
-	rm -rf solution
+	rm -rf $(shell basename $(PWD))
 
 .confirm:
 	printf "Are you sure you want to continue? [y/N] "; read confirmation && [ "$${confirmation:-N}" == "y" ]

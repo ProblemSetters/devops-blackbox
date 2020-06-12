@@ -66,7 +66,7 @@ blackbox() {
       typeset inventory_name=$1
       typeset -a inventory_args=("${@:2}")
 
-      source <(blackbox.transport.fetch "inventory/${inventory_name}.inventory") "${inventory_args[@]}"
+      source <(blackbox.transport.fetch "inventory/${inventory_name}.inventory") "$inventory_name" "${inventory_args[@]}"
     }
   }; blackbox.inventory
 

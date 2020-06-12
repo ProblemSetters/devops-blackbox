@@ -15,7 +15,7 @@ blackbox.module.ansible.score() {
     blackbox.module.load ansible/score/build.step "${action_args[@]}"
   fi
 
-  blackbox.module.load ansible/score/evaluate.step && {
+  blackbox.module.load ansible/score/evaluate.step "${action_args[@]}" && {
     local -a override_from=(
       blackbox.module.ansible.score.evaluate.expect.debug.shell
       blackbox.module.ansible.score.evaluate.expect.docker.container
