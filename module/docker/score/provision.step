@@ -11,8 +11,6 @@ blackbox.module.docker.score.provision() {
     return
   fi
 
-  blackbox.inventory.install.file /etc/blackbox/ansible/playbook.yml 0 0 </blackbox/module/ansible/score/rootfs/etc/blackbox/ansible/playbook.yml
-
   if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
     printf "\n"
     printf "BLACKBOX_PROVISION_WITH_OPTS=%s\n" "$BLACKBOX_PROVISION_WITH_OPTS"

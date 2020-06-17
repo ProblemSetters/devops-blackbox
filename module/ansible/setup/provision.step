@@ -1,27 +1,30 @@
 #!/usr/bin/env bash
-
 blackbox.module.ansible.setup.provision() {
-  typeset question_id=$1
+  typeset -a args=("$@")
 
-  if ( blackbox.flag.enabled DEBUG_MODE ); then
+  blackbox.trace.entrypoint privision.step "${FUNCNAME[0]}" "$*" "$(printf "BLACKBOX_PROVISION_WITH_OPTS=%s" "$BLACKBOX_PROVISION_WITH_OPTS")"
+
+  if ( ! blackbox.flag.enabled STEP_PROVISION ); then
     printf "\n"
-    printf "\033[0;37m%s\033[0m\n" "${FUNCNAME[0]}"
-    printf "\033[0;34m[PROVISION]\033[0m\n"
-  else
-    printf "\n"
-    printf "[PROVISION]\n"
+    printf "skip: BLACKBOX_FLAG__STEP_PROVISION=no\n"
+
+    return
   fi
 
+  printf "\n"
   blackbox.inventory.provision docker-ce && {
-    usermod -aG docker "$BLACKBOX_HOST_USERNAME"
+    usermod -a -G docker "$BLACKBOX_USER_NAME"
     service docker start
   }
+  blackbox.inventory.provision ansible python-docker
+  blackbox.inventory.install.file /etc/blackbox/ansible/playbook.yml 0 0 </blackbox/module/ansible/setup/rootfs/etc/blackbox/ansible/playbook.yml
+  blackbox.inventory.install.file playbook.yml </blackbox/module/ansible/setup/rootfs/home/%/%/playbook.yml
 
-  blackbox.inventory.provision ansible python-docker && {
-    blackbox.transport.fetch module/ansible/setup/rootfs/etc/blackbox/ansible/playbook.yml | install -m 0644 -D /dev/stdin /etc/blackbox/ansible/playbook.yml
-  }
-
-  install -o "$BLACKBOX_HOST_USERNAME" -g "$(getent group "$BLACKBOX_HOST_USERNAME" | cut -d ":" -f 1)" -m 0775 -d "/home/${BLACKBOX_HOST_USERNAME}/${question_id}" && {
-    blackbox.transport.fetch module/ansible/setup/rootfs/home/%/%/playbook.yml | install -o "$BLACKBOX_HOST_USERNAME" -g "$(getent group "$BLACKBOX_HOST_USERNAME" | cut -d ":" -f 1)" -m 0664 /dev/stdin "/home/${BLACKBOX_HOST_USERNAME}/${question_id}/playbook.yml"
-  }
+  if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
+    printf "\n"
+    printf "BLACKBOX_PROVISION_WITH_OPTS=%s\n" "$BLACKBOX_PROVISION_WITH_OPTS"
+    eval "$BLACKBOX_PROVISION_WITH_OPTS"
+    printf "\n"
+    blackbox.environment.load
+  fi
 }; blackbox.module.ansible.setup.provision "$@"
