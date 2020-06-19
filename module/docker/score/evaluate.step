@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-blackbox.module.ansible.score.evaluate() {
+blackbox.module.docker.score.evaluate() {
   export BLACKBOX_SCORE_EVALUATE_CACHE="/tmp/evaluate.cache-${RANDOM}"
 
-  blackbox.module.ansible.score.evaluate.assert() {
-    function blackbox.module.ansible.score.evaluate.assert.true() {
+  blackbox.module.docker.score.evaluate.assert() {
+    function blackbox.module.docker.score.evaluate.assert.true() {
       typeset source=$1
       typeset assert=$2
       typeset score=$3
@@ -11,7 +11,7 @@ blackbox.module.ansible.score.evaluate() {
 
       blackbox.trace.entrypoint assert "$source" "$assert"
 
-      local score=$(blackbox.module.ansible.score.evaluate.score.calculate "$score")
+      local score=$(blackbox.module.docker.score.evaluate.score.calculate "$score")
       local message=$(printf "$message" "$assert")
 
       if ( blackbox.flag.enabled DEBUG_MODE ); then
@@ -31,7 +31,7 @@ blackbox.module.ansible.score.evaluate() {
       true
     }
 
-    function blackbox.module.ansible.score.evaluate.assert.false() {
+    function blackbox.module.docker.score.evaluate.assert.false() {
       typeset source=$1
       typeset assert=$2
       typeset score=$3
@@ -39,7 +39,7 @@ blackbox.module.ansible.score.evaluate() {
 
       blackbox.trace.entrypoint assert "$source" "$assert"
 
-      local score=$(blackbox.module.ansible.score.evaluate.score.calculate "$score" >/dev/null; echo 0)
+      local score=$(blackbox.module.docker.score.evaluate.score.calculate "$score" >/dev/null; echo 0)
       local message=$(printf "$message" "$assert")
 
       if ( blackbox.flag.enabled DEBUG_MODE ); then
@@ -58,11 +58,11 @@ blackbox.module.ansible.score.evaluate() {
 
       false
     }
-  }; blackbox.module.ansible.score.evaluate.assert
+  }; blackbox.module.docker.score.evaluate.assert
 
-  blackbox.module.ansible.score.evaluate.expect() {
-    blackbox.module.ansible.score.evaluate.expect.artifact() {
-      function blackbox.module.ansible.score.evaluate.expect.artifact.collection() {
+  blackbox.module.docker.score.evaluate.expect() {
+    blackbox.module.docker.score.evaluate.expect.artifact() {
+      function blackbox.module.docker.score.evaluate.expect.artifact.collection() {
         declare assert=$(</dev/stdin)
 
         readarray -t collection<<<"${assert[*]}"
@@ -85,10 +85,10 @@ blackbox.module.ansible.score.evaluate() {
           fi
         done
       }
-    }; blackbox.module.ansible.score.evaluate.expect.artifact
+    }; blackbox.module.docker.score.evaluate.expect.artifact
 
-    blackbox.module.ansible.score.evaluate.expect.file() {
-      function blackbox.module.ansible.score.evaluate.expect.file.exists() {
+    blackbox.module.docker.score.evaluate.expect.file() {
+      function blackbox.module.docker.score.evaluate.expect.file.exists() {
         declare assert=$(</dev/stdin)
 
         typeset score=$1
@@ -97,15 +97,15 @@ blackbox.module.ansible.score.evaluate() {
         typeset message_args=("${@:4}")
 
         if ( echo "source /dev/blackbox >/dev/null; test -f \"${assert}\"" | docker exec -i -w "${BLACKBOX_USER_QUESTION_DIRECTORY}" "$BLACKBOX_SPAWN" "$BASH" ); then
-          blackbox.module.ansible.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
+          blackbox.module.docker.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
         else
-          blackbox.module.ansible.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
+          blackbox.module.docker.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
         fi
       }
-    }; blackbox.module.ansible.score.evaluate.expect.file
+    }; blackbox.module.docker.score.evaluate.expect.file
 
-    blackbox.module.ansible.score.evaluate.expect.shell() {
-      function blackbox.module.ansible.score.evaluate.expect.shell.debug() {
+    blackbox.module.docker.score.evaluate.expect.shell() {
+      function blackbox.module.docker.score.evaluate.expect.shell.debug() {
         declare assert=$(</dev/stdin)
 
         local assert=$(eval "assert() { $(echo "$assert" | sed '/^#/d' | awk 'ORS="; "') }" && declare -f assert | sed '1,2d; $d; s/^[[:space:]]\+//g;' | awk '{ printf "%s%s", EOL, $0; EOL=" " }')
@@ -127,7 +127,7 @@ blackbox.module.ansible.score.evaluate() {
         fi
       }
 
-      function blackbox.module.ansible.score.evaluate.expect.shell.failure() {
+      function blackbox.module.docker.score.evaluate.expect.shell.failure() {
         declare assert=$(</dev/stdin)
 
         typeset score=$1
@@ -138,13 +138,13 @@ blackbox.module.ansible.score.evaluate() {
         assert=$(echo "$assert" | awk 'BEGIN { printf "(" } { printf "%s%s", EOL, $0; EOL=") && (" } END { printf ")" }')
 
         if ( ! (echo "source /dev/blackbox >/dev/null; ${assert}" | docker exec -i -w "/home/${BLACKBOX_USER_NAME}" "$BLACKBOX_SPAWN" "$BASH" >/dev/null 2>&1) ); then
-          blackbox.module.ansible.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
+          blackbox.module.docker.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
         else
-          blackbox.module.ansible.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
+          blackbox.module.docker.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
         fi
       }
 
-      function blackbox.module.ansible.score.evaluate.expect.shell.stderr() {
+      function blackbox.module.docker.score.evaluate.expect.shell.stderr() {
         declare assert=$(</dev/stdin)
 
         typeset score=$1
@@ -155,13 +155,13 @@ blackbox.module.ansible.score.evaluate() {
         assert=$(echo "$assert" | awk 'BEGIN { printf "(" } { printf "%s%s", EOL, $0; EOL="); (" } END { printf ")" }')
 
         if ( echo "source /dev/blackbox >/dev/null; ${assert}" | docker exec -i -w "${BLACKBOX_USER_QUESTION_DIRECTORY}" "$BLACKBOX_SPAWN" "$BASH" 2>&1 >/dev/null | grep -q . ); then
-          blackbox.module.ansible.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
+          blackbox.module.docker.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
         else
-          blackbox.module.ansible.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
+          blackbox.module.docker.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
         fi
       }
 
-      function blackbox.module.ansible.score.evaluate.expect.shell.stdout() {
+      function blackbox.module.docker.score.evaluate.expect.shell.stdout() {
         declare assert=$(</dev/stdin)
 
         typeset score=$1
@@ -172,13 +172,13 @@ blackbox.module.ansible.score.evaluate() {
         assert=$(echo "$assert" | awk 'BEGIN { printf "(" } { printf "%s%s", EOL, $0; EOL="); (" } END { printf ")" }')
 
         if ( echo "source /dev/blackbox >/dev/null; ${assert}" | docker exec -i -w "${BLACKBOX_USER_QUESTION_DIRECTORY}" "$BLACKBOX_SPAWN" "$BASH" 2>/dev/null | grep -q . ); then
-          blackbox.module.ansible.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
+          blackbox.module.docker.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
         else
-          blackbox.module.ansible.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
+          blackbox.module.docker.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
         fi
       }
 
-      function blackbox.module.ansible.score.evaluate.expect.shell.success() {
+      function blackbox.module.docker.score.evaluate.expect.shell.success() {
         declare assert=$(</dev/stdin)
 
         typeset score=$1
@@ -189,23 +189,23 @@ blackbox.module.ansible.score.evaluate() {
         assert=$(echo "$assert" | awk 'BEGIN { printf "(" } { printf "%s%s", EOL, $0; EOL=") && (" } END { printf ")" }')
 
         if ( echo "source /dev/blackbox >/dev/null; ${assert}" | docker exec -i -w "${BLACKBOX_USER_QUESTION_DIRECTORY}" "$BLACKBOX_SPAWN" "$BASH" >/dev/null 2>&1 ); then
-          blackbox.module.ansible.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
+          blackbox.module.docker.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
         else
-          blackbox.module.ansible.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
+          blackbox.module.docker.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
         fi
       }
-    }; blackbox.module.ansible.score.evaluate.expect.shell
-  }; blackbox.module.ansible.score.evaluate.expect
+    }; blackbox.module.docker.score.evaluate.expect.shell
+  }; blackbox.module.docker.score.evaluate.expect
 
-  blackbox.module.ansible.score.evaluate.score() {
-    function blackbox.module.ansible.score.evaluate.score.calculate() {
+  blackbox.module.docker.score.evaluate.score() {
+    function blackbox.module.docker.score.evaluate.score.calculate() {
       typeset assert_score=$1
 
       if [[ ! "$assert_score" =~ ^[0-9]+([.][0-9]+)?$  ]]; then
         if [[ "$assert_score" == "-" ]]; then
           assert_score=0
         else
-          local expect_total=$(sed "/^\. \/dev\/blackbox ansible score \"${BLACKBOX_QUESTION_ID}\"\$/,/^exit 0\$/!d;//d" "$BLACKBOX_SCENARIO_PATH" | awk "/^cat <<ASSERT/ { asserts_count++ } END { print asserts_count }")
+          local expect_total=$(sed "/^\. \/dev\/blackbox docker score \"${BLACKBOX_QUESTION_ID}\"\$/,/^exit 0\$/!d;//d" "$BLACKBOX_SCENARIO_PATH" | awk "/^cat <<ASSERT/ { asserts_count++ } END { print asserts_count }")
 
           assert_score=$(awk -v expect_total="$expect_total" '{ current_score += $1 } END { expect_current=NR; print int((100 - current_score) / (expect_total - expect_current) + 0.5) }' "$BLACKBOX_SCORE_EVALUATE_CACHE")
         fi
@@ -213,9 +213,9 @@ blackbox.module.ansible.score.evaluate() {
 
       echo "$assert_score" | tee -a "$BLACKBOX_SCORE_EVALUATE_CACHE"
     }
-  }; blackbox.module.ansible.score.evaluate.score
+  }; blackbox.module.docker.score.evaluate.score
 
-  blackbox.module.ansible.score.evaluate.__init() {
+  blackbox.module.docker.score.evaluate.__init() {
     blackbox.trace.entrypoint evaluate.step "${FUNCNAME[0]}" "$*" "$(printf "BLACKBOX_FLAG__STEP_EVALUATE=%s" "$BLACKBOX_FLAG__STEP_EVALUATE")"
 
     if ( ! blackbox.flag.enabled STEP_EVALUATE ); then
@@ -226,5 +226,5 @@ blackbox.module.ansible.score.evaluate() {
     fi
 
     blackbox.inventory.install.file "$BLACKBOX_SCORE_EVALUATE_CACHE" </dev/null
-  } && blackbox.module.ansible.score.evaluate.__init "$@"
-}; blackbox.module.ansible.score.evaluate "$@"
+  } && blackbox.module.docker.score.evaluate.__init "$@"
+}; blackbox.module.docker.score.evaluate "$@"
