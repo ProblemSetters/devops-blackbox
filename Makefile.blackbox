@@ -20,7 +20,7 @@ override BLACKBOX_DIR=$(call __PWD__,../../../blackbox)
 override BLACKBOX_OPTIONS=$(foreach option, $(filter-out BLACKBOX_DIR BLACKBOX_OPTIONS,$(filter BLACKBOX_%,$(sort $(.VARIABLES)))),-e "$(option)=$($(option))")
 
 define __PWD__=
-$(shell cd $(shell dirname $(abspath $(firstword $(MAKEFILE_LIST))))/$(1) && pwd -P)
+$(abspath $(dir $(firstword $(MAKEFILE_LIST)))/$(1))
 endef
 
 debug:
@@ -67,8 +67,7 @@ prune: .confirm
 	docker system prune -a --volumes
 
 clean: .confirm
-	test -e "$(call __PWD__,$(shell basename $(PWD)))" && chattr -iR $(call __PWD__,$(shell basename $(PWD))) >/dev/null || true
-	rm -rf $(call __PWD__,$(shell basename $(PWD)))
+	$(if $(wildcard $(call __PWD__,$(shell basename $(PWD)))),chattr -iR $(call __PWD__,$(shell basename $(PWD))) >/dev/null; rm -rf $(call __PWD__,$(shell basename $(PWD))))
 
 .confirm:
 	printf "Are you sure you want to continue? [y/N] "; read confirmation && [ "$${confirmation:-N}" == "y" ]

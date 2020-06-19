@@ -33,6 +33,7 @@
     - raw: "useradd -u {{ lookup('env', 'BLACKBOX_USER').split(':')[0] }} -g {{ lookup('env', 'BLACKBOX_USER').split(':')[1] }}  -s /bin/bash -M {{ lookup('env', 'BLACKBOX_USER_NAME') }}"
     - raw: apt-get update
     - raw: DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common python
+    - raw: echo 'shopt -os allexport; . /etc/environment; shopt -ou allexport' >>/root/.bashrc
     - apt:
         pkg:
           - sudo

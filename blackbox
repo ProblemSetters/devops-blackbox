@@ -185,11 +185,11 @@ blackbox() {
     typeset -a module_args=("${@:2}")
 
     if [ ! -h "/dev/blackbox" ]; then
-      wget -S -O /tmp/blackbox "https://github.com/ProblemSetters/devops-blackbox/archive/${BLACKBOX_VERSION}.zip1" && {
+      wget -S -O /tmp/blackbox "https://github.com/ProblemSetters/devops-blackbox/archive/${BLACKBOX_VERSION}.zip" && {
         unzip /tmp/blackbox -d /tmp && {
           mv "/tmp/devops-blackbox-${BLACKBOX_VERSION}" /blackbox
           ln -s /blackbox/blackbox /dev/blackbox
-          rm -rf /tmp/*
+          rm -rf /tmp/*blackbox*
         }
       } || blackbox.exception.raise "blackbox is not available"
     fi
