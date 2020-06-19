@@ -1,62 +1,36 @@
 #!/usr/bin/env bash
+
 blackbox() {
-  export BLACKBOX_VERSION=${BLACKBOX_VERSION:-master}
-  \
-  export BLACKBOX_FLAG__DEBUG_MODE=${BLACKBOX_FLAG__DEBUG_MODE:-no}
-  export BLACKBOX_FLAG__STEP_PROVISION=${BLACKBOX_FLAG__STEP_PROVISION:-yes}
-  export BLACKBOX_FLAG__STEP_BUILD=${BLACKBOX_FLAG__STEP_BUILD:-yes}
-  export BLACKBOX_FLAG__STEP_EVALUATE=${BLACKBOX_FLAG__STEP_EVALUATE:-yes}
-  export BLACKBOX_FLAG__INVENTORY_CACHE_TTL=${BLACKBOX_FLAG__INVENTORY_CACHE_TTL:-60}
-  \
+  export BLACKBOX_VERSION=master
+
   export BLACKBOX_HOST=${BLACKBOX_HOST:-localhost}
-  export BLACKBOX_SPAWN=${BLACKBOX_SPAWN:-$(cat /proc/sys/kernel/random/uuid)}
-  export BLACKBOX_USER=${BLACKBOX_USER:-1000:1000}
-  export BLACKBOX_USER_NAME=${BLACKBOX_USERBLACKBOX_USER_NAME_NAME:-ubuntu}
-  export BLACKBOX_USER_HOME=${BLACKBOX_USER_HOME:-"/home/${BLACKBOX_USER_NAME}"}
-  export BLACKBOX_USER_QUESTION_DIRECTORY=${BLACKBOX_USER_QUESTION_DIRECTORY:-"$(getent passwd "$BLACKBOX_USER_NAME" | cut -d ":" -f 6)/${3}"}
-  \
-  export BLACKBOX_WITH_OPTS=$(declare -f BLACKBOX_WITH_OPTS | sed '1,2d; $d; s/^[[:space:]]\+//g; s/^}/; &/g' | awk '{ printf "%s%s", EOL, $0; EOL=" "}' | sed 's/[[:space:]];\([[:space:]]}\)/;\1/')
-  export BLACKBOX_PROVISION_WITH_OPTS=$(declare -f BLACKBOX_PROVISION_WITH_OPTS | sed '1,2d; $d; s/^[[:space:]]\+//g; s/^}/; &/g' | awk '{ printf "%s%s", EOL, $0; EOL=" "}' | sed 's/[[:space:]];\([[:space:]]}\)/;\1/')
-  export BLACKBOX_BUILD_WITH_OPTS=$(declare -f BLACKBOX_BUILD_WITH_OPTS | sed '1,2d; $d; s/^[[:space:]]\+//g; s/^}/; &/g' | awk '{ printf "%s%s", EOL, $0; EOL=" "}' | sed 's/[[:space:]];\([[:space:]]}\)/;\1/')
-  export BLACKBOX_BUILD_SOLUTION_WITH_OPTS=$(declare -f BLACKBOX_BUILD_SOLUTION_WITH_OPTS | sed '1,2d; $d; s/^[[:space:]]\+//g; s/^}/; &/g' | awk '{ printf "%s%s", EOL, $0; EOL=" "}' | sed 's/[[:space:]];\([[:space:]]}\)/;\1/')
-  export BLACKBOX_EVALUATE_WITH_OPTS=$(declare -f BLACKBOX_EVALUATE_WITH_OPTS | sed '1,2d; $d; s/^[[:space:]]\+//g; s/^}/; &/g' | awk '{ printf "%s%s", EOL, $0; EOL=" "}' | sed 's/[[:space:]];\([[:space:]]}\)/;\1/')
+  export BLACKBOX_HOST_USER=${BLACKBOX_HOST_USER:-1000:1000}
+  export BLACKBOX_HOST_USERNAME=${BLACKBOX_HOST_USERNAME:-ubuntu}
+  export BLACKBOX_SPAWN=${BLACKBOX_SPAWN:-$(cat /proc/sys/kernel/random/uuid 2>/dev/null || head /dev/urandom | tr -cd "[:alnum:]" | head -c 36)}
 
-  typeset -gx BLACKBOX_SCENARIO_PATH=$0
-  typeset -gx BLACKBOX_MODULE_NAME=$1
-  typeset -gx BLACKBOX_MODULE_ACTION_NAME=$2
-  typeset -gx BLACKBOX_QUESTION_ID=$3
+  export BLACKBOX_FLAG__DEBUG_MODE=${BLACKBOX_FLAG__DEBUG_MODE:-no}
+  export BLACKBOX_FLAG__INVENTORY_CACHE_TTL=${BLACKBOX_INVENTORY_CACHE_TTL:-60}
+  export BLACKBOX_FLAG__STEP_BUILD=${BLACKBOX_FLAG__STEP_BUILD:-yes}
+  export BLACKBOX_FLAG__STEP_CONFIGURE=${BLACKBOX_FLAG__STEP_CONFIGURE:-yes}
+  export BLACKBOX_FLAG__STEP_EVALUATE=${BLACKBOX_FLAG__STEP_EVALUATE:-yes}
+  export BLACKBOX_FLAG__STEP_PROVISION=${BLACKBOX_FLAG__STEP_PROVISION:-yes}
 
-  blackbox.environment() {
-    function blackbox.environment.load() {
-      shopt -os allexport
-      . /etc/environment
-      shopt -ou allexport
+  export BLACKBOX_HOST_WITH_OPTS=$(declare -f BLACKBOX_HOST_WITH_OPTS | sed '1,2d; $d; s/^[[:space:]]\+}/;&/' | awk '{ printf "%s%s", EOL, $0; EOL=" "}' | sed 's/[[:space:]];/; /' | tr -s '[:space:]')
+  export BLACKBOX_SPAWN_WITH_OPTS=$(declare -f BLACKBOX_SPAWN_WITH_OPTS | sed '1,2d; $d; s/^[[:space:]]\+}/;&/' | awk '{ printf "%s%s", EOL, $0; EOL=" "}' | sed 's/[[:space:]];/; /' | tr -s '[:space:]')
 
-      if ( blackbox.flag.enabled DEBUG_MODE ); then
-        printf "\033[0;37m%s\033[0m\n" "$(printenv | sort | awk 'ORS=" "')"
-      else
-        printf "%s\n" "$(printenv | sort | awk 'ORS=" "')"
-      fi
-    }
-  }; blackbox.environment
+  export BLACKBOX_MODULE_NAME=$1
+  export BLACKBOX_MODULE_ACTION_NAME=$2
+  export BLACKBOX_MODULE_ACTION_ARGC=$((${#@} - 2))
+  export BLACKBOX_MODULE_ACTION_ARGV=${*:3}
 
   blackbox.exception() {
     function blackbox.exception.raise() {
       typeset message=$1
       typeset -a args=("${@:2}")
 
-      if ( blackbox.flag.enabled DEBUG_MODE ); then
-        printf "\n"
-        printf "\033[0;37m%s < \"%s\" %s\033[0m\n" "${FUNCNAME[0]}" "$message" "${args[*]}"
-        printf "\033[0;31merror: *** %s\033[0m\n" "$(printf "$message" "${args[@]}")" >&2
-        printf "\033[0;33m^^\n"
-        printf "$(local level=0; while $(echo caller "$level"); do ((level++)); done)" | awk '{ print "at " $2 "(" $3 ":" $1 ")"; }'
-        printf "\033[0m"
-      else
-        printf "error: *** %s\n" "$(printf "$message" "${args[@]}")" >&2
-      fi
-
-      kill $$
+      printf "[ERROR]: %s.\n" "$(printf "$message" "${args[@]}")" >&2 && {
+        kill $$
+      }
     }
   }; blackbox.exception
 
@@ -67,10 +41,10 @@ blackbox() {
       local real_value=$(eval echo "$(printf "\$BLACKBOX_FLAG__%s" "$name")")
 
       if [ -z "$real_value" ]; then
-        blackbox.exception.raise "flag '%s' not found" "$name"
+        blackbox.exception.raise 'flag "%s" not found' "$name"
       fi
 
-      test "$real_value" != "no"
+      [[ "$real_value" != "no" ]]
     }
 
     function blackbox.flag.is() {
@@ -80,130 +54,71 @@ blackbox() {
       local real_value=$(eval echo "$(printf "\$BLACKBOX_FLAG__%s" "$name")")
 
       if [ -z "$real_value" ]; then
-        blackbox.exception.raise "flag '%s' not found" "$name"
+        blackbox.exception.raise 'flag "%s" not found' "$name"
       fi
 
-      test "$real_value" = "$expected_value"
+      [[ "$real_value" == "$expected_value" ]]
     }
   }; blackbox.flag
 
   blackbox.inventory() {
-    blackbox.inventory.install() {
-      function blackbox.inventory.install.directory() {
-        typeset destination=$1
-        typeset owner=${2:-$(echo "$BLACKBOX_USER" | cut -d ":" -f 1)}
-        typeset group=${3:-$(echo "$BLACKBOX_USER" | cut -d ":" -f 2)}
-
-        install -o "$owner" -g "$group" -m 0775 -d "$destination"
-      }
-
-      function blackbox.inventory.install.file() {
-        declare source=$(</dev/stdin)
-
-        typeset destination=$1
-        typeset owner=${2:-$(echo "$BLACKBOX_USER" | cut -d ":" -f 1)}
-        typeset group=${3:-$(echo "$BLACKBOX_USER" | cut -d ":" -f 2)}
-
-        install -o "$owner" -g "$group" -m 0775 -d "$(dirname "$destination")" && {
-          if [ -n "$source" ]; then
-            echo "$source" | install -o "$owner" -g "$group" -m 0664 /dev/stdin "$destination"
-          else
-            install -o "$owner" -g "$group" -m 0664 /dev/null "$destination"
-          fi
-        }
-      }
-    }; blackbox.inventory.install
-
     function blackbox.inventory.provision() {
-      typeset name=$1
-      typeset -a with_packages=("${@:2}")
+      typeset inventory_name=$1
+      typeset -a inventory_args=("${@:2}")
 
-      if [ ! -e "/blackbox/inventory/${name}.inventory" ]; then
-        blackbox.exception.raise "inventory '%s' not found" "$name"
-      fi
-
-      source "/blackbox/inventory/${name}.inventory" "$name" "${with_packages[@]}"
+      source <(blackbox.transport.fetch "inventory/${inventory_name}.inventory") "$inventory_name" "${inventory_args[@]}"
     }
   }; blackbox.inventory
 
   blackbox.module() {
     function blackbox.module.load() {
-      typeset name=$1
-      typeset -a args=("${@:2}")
+      typeset module_name=$1
+      typeset -a module_args=("${@:2}")
 
-      if [ ! -e "/blackbox/module/${name}" ]; then
-        blackbox.exception.raise "module '%s' not found" "$name"
-      fi
-
-      source "/blackbox/module/${name}" "${args[@]}"
+      source <(blackbox.transport.fetch "module/${module_name}") "${module_args[@]}"
     }
 
     function blackbox.module.override() {
-      typeset to=$1
-      typeset from=$2
+      typeset override_to=$1
+      typeset override_from=$2
 
-      local from_definition="(){ return; }"
+      local override_from_definition="(){ return; }"
 
-      if [ -n "$from" ]; then
-        from_definition="$(declare -f "$from")"
+      if [ -n "$override_from" ]; then
+        override_from_definition="$(declare -f "$override_from")"
       fi
 
-      eval "$(printf "function %s %s" "$to" "${from_definition#*"()"}")"
+      eval "$(printf "function %s %s" "$override_to" "${override_from_definition#*"()"}")"
     }
   }; blackbox.module
 
-  blackbox.trace() {
-    function blackbox.trace.entrypoint() {
-      typeset header=$1
-      typeset name=$2
-      typeset args=("$3")
-      typeset opts=("$4")
+  blackbox.transport() {
+    function blackbox.transport.fetch() {
+      typeset resource_uri=$1
 
-      if [ -n "${args[*]}" ]; then
-        args=("${args[*]/#/ < }")
-      fi
-
-      if [ -n "${opts[*]}" ]; then
-        opts=("${opts[*]/#/ | }")
-      fi
-
-      if ( blackbox.flag.enabled DEBUG_MODE ); then
-        printf "\n"
-        printf "\033[0;37m%s%s%s\033[0m\n" "$name" "${args[*]}" "${opts[*]}"
-        printf "\033[0;34m[%s]\033[0m\n" "${header^^}"
-      else
-        printf "\n"
-        printf "[%s]\n" "${header^^}"
-      fi
-
-      blackbox.environment.load
+      cat "/blackbox/${resource_uri}" 2>/dev/null || {
+        wget -qO- "https://raw.githubusercontent.com/ProblemSetters/devops-blackbox/${BLACKBOX_VERSION}/${resource_uri}" || {
+          blackbox.exception.raise 'resource "%s" not found' "$resource_uri"
+        }
+      }
     }
-  }; blackbox.trace
+  }; blackbox.transport
 
   blackbox.__init() {
     typeset module_name=$1
     typeset -a module_args=("${@:2}")
 
-    if [ ! -h "/dev/blackbox" ]; then
-      wget -S -O /tmp/blackbox "https://github.com/ProblemSetters/devops-blackbox/archive/${BLACKBOX_VERSION}.zip1" && {
-        unzip /tmp/blackbox -d /tmp && {
-          mv "/tmp/devops-blackbox-${BLACKBOX_VERSION}" /blackbox
-          ln -s /blackbox/blackbox /dev/blackbox
-          rm -rf /tmp/*
-        }
-      } || blackbox.exception.raise "blackbox is not available"
-    fi
-
-    blackbox.trace.entrypoint blackbox "${FUNCNAME[0]}" "$*"
-
     if [ -z "$module_name" ]; then
       return
     fi
 
-    blackbox.inventory.install.directory "$BLACKBOX_USER_QUESTION_DIRECTORY" && {
-      cd "$BLACKBOX_USER_QUESTION_DIRECTORY" && {
-        blackbox.module.load "${module_name}.module" "${module_args[@]}"
-      }
-    }
+    if ( blackbox.flag.enabled DEBUG_MODE ); then
+      printf "\n"
+      printf "\033[0;37m%s\033[0m\n" "$(printenv | sort)"
+    else
+      printf "%s\n" "$(printenv | sort)"
+    fi
+
+    blackbox.module.load "${module_name}.module" "${module_args[@]}"
   } && blackbox.__init "$@"
 }; blackbox "$@"
