@@ -1,25 +1,25 @@
 #!/usr/bin/env bash
+
 blackbox.module.ansible.score() {
-  typeset question_id=$1
-  typeset -a step_args=("${@:2}")
+  typeset -a action_args=("$@")
 
-  blackbox.trace.entrypoint score.action "${FUNCNAME[0]}" "$*"
-
-  if (( ! ${#step_args[@]} )); then
-    step_args=("")
+  if ( blackbox.flag.enabled STEP_PROVISION ); then
+    blackbox.module.load ansible/score/provision.step
   fi
 
-  blackbox.module.load ansible/score/provision.step "${step_args[@]}"
-  blackbox.module.load ansible/score/build.step "${step_args[@]}"
+  if ( blackbox.flag.enabled STEP_CONFIGURE ); then
+    blackbox.module.load ansible/score/configure.step
+  fi
 
-  blackbox.module.load ansible/score/evaluate.step "${step_args[@]}" && {
+  if ( blackbox.flag.enabled STEP_BUILD ); then
+    blackbox.module.load ansible/score/build.step "${action_args[@]}"
+  fi
+
+  blackbox.module.load ansible/score/evaluate.step "${action_args[@]}" && {
     local -a override_from=(
-      blackbox.module.ansible.score.evaluate.expect.artifact.collection
+      blackbox.module.ansible.score.evaluate.expect.debug.shell
+      blackbox.module.ansible.score.evaluate.expect.docker.container
       blackbox.module.ansible.score.evaluate.expect.file.exists
-      blackbox.module.ansible.score.evaluate.expect.shell.debug
-      blackbox.module.ansible.score.evaluate.expect.shell.failure
-      blackbox.module.ansible.score.evaluate.expect.shell.stderr
-      blackbox.module.ansible.score.evaluate.expect.shell.stdout
       blackbox.module.ansible.score.evaluate.expect.shell.success
     )
 

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
+
 blackbox.module.ansible.setup() {
   typeset question_id=$1
-  typeset -a step_args=("${@:2}")
 
-  blackbox.trace.entrypoint setup.action "${FUNCNAME[0]}" "$*"
-
-  if (( ! ${#step_args[@]} )); then
-    step_args=("")
+  if ( blackbox.flag.enabled STEP_PROVISION ); then
+    blackbox.module.load ansible/setup/provision.step "$question_id"
   fi
 
-  blackbox.module.load ansible/setup/provision.step "${step_args[@]}"
+  if ( blackbox.flag.enabled STEP_CONFIGURE ); then
+    blackbox.module.load ansible/setup/configure.step
+  fi
 }; blackbox.module.ansible.setup "$@"
