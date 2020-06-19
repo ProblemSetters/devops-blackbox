@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-blackbox.module.docker.score.provision() {
+blackbox.module.docker.setup.provision() {
   typeset -a args=("$@")
 
   blackbox.trace.entrypoint privision.step "${FUNCNAME[0]}" "$*" "$(printf "BLACKBOX_PROVISION_WITH_OPTS=%s" "$BLACKBOX_PROVISION_WITH_OPTS")"
@@ -11,7 +11,12 @@ blackbox.module.docker.score.provision() {
     return
   fi
 
-  blackbox.inventory.install.file /etc/blackbox/ansible/playbook.yml 0 0 </blackbox/module/ansible/score/rootfs/etc/blackbox/ansible/playbook.yml
+  printf "\n"
+  blackbox.inventory.provision docker-ce && {
+    usermod -a -G docker "$BLACKBOX_USER_NAME"
+    service docker start
+  }
+  blackbox.inventory.install.file script.sh </blackbox/module/docker/setup/rootfs/home/%/%/script.sh
 
   if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
     printf "\n"
@@ -20,4 +25,4 @@ blackbox.module.docker.score.provision() {
     printf "\n"
     blackbox.environment.load
   fi
-}; blackbox.module.docker.score.provision "$@"
+}; blackbox.module.docker.setup.provision "$@"
