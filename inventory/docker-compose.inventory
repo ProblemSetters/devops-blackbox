@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+blackbox.inventory.docker-compose() {
+  typeset package_name=$1
+  typeset -a with_packages=("${@:2}")
+
+  if ( docker-compose -v 2>/dev/null ); then
+    return
+
+    false
+  fi
+
+  if [ -z "$(find /var/lib/apt/lists -amin -"$BLACKBOX_FLAG__INVENTORY_CACHE_TTL")" ]; then
+    apt-get update
+  fi
+
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gcc python python-dev python-pip && {
+    local requirements="setuptools wheel docker-compose"
+
+    for requirement in ${requirements[*]}; do
+      pip install "$requirement"
+    done
+  }
+
+  if (( ${#with_packages[@]} )); then
+    dpkg-query -W "${with_packages[@]}" 2>&1
+
+    if ( dpkg-query -L "${with_packages[@]}" >/dev/null 2>&1); then
+      return
+    fi
+
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${with_packages[@]}"
+  fi
+}; blackbox.inventory.docker-compose "$@"
