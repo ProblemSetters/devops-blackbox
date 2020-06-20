@@ -3,8 +3,6 @@ blackbox.inventory.docker-ce() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")
 
-  local cache_ttl=${BLACKBOX_FLAG__INVENTORY_CACHE_TTL:-60}
-
   dpkg-query -W "$package_name" "${with_packages[@]}" 2>&1
 
   if ( dpkg-query -L "$package_name" "${with_packages[@]}" >/dev/null 2>&1); then
@@ -13,7 +11,7 @@ blackbox.inventory.docker-ce() {
     return
   fi
 
-  if [ -z "$(find /var/lib/apt/lists -amin -"$cache_ttl")" ]; then
+  if [ -z "$(find /var/lib/apt/lists -amin -"$BLACKBOX_FLAG__INVENTORY_CACHE_TTL")" ]; then
     apt-get update
   fi
 
