@@ -1,5 +1,5 @@
 shopt -os allexport && {
-  . /etc/environment;
+  . /etc/environment
   shopt -ou allexport
 }
 

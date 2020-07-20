@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
-blackbox.framework.module ()
-{
-  function blackbox.framework.module.load ()
-  {
-    typeset module_name=$1;
-    typeset -a module_args=("${@:2}");
+blackbox.framework.module() {
+  function blackbox.framework.module.load() {
+    typeset module_name=$1
+    typeset -a module_args=("${@:2}")
 
     if [ ! -e "/blackbox/module/${module_name}.module" ]; then
-      blackbox.framework.exception.raise "module '%s' not found" "$module_name";
-    fi;
+      blackbox.framework.exception.raise "module '%s' not found" "$module_name"
+    fi
 
     blackbox.framework.import "blackbox.module.${module_name}:module" "${module_args[@]}"
   }

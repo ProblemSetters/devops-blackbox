@@ -1,29 +1,28 @@
 #!/usr/bin/env bash
-blackbox.framework.module.abstract.score.build ()
-{
-  typeset -a args=("$@");
+blackbox.framework.module.abstract.score.build() {
+  typeset -a args=("$@")
 
   if ( ! blackbox.framework.flag.enabled STEP_BUILD ); then
-    printf "skip: BLACKBOX_FLAG__STEP_BUILD=no\n";
+    printf "skip: BLACKBOX_FLAG__STEP_BUILD=no\n"
 
-    return;
-  fi;
+    return
+  fi
 
   declare -a build_cmd=(
     "/bin/bash"
     script.sh
-  );
+  )
 
-  : <<< blackbox.module.*.score.build;
+  : <<< blackbox.module.*.score.build
 
   if [ ! -e "${build_cmd[1]}" ]; then
-    blackbox.framework.exception.raise "solution stub '%s' does not exists" "${build_cmd[1]}";
-  fi;
+    blackbox.framework.exception.raise "solution stub '%s' does not exists" "${build_cmd[1]}"
+  fi
 
-  docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "${build_cmd[@]}";
+  docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "${build_cmd[@]}"
 
   if [ -n "$BLACKBOX_BUILD_WITH_OPTS" ]; then
-    printf "BLACKBOX_BUILD_WITH_OPTS=%s\n" "$BLACKBOX_BUILD_WITH_OPTS";
-    docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash -c "$BLACKBOX_BUILD_WITH_OPTS";
+    printf "BLACKBOX_BUILD_WITH_OPTS=%s\n" "$BLACKBOX_BUILD_WITH_OPTS"
+    docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash -c "$BLACKBOX_BUILD_WITH_OPTS"
   fi
 }

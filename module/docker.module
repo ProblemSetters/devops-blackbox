@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-blackbox.module.docker ()
-{
+blackbox.module.docker() {
   : <<< blackbox.framework.module.abstract
 }

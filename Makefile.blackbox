@@ -32,7 +32,7 @@ debug:
 
 override SHELL:=/bin/bash
 
-all: uninstall install setup
+all: uninstall prune install setup solution score
 
 install:
 	cat <(echo FROM problemsetters/blackbox:abstract) <(echo RUN groupadd docker) | DOCKER_BUILDKIT=1 docker build --build-arg="BLACKBOX_USER=$(BLACKBOX_USER)" --build-arg="BLACKBOX_USER_NAME=$(BLACKBOX_USER_NAME)" --build-arg="BLACKBOX_USER_HOME=$(BLACKBOX_USER_HOME)" --build-arg="BUILDKIT_INLINE_CACHE=1" --cache-from="problemsetters/blackbox:abstract" --progress="plain" --tag="blackbox:$(BLACKBOX_HOST)" -
@@ -54,11 +54,11 @@ shell\:spawn:
 	docker exec -it --user="$(BLACKBOX_USER)" $(BLACKBOX_HOST) /bin/bash -c "docker exec -it $(BLACKBOX_SPAWN) /bin/bash"
 
 uninstall:
-	docker ps -aq -f "name=$(BLACKBOX_HOST)" | xargs -r docker rm -f >/dev/null
-	docker images -aq -f "reference=blackbox:$(BLACKBOX_HOST)" | xargs -r docker rmi -f >/dev/null
+	docker ps -aq -f "name=$(BLACKBOX_HOST)" | xargs -r docker rm -f > /dev/null
+	docker images -aq -f "reference=blackbox:$(BLACKBOX_HOST)" | xargs -r docker rmi -f
 
 prune:
-	docker ps -aq -f "name=blackbox-" | xargs -r docker stop >/dev/null
+	docker ps -aq -f "name=blackbox-" | xargs -r docker stop > /dev/null
 	docker system prune -a --volumes
 
 .SILENT:

@@ -1,23 +1,22 @@
 #!/usr/bin/env bash
-blackbox.framework.module.abstract.setup.provision ()
-{
-  typeset -a args=("$@");
+blackbox.framework.module.abstract.setup.provision() {
+  typeset -a args=("$@")
 
   if ( ! blackbox.framework.flag.enabled STEP_PROVISION ); then
-    printf "skip: BLACKBOX_FLAG__STEP_PROVISION=no\n";
+    printf "skip: BLACKBOX_FLAG__STEP_PROVISION=no\n"
 
-    return;
-  fi;
+    return
+  fi
 
   blackbox.framework.inventory.provision docker-ce && {
-    usermod -a -G docker "$BLACKBOX_USER_NAME";
+    usermod -a -G docker "$BLACKBOX_USER_NAME"
     service docker start
-  };
+  }
 
-  : <<< blackbox.module.*.setup.provision;
+  : <<< blackbox.module.*.setup.provision
 
   if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
-    printf "BLACKBOX_PROVISION_WITH_OPTS=%s\n" "$BLACKBOX_PROVISION_WITH_OPTS";
-    eval "$BLACKBOX_PROVISION_WITH_OPTS";
+    printf "BLACKBOX_PROVISION_WITH_OPTS=%s\n" "$BLACKBOX_PROVISION_WITH_OPTS"
+    eval "$BLACKBOX_PROVISION_WITH_OPTS"
   fi
 }

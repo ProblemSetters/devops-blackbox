@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-blackbox.framework.module.abstract ()
-{
-    typeset action_name=$1;
-    typeset -a action_args=("${@:2}");
+blackbox.framework.module.abstract() {
+    typeset action_name=$1
+    typeset -a action_args=("${@:2}")
 
-    blackbox.framework.import "blackbox.module.${module_name}.${action_name}:action" "${action_args[@]}";
+    blackbox.framework.import "blackbox.module.${module_name}.${action_name}:action" "${action_args[@]}"
 
     : <<< blackbox.module.*
 }

@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-blackbox.framework.module.abstract.score.evaluate ()
-{
-  typeset -a args=("$@");
+blackbox.framework.module.abstract.score.evaluate() {
+  typeset -a args=("$@")
 
-  blackbox.framework.import "blackbox.framework.module.abstract.score.evaluate.assert";
-  blackbox.framework.import "blackbox.framework.module.abstract.score.evaluate.expect";
-  blackbox.framework.import "blackbox.framework.module.abstract.score.evaluate.score";
+  blackbox.framework.import "blackbox.framework.module.abstract.score.evaluate.assert"
+  blackbox.framework.import "blackbox.framework.module.abstract.score.evaluate.expect"
+  blackbox.framework.import "blackbox.framework.module.abstract.score.evaluate.score"
 
   local -a from_namespace=(
     blackbox.framework.module.abstract.score.evaluate.expect.artifact.collection
@@ -15,18 +14,24 @@ blackbox.framework.module.abstract.score.evaluate ()
     blackbox.framework.module.abstract.score.evaluate.expect.shell.stderr
     blackbox.framework.module.abstract.score.evaluate.expect.shell.stdout
     blackbox.framework.module.abstract.score.evaluate.expect.shell.success
-  );
+  )
 
   for namespace in "${from_namespace[@]}"; do
-    local to_namespace=${namespace/framework.module.abstract.score.evaluate./};
-    local to_namespace_definition=$(declare -f "$namespace");
+    local to_namespace=${namespace/framework.module.abstract.score.evaluate./}
+    local to_namespace_definition=$(declare -f "$namespace")
 
     if ( ! blackbox.framework.flag.enabled STEP_EVALUATE ); then
-      to_namespace_definition="(){ :; }";
+      to_namespace_definition="(){ :; }"
     fi
 
-    eval "$(printf "function %s %s" "$to_namespace" "${to_namespace_definition#*"()"}")";
-  done;
+    eval "$(printf "function %s %s" "$to_namespace" "${to_namespace_definition#*"()"}")"
+  done
 
-  : <<< blackbox.module.*.score.evaluate;
+  if ( ! blackbox.framework.flag.enabled STEP_EVALUATE ); then
+    printf "skip: BLACKBOX_FLAG__STEP_EVALUATE=no\n"
+
+    return
+  fi
+
+  : <<< blackbox.module.*.score.evaluate
 }

@@ -4,7 +4,7 @@ blackbox.framework.module.abstract.setup() {
   typeset -a step_args=("${@:2}")
 
   if [ ! -e "/blackbox/module/${module_name}/setup.action" ]; then
-    blackbox.framework.exception.raise "action '%s:setup' not found" "$module_name";
+    blackbox.framework.exception.raise "action '%s:setup' not found" "$module_name"
   fi
 
   blackbox.framework.import "blackbox.module.${module_name}.setup.provision:step" "${step_args[@]}"

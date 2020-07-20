@@ -1,89 +1,83 @@
 #!/usr/bin/env bash
-blackbox.framework.module.abstract.score.evaluate.expect.shell ()
-{
-  function blackbox.framework.module.abstract.score.evaluate.expect.debug ()
-  {
-    declare assert=$(</dev/stdin);
+blackbox.framework.module.abstract.score.evaluate.expect.shell() {
+  function blackbox.framework.module.abstract.score.evaluate.expect.shell.debug() {
+    declare assert=$(</dev/stdin)
 
-    assert=$(eval "$(printf "function assert() { %s }" "$(awk 'ORS="; "' <(sed '/^#/d' <<< "$assert"))")" && awk '{ printf "%s%s", EOL, $0; EOL=" " }' <(sed '1,2d; $d; s/^[[:space:]]\+//g;' <(declare -f assert)));
+    assert=$(eval "$(printf "function assert() { %s }" "$(awk 'ORS="; "' <(sed '/^#/d' <<< "$assert"))")" && awk '{ printf "%s%s", EOL, $0; EOL=" " }' <(sed '1,2d; $d; s/^[[:space:]]\+//g;' <(declare -f assert)))
 
     (
-      printf "\033[0;33m.: DEBUG:\033[0m %s\n" "$assert";
-      printf "\033[0;37m--\033[0m\n";
-      printf "\033[0;38m%s\033[0m\n" "$(echo "$assert" | docker exec -i -w "${BLACKBOX_USER_QUESTION_DIR}" "$BLACKBOX_SPAWN" /bin/bash 2>&1)";
-      printf "\033[0;37m--\033[0m\n";
-    ) | if ( tput setaf &> /dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi;
+      printf "\033[0;33m.: DEBUG:\033[0m %s\n" "$assert"
+      printf "\033[0;37m--\033[0m\n"
+      printf "\033[0;38m%s\033[0m\n" "$(echo "$assert" | docker exec -i -w "${BLACKBOX_USER_QUESTION_DIR}" "$BLACKBOX_SPAWN" /bin/bash 2>&1)"
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &> /dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
   }
 
-  function blackbox.framework.module.abstract.score.evaluate.expect.shell.failure ()
-  {
-    declare assert=$(</dev/stdin);
+  function blackbox.framework.module.abstract.score.evaluate.expect.shell.failure() {
+    declare assert=$(</dev/stdin)
 
-    typeset score=$1;
-    typeset message_true=$2;
-    typeset message_false=$3;
-    typeset message_args=("${@:4}");
+    typeset score=$1
+    typeset message_true=$2
+    typeset message_false=$3
+    typeset message_args=("${@:4}")
 
-    assert=$(awk 'BEGIN { printf "( " } { printf "%s%s", EOL, $0; EOL=" ); ( " } END { printf " )" }' <<< "$assert");
+    assert=$(awk 'BEGIN { printf "( " } { printf "%s%s", EOL, $0; EOL=" ); ( " } END { printf " )" }' <<< "$assert")
 
     if ( ! (echo "$assert" | docker exec -i -w "${BLACKBOX_USER_QUESTION_DIR}" "$BLACKBOX_SPAWN" /bin/bash &> /dev/null) ); then
-      blackbox.framework.module.abstract.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")";
+      blackbox.framework.module.abstract.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else
-      blackbox.framework.module.abstract.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")";
+      blackbox.framework.module.abstract.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
     fi
   }
 
-  function blackbox.framework.module.abstract.score.evaluate.expect.shell.stderr ()
-  {
-    declare assert=$(</dev/stdin);
+  function blackbox.framework.module.abstract.score.evaluate.expect.shell.stderr() {
+    declare assert=$(</dev/stdin)
 
-    typeset score=$1;
-    typeset message_true=$2;
-    typeset message_false=$3;
-    typeset message_args=("${@:4}");
+    typeset score=$1
+    typeset message_true=$2
+    typeset message_false=$3
+    typeset message_args=("${@:4}")
 
-    assert=$(awk 'BEGIN { printf "( " } { printf "%s%s", EOL, $0; EOL=" ); ( " } END { printf " )" }' <<< "$assert");
+    assert=$(awk 'BEGIN { printf "( " } { printf "%s%s", EOL, $0; EOL=" ); ( " } END { printf " )" }' <<< "$assert")
 
     if ( echo "$assert" | docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash 2>&1 > /dev/null | grep -q . ); then
-      blackbox.framework.module.abstract.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")";
+      blackbox.framework.module.abstract.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else
-      blackbox.framework.module.abstract.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")";
+      blackbox.framework.module.abstract.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
     fi
   }
 
-  function blackbox.framework.module.abstract.score.evaluate.expect.shell.stdout ()
-  {
-    declare assert=$(</dev/stdin);
+  function blackbox.framework.module.abstract.score.evaluate.expect.shell.stdout() {
+    declare assert=$(</dev/stdin)
 
-    typeset score=$1;
-    typeset message_true=$2;
-    typeset message_false=$3;
-    typeset message_args=("${@:4}");
+    typeset score=$1
+    typeset message_true=$2
+    typeset message_false=$3
+    typeset message_args=("${@:4}")
 
-    assert=$(awk 'BEGIN { printf "( " } { printf "%s%s", EOL, $0; EOL=" ); ( " } END { printf " )" }' <<< "$assert");
+    assert=$(awk 'BEGIN { printf "( " } { printf "%s%s", EOL, $0; EOL=" ); ( " } END { printf " )" }' <<< "$assert")
 
     if ( echo "$assert" | docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash 2> /dev/null | grep -q . ); then
-      blackbox.framework.module.abstract.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")";
+      blackbox.framework.module.abstract.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else
-      blackbox.framework.module.abstract.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")";
+      blackbox.framework.module.abstract.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
     fi
   }
 
-  function blackbox.framework.module.abstract.score.evaluate.expect.shell.success ()
-  {
-    declare assert=$(</dev/stdin);
+  function blackbox.framework.module.abstract.score.evaluate.expect.shell.success() {
+    declare assert=$(</dev/stdin)
 
-    typeset score=$1;
-    typeset message_true=$2;
-    typeset message_false=$3;
-    typeset message_args=("${@:4}");
+    typeset score=$1
+    typeset message_true=$2
+    typeset message_false=$3
+    typeset message_args=("${@:4}")
 
-    assert=$(awk 'BEGIN { printf "( " } { printf "%s%s", EOL, $0; EOL=" ); ( " } END { printf " )" }' <<< "$assert");
+    assert=$(awk 'BEGIN { printf "( " } { printf "%s%s", EOL, $0; EOL=" ); ( " } END { printf " )" }' <<< "$assert")
 
     if ( echo "$assert" | docker exec -i -w "${BLACKBOX_USER_QUESTION_DIR}" "$BLACKBOX_SPAWN" /bin/bash &> /dev/null ); then
-      blackbox.framework.module.abstract.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")";
+      blackbox.framework.module.abstract.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else
-      blackbox.framework.module.abstract.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")";
+      blackbox.framework.module.abstract.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
     fi
   }
 }

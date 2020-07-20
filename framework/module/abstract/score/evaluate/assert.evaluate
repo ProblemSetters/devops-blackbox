@@ -1,42 +1,39 @@
 #!/usr/bin/env bash
-blackbox.framework.module.abstract.score.evaluate.assert ()
-{
-  function blackbox.framework.module.abstract.score.evaluate.assert.true ()
-  {
-    typeset source=$1;
-    typeset assert=$2;
-    typeset score=$3;
-    typeset message=$4;
+blackbox.framework.module.abstract.score.evaluate.assert() {
+  function blackbox.framework.module.abstract.score.evaluate.assert.true() {
+    typeset source=$1
+    typeset assert=$2
+    typeset score=$3
+    typeset message=$4
 
-    local score=$(blackbox.framework.module.abstract.score.evaluate.score.calculate "$score");
-    local message=$(printf "$message" "$assert");
+    local score=$(blackbox.framework.module.abstract.score.evaluate.score.calculate "$score")
+    local message=$(printf "$message" "$assert")
 
     (
-      printf "\033[0;32m.: SUCCESS:\033[0m %s\n" "$message";
-      printf "\033[0;37m--\033[0m\n";
-      printf "Partial Credit: %s\n" "$score";
-      printf "\033[0;37m--\033[0m\n";
-    ) | if ( tput setaf &> /dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi;
+      printf "\033[0;32m.: SUCCESS:\033[0m %s\n" "$message"
+      printf "\033[0;37m--\033[0m\n"
+      printf "Partial Credit: %s\n" "$score"
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &> /dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
     true
   }
 
-  function blackbox.framework.module.abstract.score.evaluate.assert.false ()
-  {
-    typeset source=$1;
-    typeset assert=$2;
-    typeset score=$3;
-    typeset message=$4;
+  function blackbox.framework.module.abstract.score.evaluate.assert.false() {
+    typeset source=$1
+    typeset assert=$2
+    typeset score=$3
+    typeset message=$4
 
-    local score=$(blackbox.framework.module.abstract.score.evaluate.score.calculate "$score" &> /dev/null; echo 0);
-    local message=$(printf "$message" "$assert");
+    local score=$(blackbox.framework.module.abstract.score.evaluate.score.calculate "$score" &> /dev/null; echo 0)
+    local message=$(printf "$message" "$assert")
 
     (
-      printf "\033[0;31m.: FAIL:\033[0m %s\n" "$message";
-      printf "\033[0;37m--\033[0m\n";
-      printf "Partial Credit: %s\n" "$score";
-      printf "\033[0;37m--\033[0m\n";
-    ) | if ( tput setaf &> /dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi;
+      printf "\033[0;31m.: FAIL:\033[0m %s\n" "$message"
+      printf "\033[0;37m--\033[0m\n"
+      printf "Partial Credit: %s\n" "$score"
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &> /dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
     false
   }

@@ -1,43 +1,38 @@
 #!/usr/bin/env bash
-blackbox.framework.inventory ()
-{
-  blackbox.framework.inventory.install ()
-  {
-    function blackbox.framework.inventory.install.directory ()
-    {
-      typeset destination=$1;
-      typeset owner=${2:-$(cut -d ":" -f 1 <<<"$BLACKBOX_USER")};
-      typeset group=${3:-$(cut -d ":" -f 2 <<<"$BLACKBOX_USER"))};
+blackbox.framework.inventory() {
+  blackbox.framework.inventory.install() {
+    function blackbox.framework.inventory.install.directory() {
+      typeset destination=$1
+      typeset owner=${2:-$(cut -d ":" -f 1 <<<"$BLACKBOX_USER")}
+      typeset group=${3:-$(cut -d ":" -f 2 <<<"$BLACKBOX_USER"))}
 
       install -o "$owner" -g "$group" -m 0775 -d "$destination"
-    };
+    }
 
-    function blackbox.framework.inventory.install.file ()
-    {
-      declare source=$(</dev/stdin);
+    function blackbox.framework.inventory.install.file() {
+      declare source=$(</dev/stdin)
 
-      typeset destination=$1;
-      typeset owner=${2:-$(cut -d ":" -f 1 <<<"$BLACKBOX_USER")};
-      typeset group=${3:-$(cut -d ":" -f 2 <<<"$BLACKBOX_USER")};
+      typeset destination=$1
+      typeset owner=${2:-$(cut -d ":" -f 1 <<<"$BLACKBOX_USER")}
+      typeset group=${3:-$(cut -d ":" -f 2 <<<"$BLACKBOX_USER")}
 
       install -o "$owner" -g "$group" -m 0775 -d "$(dirname "$destination")" && {
         if [ -n "$source" ]; then
-          install -o "$owner" -g "$group" -m 0664 /dev/stdin "$destination" <<< "$source";
+          install -o "$owner" -g "$group" -m 0664 /dev/stdin "$destination" <<< "$source"
         else
-          install -o "$owner" -g "$group" -m 0664 /dev/null "$destination";
+          install -o "$owner" -g "$group" -m 0664 /dev/null "$destination"
         fi
       }
     }
-  }; blackbox.framework.inventory.install;
+  }; blackbox.framework.inventory.install
 
-  function blackbox.framework.inventory.provision ()
-  {
-    typeset name=$1;
-    typeset -a with_deps=("${@:2}");
+  function blackbox.framework.inventory.provision() {
+    typeset name=$1
+    typeset -a with_deps=("${@:2}")
 
     if [ ! -e "/blackbox/framework/inventory/${name}.inventory" ]; then
-      blackbox.framework.exception.raise "inventory '%s' not found" "$name";
-    fi;
+      blackbox.framework.exception.raise "inventory '%s' not found" "$name"
+    fi
 
     blackbox.framework.import "blackbox.framework.inventory.${name}" "$name" "${with_deps[@]}"
   }

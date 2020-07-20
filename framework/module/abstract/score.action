@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
-blackbox.framework.module.abstract.score ()
-{
-  typeset question_id=$1;
-  typeset -a step_args=("${@:2}");
+blackbox.framework.module.abstract.score() {
+  typeset question_id=$1
+  typeset -a step_args=("${@:2}")
 
   if [ ! -e "/blackbox/module/${module_name}/score.action" ]; then
-    blackbox.framework.exception.raise "action '%s:score' not found" "$module_name";
-  fi;
+    blackbox.framework.exception.raise "action '%s:score' not found" "$module_name"
+  fi
 
-  blackbox.framework.import "blackbox.module.${module_name}.score.provision:step" "${step_args[@]}";
-  blackbox.framework.import "blackbox.module.${module_name}.score.build:step" "${step_args[@]}";
-  blackbox.framework.import "blackbox.module.${module_name}.score.evaluate:step" "${step_args[@]}";
+  blackbox.framework.import "blackbox.module.${module_name}.score.provision:step" "${step_args[@]}"
+  blackbox.framework.import "blackbox.module.${module_name}.score.build:step" "${step_args[@]}"
+  blackbox.framework.import "blackbox.module.${module_name}.score.evaluate:step" "${step_args[@]}"
 
   : <<< blackbox.module.*.score
 }

@@ -1,19 +1,17 @@
 #!/usr/bin/env bash
-blackbox.framework.module.abstract.score.evaluate.expect.file ()
-{
-  function blackbox.framework.module.abstract.score.evaluate.expect.file.exists ()
-  {
-    declare assert=$(</dev/stdin);
+blackbox.framework.module.abstract.score.evaluate.expect.file() {
+  function blackbox.framework.module.abstract.score.evaluate.expect.file.exists() {
+    declare assert=$(</dev/stdin)
 
-    typeset score=$1;
-    typeset message_true=$2;
-    typeset message_false=$3;
-    typeset message_args=("${@:4}");
+    typeset score=$1
+    typeset message_true=$2
+    typeset message_false=$3
+    typeset message_args=("${@:4}")
 
     if ( echo "test -f '$assert'" | docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash ); then
-      blackbox.framework.module.abstract.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")";
+      blackbox.framework.module.abstract.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else
-      blackbox.framework.module.abstract.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")";
+      blackbox.framework.module.abstract.score.evaluate.assert.false "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
     fi
   }
 }
