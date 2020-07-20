@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+blackbox.framework.module.abstract.score.evaluate.expect ()
+{
+  blackbox.framework.import "blackbox.framework.module.abstract.score.evaluate.expect.artifact";
+  blackbox.framework.import "blackbox.framework.module.abstract.score.evaluate.expect.file";
+  blackbox.framework.import "blackbox.framework.module.abstract.score.evaluate.expect.shell"
+}

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+blackbox.framework.module.abstract.score.evaluate.expect.artifact ()
+{
+  function blackbox.framework.module.abstract.score.evaluate.expect.artifact.collection ()
+  {
+    declare assert=$(</dev/stdin);
+
+    readarray -t collection <<< "${assert[*]}";
+
+    for artifact in "${collection[@]}"; do
+      (
+        printf "\033[0;35m.: ARTIFACT:\033[0m %s\n" "$artifact";
+        printf "\033[0;37m--\033[0m\n";
+        printf "\033[0;38m%s\033[0m\n" "$(echo "${artifact} 2>&1" | docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash 2>&1)";
+        printf "\033[0;37m--\033[0m\n";
+      ) | if ( tput setaf &> /dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi;
+    done
+  }
+}
+

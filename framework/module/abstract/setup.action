@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+blackbox.framework.module.abstract.setup() {
+  typeset question_id=$1
+  typeset -a step_args=("${@:2}")
+
+  if [ ! -e "/blackbox/module/${module_name}/setup.action" ]; then
+    blackbox.framework.exception.raise "action '%s:setup' not found" "$module_name";
+  fi
+
+  blackbox.framework.import "blackbox.module.${module_name}.setup.provision:step" "${step_args[@]}"
+
+  : <<<blackbox.module.*.setup
+}
