@@ -105,23 +105,23 @@ blackbox() {
     }
   }; blackbox.framework
 
-  blackbox.framework.import "blackbox.framework.exception:framework"
-  blackbox.framework.import "blackbox.framework.flag:framework"
-  blackbox.framework.import "blackbox.framework.inventory:framework"
-  blackbox.framework.import "blackbox.framework.module:framework"
-
   function blackbox.__init() {
     typeset module_name=$1
     typeset -a module_args=("${@:2}")
 
     if [ ! -e "$BLACKBOX_DIR" ]; then
-      wget -S -O /tmp/blackbox "https://github.com/ProblemSetters/devops-blackbox/archive/${BLACKBOX_VERSION}.zip" && {
+      wget -S -O /tmp/blackbox --no-cache "https://github.com/ProblemSetters/devops-blackbox/archive/${BLACKBOX_VERSION}.zip" && {
         unzip /tmp/blackbox -d /tmp && {
           mv "/tmp/devops-blackbox-${BLACKBOX_VERSION}" "$BLACKBOX_DIR"
           rm -rf /tmp/*blackbox*
         }
-      } || blackbox.framework.exception.raise "blackbox '%s' is not available" "$BLACKBOX_VERSION"
+      } || printf "error: *** blackbox '%s' is not available\n" "$BLACKBOX_VERSION"
     fi
+
+    blackbox.framework.import "blackbox.framework.exception:framework"
+    blackbox.framework.import "blackbox.framework.flag:framework"
+    blackbox.framework.import "blackbox.framework.inventory:framework"
+    blackbox.framework.import "blackbox.framework.module:framework"
 
     blackbox.framework.inventory.install.directory "$BLACKBOX_USER_QUESTION_DIR" && {
       pushd "$BLACKBOX_USER_QUESTION_DIR" && {
