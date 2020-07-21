@@ -13,7 +13,7 @@ blackbox.framework.module.abstract.setup.provision() {
     service docker start
   }
 
-  : <<< blackbox.module.*.setup.provision
+  : <<<blackbox.module.*.setup.provision
 
   if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
     printf "BLACKBOX_PROVISION_WITH_OPTS=%s\n" "$BLACKBOX_PROVISION_WITH_OPTS"

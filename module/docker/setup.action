@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 blackbox.module.docker.setup() {
-  : <<< blackbox.framework.module.abstract.setup:action
+  : <<<blackbox.framework.module.abstract.setup:action
 }

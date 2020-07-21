@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 blackbox.module.docker.score() {
-  : <<< blackbox.framework.module.abstract.score:action
+  : <<<blackbox.framework.module.abstract.score:action
 }

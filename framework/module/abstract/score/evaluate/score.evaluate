@@ -15,7 +15,7 @@ blackbox.framework.module.abstract.score.evaluate.score() {
       fi
     fi
 
-    tee -a "$BLACKBOX_SCORE_EVALUATE_CACHE" <<< "$assert_score"
+    tee -a "$BLACKBOX_SCORE_EVALUATE_CACHE" <<<"$assert_score"
   }
 
   blackbox.framework.module.abstract.score.evaluate.score.__init() {

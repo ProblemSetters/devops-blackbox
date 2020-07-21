@@ -19,7 +19,7 @@ blackbox.framework.inventory.docker-ce() {
     wget -qO- https://download.docker.com/linux/ubuntu/gpg | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=true apt-key add -
     add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package_name" "${with_packages[@]}" && {
-      install -m 0644 -D /dev/stdin /etc/docker/daemon.json <<< '{ "storage-driver": "vfs" }'
+      install -m 0644 -D /dev/stdin /etc/docker/daemon.json <<<'{ "storage-driver": "vfs" }'
     }
   }
 }

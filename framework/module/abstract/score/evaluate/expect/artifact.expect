@@ -3,7 +3,7 @@ blackbox.framework.module.abstract.score.evaluate.expect.artifact() {
   function blackbox.framework.module.abstract.score.evaluate.expect.artifact.collection() {
     declare assert=$(</dev/stdin)
 
-    readarray -t collection <<< "${assert[*]}"
+    readarray -t collection <<<"${assert[*]}"
 
     for artifact in "${collection[@]}"; do
       (

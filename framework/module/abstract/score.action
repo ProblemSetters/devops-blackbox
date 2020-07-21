@@ -11,5 +11,5 @@ blackbox.framework.module.abstract.score() {
   blackbox.framework.import "blackbox.module.${module_name}.score.build:step" "${step_args[@]}"
   blackbox.framework.import "blackbox.module.${module_name}.score.evaluate:step" "${step_args[@]}"
 
-  : <<< blackbox.module.*.score
+  : <<<blackbox.module.*.score
 }

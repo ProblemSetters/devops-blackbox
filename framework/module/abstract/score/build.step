@@ -13,7 +13,7 @@ blackbox.framework.module.abstract.score.build() {
     script.sh
   )
 
-  : <<< blackbox.module.*.score.build
+  : <<<blackbox.module.*.score.build
 
   if [ ! -e "${build_cmd[1]}" ]; then
     blackbox.framework.exception.raise "solution stub '%s' does not exists" "${build_cmd[1]}"

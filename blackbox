@@ -27,10 +27,10 @@ blackbox() {
       typeset -a args=("${@:2}")
 
       local destination_namespace_name=${namespace%:*}
-      local destination_namespace_extension=$(sed -n "s/.*://p" <<< "$namespace")
+      local destination_namespace_extension=$(sed -n "s/.*://p" <<<"$namespace")
 
       if [ -z "$destination_namespace_extension" ]; then
-        destination_namespace_extension=$(rev <(cut -d "." -f 2 <(rev <<< "$namespace")))
+        destination_namespace_extension=$(rev <(cut -d "." -f 2 <(rev <<<"$namespace")))
       fi
 
       local destination_definition=$(declare -f "$destination_namespace_name")
@@ -39,7 +39,7 @@ blackbox() {
         return
       fi
 
-      local destination_definition_path=$(printf "%s/%s.%s" "$BLACKBOX_DIR" "$(sed "s/\./\//g" <(cut -d "." -f 2- <<< "$destination_namespace_name"))" "$destination_namespace_extension")
+      local destination_definition_path=$(printf "%s/%s.%s" "$BLACKBOX_DIR" "$(sed "s/\./\//g" <(cut -d "." -f 2- <<<"$destination_namespace_name"))" "$destination_namespace_extension")
 
       if [ ! -e "$destination_definition_path" ]; then
         if ( ! declare -f blackbox.framework.exception.raise &>/dev/null ); then
@@ -51,27 +51,27 @@ blackbox() {
         blackbox.framework.exception.raise "definition '%s' does not exists" "$destination_definition_path"
       fi
 
-      local destination_definition_source_placeholder=$(sed -n '/^[[:space:]]*:[[:space:]]<<<[[:space:]]blackbox\.[[:lower:][:digit:].:]\+;\{0,1\}$/p' < "$destination_definition_path")
+      destination_definition=$(source "$destination_definition_path" && declare -f "$destination_namespace_name")
+
+      local destination_definition_source_placeholder=$(sed -n '/^[[:space:]]*:[[:space:]]<<<[[:space:]]blackbox\.[[:lower:][:digit:].:]\+;\{0,1\}$/p' <<<"$destination_definition")
 
       if [ -z "$destination_definition_source_placeholder" ]; then
-        source "$(printf "%s/%s.%s" "$BLACKBOX_DIR" "$(sed "s/\./\//g" <(cut -d "." -f 2- <<< "$destination_namespace_name"))" "$destination_namespace_extension")" && {
+        source "$(printf "%s/%s.%s" "$BLACKBOX_DIR" "$(sed "s/\./\//g" <(cut -d "." -f 2- <<<"$destination_namespace_name"))" "$destination_namespace_extension")" && {
           eval "$destination_namespace_name" "${args[@]}"
         }
 
         return
       fi
 
-      destination_definition=$(source "$destination_definition_path" && declare -f "$destination_namespace_name")
-
-      local source_namespace=$(sed -n 's/^[[:space:]]*:[[:space:]]<<<[[:space:]]\(blackbox\.[[:lower:][:digit:].:]\+\);\{0,1\}$/\1/p' <<< "$destination_definition")
+      local source_namespace=$(sed -n 's/^[[:space:]]*:[[:space:]]<<<[[:space:]]\(blackbox\.[[:lower:][:digit:].:]\+\);\{0,1\}$/\1/p' <<<"$destination_definition")
       local source_namespace_name=${source_namespace%:*}
-      local source_namespace_extension=$(sed -n "s/.*://p" <<< "$source_namespace")
+      local source_namespace_extension=$(sed -n "s/.*://p" <<<"$source_namespace")
 
       if [ -z "$source_namespace_extension" ]; then
-        source_namespace_extension=$(rev <(cut -d "." -f 2 <(rev <<< "$source_namespace")))
+        source_namespace_extension=$(rev <(cut -d "." -f 2 <(rev <<<"$source_namespace")))
       fi
 
-      local source_definition_path=$(printf "%s/%s.%s" "$BLACKBOX_DIR" "$(sed "s/\./\//g" <(cut -d "." -f 2- <<< "$source_namespace_name"))" "$source_namespace_extension")
+      local source_definition_path=$(printf "%s/%s.%s" "$BLACKBOX_DIR" "$(sed "s/\./\//g" <(cut -d "." -f 2- <<<"$source_namespace_name"))" "$source_namespace_extension")
 
       if [ ! -e "$source_definition_path" ]; then
         if ( ! declare -f blackbox.framework.exception.raise &>/dev/null ); then
@@ -85,10 +85,10 @@ blackbox() {
 
       source_definition=$(source "$source_definition_path" && declare -f "$source_namespace_name")
 
-      local source_definition_destination_placeholder=$(sed -n "/[[:space:]]*:[[:space:]]<<<[[:space:]]blackbox\.[[:lower:][:digit:].*:]\+;\{0,1\}/p" <<< "$source_definition")
-      local source_definition_destination_namespace=$(sed -n "s/[[:space:]]*:[[:space:]]<<<[[:space:]]\(blackbox\.[[:lower:][:digit:].*:]\+\);\{0,1\}/\1/p" <<< "$source_definition_destination_placeholder")
+      local source_definition_destination_placeholder=$(sed -n "/[[:space:]]*:[[:space:]]<<<[[:space:]]blackbox\.[[:lower:][:digit:].*:]\+;\{0,1\}/p" <<<"$source_definition")
+      local source_definition_destination_namespace=$(sed -n "s/[[:space:]]*:[[:space:]]<<<[[:space:]]\(blackbox\.[[:lower:][:digit:].*:]\+\);\{0,1\}/\1/p" <<<"$source_definition_destination_placeholder")
 
-      if ( ! grep -q "$(printf '^%s$' "$source_definition_destination_namespace")" <<< "$destination_namespace_name" ); then
+      if ( ! grep -q "$(printf '^%s$' "$source_definition_destination_namespace")" <<<"$destination_namespace_name" ); then
         if ( ! declare -f blackbox.framework.exception.raise &>/dev/null ); then
           printf "error: *** definition '%s' cannot be extended with '%s'\n" "$destination_namespace_name" "$source_definition_destination_namespace"
 
@@ -98,8 +98,8 @@ blackbox() {
         blackbox.framework.exception.raise "definition '%s' cannot be extended with '%s'" "$destination_namespace_name" "$source_definition_destination_namespace"
       fi
 
-      source_definition=$(sed '1,2d; $d' <<< "$source_definition")
-      destination_definition=$(sed "$(printf '1,2d; $d; /%s/d' "$destination_definition_source_placeholder")" <<< "$destination_definition")
+      source_definition=$(sed '1,2d; $d' <<<"$source_definition")
+      destination_definition=$(sed "$(printf '1,2d; $d; /%s/d' "$destination_definition_source_placeholder")" <<<"$destination_definition")
       eval "$(printf '%s() {\n%s\n}; %s' "$destination_namespace_name" "${source_definition/${source_definition_destination_placeholder}/${destination_definition}}" "$destination_namespace_name")" "${args[@]}"
     }
   }; blackbox.framework
