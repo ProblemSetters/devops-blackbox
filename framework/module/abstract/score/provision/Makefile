@@ -11,7 +11,7 @@ override BLACKBOX_BUILD_ARGS=$(foreach arg, $(filter-out BLACKBOX_BUILD_ARGS,$(f
 SHELL:=/bin/bash
 
 build:
-	DOCKER_BUILDKIT=1 docker build $(BLACKBOX_BUILD_ARGS) --cache-from="$(BLACKBOX)" --tag="$(BLACKBOX)" .
+	DOCKER_BUILDKIT=1 docker build $(BLACKBOX_BUILD_ARGS) --cache-from="$(BLACKBOX)" --progress="plain" --tag="$(BLACKBOX)" .
 
 run:
 	docker run -it --rm $(BLACKBOX)

@@ -9,5 +9,5 @@ blackbox.framework.module.abstract.setup() {
 
   blackbox.framework.import "blackbox.module.${module_name}.setup.provision:step" "${step_args[@]}"
 
-  : <<<blackbox.module.*.setup
+  : <<< blackbox.module.*.setup
 }

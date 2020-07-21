@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 blackbox.module.docker.setup.provision() {
-  : <<<blackbox.framework.module.abstract.setup.provision:step
+  : <<< blackbox.framework.module.abstract.setup.provision:step
 
   blackbox.framework.inventory.install.file script.sh </blackbox/module/docker/setup/provision/rootfs/home/%/%/script.sh
 }

@@ -5,5 +5,5 @@ blackbox.framework.module.abstract() {
 
     blackbox.framework.import "blackbox.module.${module_name}.${action_name}:action" "${action_args[@]}"
 
-    : <<<blackbox.module.*
+    : <<< blackbox.module.*
 }

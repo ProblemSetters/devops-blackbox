@@ -8,6 +8,7 @@ blackbox() {
   export BLACKBOX_USER_NAME=$(awk -v master="ubuntu" -v user="$BLACKBOX_USER_NAME" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
   export BLACKBOX_USER_HOME=$(awk -v master="/home/${BLACKBOX_USER_NAME}" -v user="$BLACKBOX_USER_HOME" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
   export BLACKBOX_USER_QUESTION_DIR=$(awk -v master="${BLACKBOX_USER_HOME}/${3}" -v user="$BLACKBOX_USER_QUESTION_DIR" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
+  export BLACKBOX_VERSION=$(awk -v master="master" -v user="$BLACKBOX_VERSION" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
 
   export BLACKBOX_FLAG__STEP_PROVISION=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_PROVISION" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
   export BLACKBOX_FLAG__STEP_BUILD=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_BUILD" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
@@ -113,9 +114,14 @@ blackbox() {
     typeset module_name=$1
     typeset -a module_args=("${@:2}")
 
-    shopt -os allexport
-    . /etc/environment
-    shopt -ou allexport
+    if [ ! -e "$BLACKBOX_DIR" ]; then
+      wget -S -O /tmp/blackbox "https://github.com/ProblemSetters/devops-blackbox/archive/${BLACKBOX_VERSION}.zip" && {
+        unzip /tmp/blackbox -d /tmp && {
+          mv "/tmp/devops-blackbox-${BLACKBOX_VERSION}" "$BLACKBOX_DIR"
+          rm -rf /tmp/*blackbox*
+        }
+      } || blackbox.framework.exception.raise "blackbox '%s' is not available" "$BLACKBOX_VERSION"
+    fi
 
     blackbox.framework.inventory.install.directory "$BLACKBOX_USER_QUESTION_DIR" && {
       pushd "$BLACKBOX_USER_QUESTION_DIR" && {

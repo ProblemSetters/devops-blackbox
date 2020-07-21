@@ -33,5 +33,5 @@ blackbox.framework.module.abstract.score.evaluate() {
     return
   fi
 
-  : <<<blackbox.module.*.score.evaluate
+  : <<< blackbox.module.*.score.evaluate
 }
