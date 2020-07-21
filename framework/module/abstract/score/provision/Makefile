@@ -5,24 +5,30 @@ ifeq ($(origin .FEATURES),undefined)
   $(error `make` executable version "$(MAKE_VERSION)" is unsupported. GNU Make 3.82 or above is required)
 endif
 
-IMAGE_NAME=problemsetters/blackbox:abstract
+override BLACKBOX:=problemsetters/blackbox:$(shell basename $(abspath $(firstword $(MAKEFILE_LIST))/../../../))
+override BLACKBOX_BUILD_ARGS=$(foreach arg, $(filter-out BLACKBOX_BUILD_ARGS,$(filter BLACKBOX BLACKBOX_%,$(sort $(.VARIABLES)))),--build-arg="$(arg)=$($(arg))") --build-arg="BUILDKIT_INLINE_CACHE=1"
+
+SHELL:=/bin/bash
 
 build:
-	DOCKER_BUILDKIT=1 docker build --build-arg="BUILDKIT_INLINE_CACHE=1" --cache-from="$(IMAGE_NAME)" --progress="plain" --tag="$(IMAGE_NAME)" .
+	DOCKER_BUILDKIT=1 docker build $(BLACKBOX_BUILD_ARGS) --cache-from="$(BLACKBOX)" --tag="$(BLACKBOX)" .
 
 run:
-	docker run -it --rm $(IMAGE_NAME)
+	docker run -it --rm $(BLACKBOX)
 
 scan:
-	docker run -it --rm --volume="/var/run/docker.sock:/var/run/docker.sock" aquasec/trivy $(IMAGE_NAME)
+	docker run -it --rm --volume="/var/run/docker.sock:/var/run/docker.sock" aquasec/trivy $(BLACKBOX)
 
 analyze:
-	docker run -it --rm --volume="/var/run/docker.sock:/var/run/docker.sock" wagoodman/dive $(IMAGE_NAME)
+	docker run -it --rm --volume="/var/run/docker.sock:/var/run/docker.sock" wagoodman/dive $(BLACKBOX)
 
-push:
+push: .confirm
 	docker login
-	docker push $(IMAGE_NAME)
+	docker push $(BLACKBOX)
 
 prune:
-	docker ps -aq | xargs -r docker stop > /dev/null
+	docker ps -aq | xargs -r docker stop >/dev/null
 	docker system prune -a --volumes
+
+.confirm:
+	@printf "Are you sure you want to continue? [y/N] "; read confirmation && [ "$${confirmation:-N}" == "y" ]

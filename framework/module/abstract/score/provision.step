@@ -8,7 +8,7 @@ blackbox.framework.module.abstract.score.provision() {
     return
   fi
 
-  docker ps -aq | xargs -r docker stop > /dev/null
+  docker ps -aq | xargs -r docker stop >/dev/null
   docker system prune -af --volumes
   docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --privileged --volume="${BLACKBOX_DIR}:${BLACKBOX_DIR}:ro" --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:ro" "problemsetters/blackbox:${module_name}"
 

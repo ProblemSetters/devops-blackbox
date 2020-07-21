@@ -4,7 +4,7 @@ blackbox.framework.flag() {
     typeset name=$1
     typeset expected_value=$2
 
-    local real_value=$(eval "cat <<<\$BLACKBOX_FLAG__${name}")
+    local real_value=$(eval "$(printf 'cat <<< $BLACKBOX_FLAG__%s' "$name")")
 
     if [ -z "$real_value" ]; then
       blackbox.framework.exception.raise "flag '%s' not found" "$name"

@@ -9,10 +9,9 @@ ifeq ($(words $(MAKEFILE_LIST)),1)
   $(error `Makefile.blackbox` should be included, direct usage is not allowed)
 endif
 
-BLACKBOX_FLAG__DEBUG_MODE=$(if $(filter debug,$(MAKECMDGOALS)),yes,no)
-BLACKBOX_FLAG__STEP_PROVISION=yes
-BLACKBOX_FLAG__STEP_BUILD=yes
-BLACKBOX_FLAG__STEP_EVALUATE=yes
+BLACKBOX_FLAG__STEP_PROVISION:=yes
+BLACKBOX_FLAG__STEP_BUILD:=yes
+BLACKBOX_FLAG__STEP_EVALUATE:=yes
 
 BLACKBOX_DIR=$(call blackbox/pwd,$(dir $(lastword $(MAKEFILE_LIST))))
 
@@ -27,15 +26,15 @@ define blackbox/pwd=
 $(abspath $(dir $(firstword $(MAKEFILE_LIST)))/$(1))
 endef
 
+SHELL:=/bin/bash
+
 debug:
 	:
-
-override SHELL:=/bin/bash
 
 all: uninstall prune install setup solution score
 
 install:
-	cat <(echo FROM problemsetters/blackbox:abstract) <(echo RUN groupadd docker) | DOCKER_BUILDKIT=1 docker build --build-arg="BLACKBOX_USER=$(BLACKBOX_USER)" --build-arg="BLACKBOX_USER_NAME=$(BLACKBOX_USER_NAME)" --build-arg="BLACKBOX_USER_HOME=$(BLACKBOX_USER_HOME)" --build-arg="BUILDKIT_INLINE_CACHE=1" --cache-from="problemsetters/blackbox:abstract" --progress="plain" --tag="blackbox:$(BLACKBOX_HOST)" -
+	cat <(echo FROM problemsetters/blackbox:abstract) <(echo RUN groupadd docker) | DOCKER_BUILDKIT=1 docker build --build-arg="BLACKBOX_USER=$(BLACKBOX_USER)" --build-arg="BLACKBOX_USER_NAME=$(BLACKBOX_USER_NAME)" --build-arg="BLACKBOX_USER_HOME=$(BLACKBOX_USER_HOME)" --build-arg="BUILDKIT_INLINE_CACHE=1" --cache-from="problemsetters/blackbox:abstract" --tag="blackbox:$(BLACKBOX_HOST)" -
 	docker run -di --group-add docker --hostname="blackbox" --name="$(BLACKBOX_HOST)" --privileged --volume="$(BLACKBOX_DIR):/blackbox:ro" --volume="$(call blackbox/pwd)/setup.sh:$(BLACKBOX_USER_HOME)/setup.sh:ro" --volume="$(call blackbox/pwd)/score.sh:$(BLACKBOX_USER_HOME)/score.sh:ro" blackbox:$(BLACKBOX_HOST) >/dev/null
 
 setup:
@@ -54,11 +53,11 @@ shell\:spawn:
 	docker exec -it --user="$(BLACKBOX_USER)" $(BLACKBOX_HOST) /bin/bash -c "docker exec -it $(BLACKBOX_SPAWN) /bin/bash"
 
 uninstall:
-	docker ps -aq -f "name=$(BLACKBOX_HOST)" | xargs -r docker rm -f > /dev/null
+	docker ps -aq -f "name=$(BLACKBOX_HOST)" | xargs -r docker rm -f >/dev/null
 	docker images -aq -f "reference=blackbox:$(BLACKBOX_HOST)" | xargs -r docker rmi -f
 
 prune:
-	docker ps -aq -f "name=blackbox-" | xargs -r docker stop > /dev/null
+	docker ps -aq -f "name=blackbox-" | xargs -r docker stop >/dev/null
 	docker system prune -a --volumes
 
 .SILENT:

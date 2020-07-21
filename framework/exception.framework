@@ -9,7 +9,7 @@ blackbox.framework.exception() {
       printf "\033[0;31mexception: *** %s.\033[0m\n" "$(printf "$message" "${args[@]}")"
       printf "\033[0;33m^^\033[0m\n"
       awk '{ printf "\033[0;33mat %s (%s:%d)\033[0m\n", $2, $3, $1 }' <(local depth=0; while $(echo caller "$depth"); do ((depth++)); done)
-    ) | if ( tput setaf &> /dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
     kill $$
   }

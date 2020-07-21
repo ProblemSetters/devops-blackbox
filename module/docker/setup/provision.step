@@ -2,5 +2,5 @@
 blackbox.module.docker.setup.provision() {
   : <<< blackbox.framework.module.abstract.setup.provision:step
 
-  blackbox.framework.inventory.install.file script.sh < /blackbox/module/docker/setup/provision/rootfs/home/%/%/script.sh
+  blackbox.framework.inventory.install.file script.sh </blackbox/module/docker/setup/provision/rootfs/home/%/%/script.sh
 }

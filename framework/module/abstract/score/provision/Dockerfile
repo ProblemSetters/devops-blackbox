@@ -30,15 +30,17 @@ RUN apt-get \
       -rf \
       /var/lib/apt/lists/*
 
-ONBUILD ARG BLACKBOX_USER=1000:1000
-ONBUILD ARG BLACKBOX_USER_NAME=ubuntu
-ONBUILD ARG BLACKBOX_USER_HOME=/home/${BLACKBOX_USER_NAME}
-ONBUILD ARG BLACKBOX_VERSION=master
+ONBUILD ARG BLACKBOX
+ONBUILD ARG BLACKBOX_USER
+ONBUILD ARG BLACKBOX_USER_NAME
+ONBUILD ARG BLACKBOX_USER_HOME
+ONBUILD ARG BLACKBOX_VERSION
 
-ONBUILD ENV BLACKBOX_USER=${BLACKBOX_USER} \
-            BLACKBOX_USER_NAME=${BLACKBOX_USER_NAME} \
-            BLACKBOX_USER_HOME=${BLACKBOX_USER_HOME} \
-            BLACKBOX_VERSION=${BLACKBOX_VERSION}
+ONBUILD ENV BLACKBOX=${BLACKBOX}
+ONBUILD ENV BLACKBOX_USER=${BLACKBOX_USER}
+ONBUILD ENV BLACKBOX_USER_NAME=${BLACKBOX_USER_NAME}
+ONBUILD ENV BLACKBOX_USER_HOME=${BLACKBOX_USER_HOME}
+ONBUILD ENV BLACKBOX_VERSION=${BLACKBOX_VERSION}
 
 ONBUILD RUN printenv \
               \
@@ -81,26 +83,24 @@ ONBUILD RUN printenv \
               -exec \
                 sh \
                   -c \
-                    '(cat "$0") | envsubst "$(printenv | sed -e "/^BLACKBOX/!d; s/^/\${/; s/=.*/}/" | sed -e ":a;N;\$!ba;s/\n/ /g")" > "$0"' "{}" \; \
+                    '(cat "$0") | envsubst "$(printenv | sed -e "/^BLACKBOX/!d; s/^/\${/; s/=.*/}/" | sed -e ":a;N;\$!ba;s/\n/ /g")" >"$0"' "{}" \; \
             && \
-            if [ -n "${BLACKBOX_VERSION}" ]; then \
-              wget \
-                -S \
-                -O \
-                  /tmp/blackbox \
-                "https://github.com/ProblemSetters/devops-blackbox/archive/${BLACKBOX_VERSION}.zip" \
-                  \
-                  2>&1; \
-              unzip \
+            wget \
+              -S \
+              -O \
                 /tmp/blackbox \
-                -d \
-                  /tmp; \
-              mv \
-                "/tmp/devops-blackbox-${BLACKBOX_VERSION}" \
-                /blackbox; \
-              rm \
-                -rf \
-                /tmp/*blackbox*; \
-            fi
+              "https://github.com/ProblemSetters/devops-blackbox/archive/${BLACKBOX_VERSION}.zip" \
+                \
+                2>&1; \
+            unzip \
+              /tmp/blackbox \
+              -d \
+                /tmp; \
+            mv \
+              "/tmp/devops-blackbox-${BLACKBOX_VERSION}" \
+              /blackbox; \
+            rm \
+              -rf \
+              /tmp/*blackbox*
 
 ONBUILD WORKDIR ${BLACKBOX_USER_HOME}

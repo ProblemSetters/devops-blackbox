@@ -42,7 +42,7 @@ blackbox() {
       local destination_definition_path=$(printf "%s/%s.%s" "$BLACKBOX_DIR" "$(sed "s/\./\//g" <(cut -d "." -f 2- <<< "$destination_namespace_name"))" "$destination_namespace_extension")
 
       if [ ! -e "$destination_definition_path" ]; then
-        if ( ! declare -f blackbox.framework.exception.raise &> /dev/null ); then
+        if ( ! declare -f blackbox.framework.exception.raise &>/dev/null ); then
           printf "error: *** definition '%s' does not exists\n" "$destination_definition_path"
 
           kill $$
@@ -68,13 +68,13 @@ blackbox() {
       local source_namespace_extension=$(sed -n "s/.*://p" <<< "$source_namespace")
 
       if [ -z "$source_namespace_extension" ]; then
-        source_namespace_extension=$(rev <(cut -d "." -f 2 <(rev <<<"$source_namespace")))
+        source_namespace_extension=$(rev <(cut -d "." -f 2 <(rev <<< "$source_namespace")))
       fi
 
       local source_definition_path=$(printf "%s/%s.%s" "$BLACKBOX_DIR" "$(sed "s/\./\//g" <(cut -d "." -f 2- <<< "$source_namespace_name"))" "$source_namespace_extension")
 
       if [ ! -e "$source_definition_path" ]; then
-        if ( ! declare -f blackbox.framework.exception.raise &> /dev/null ); then
+        if ( ! declare -f blackbox.framework.exception.raise &>/dev/null ); then
           printf "error: *** definition '%s' does not exists\n" "$source_definition_path"
 
           kill $$
@@ -89,7 +89,7 @@ blackbox() {
       local source_definition_destination_namespace=$(sed -n "s/[[:space:]]*:[[:space:]]<<<[[:space:]]\(blackbox\.[[:lower:][:digit:].*:]\+\);\{0,1\}/\1/p" <<< "$source_definition_destination_placeholder")
 
       if ( ! grep -q "$(printf '^%s$' "$source_definition_destination_namespace")" <<< "$destination_namespace_name" ); then
-        if ( ! declare -f blackbox.framework.exception.raise &> /dev/null ); then
+        if ( ! declare -f blackbox.framework.exception.raise &>/dev/null ); then
           printf "error: *** definition '%s' cannot be extended with '%s'\n" "$destination_namespace_name" "$source_definition_destination_namespace"
 
           kill $$
