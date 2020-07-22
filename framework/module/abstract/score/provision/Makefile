@@ -1,14 +1,14 @@
 #!/usr/bin/env make
 override blackbox/framework/module/abstract/score/provision/:=*
 
+SHELL:=/bin/bash
+
 ifeq ($(origin .FEATURES),undefined)
   $(error `make` executable version "$(MAKE_VERSION)" is unsupported. GNU Make 3.82 or above is required)
 endif
 
-override BLACKBOX:=problemsetters/blackbox:$(shell basename $(abspath $(firstword $(MAKEFILE_LIST))/../../../))
-override BLACKBOX_BUILD_ARGS=$(foreach arg, $(filter-out BLACKBOX_BUILD_ARGS,$(filter BLACKBOX BLACKBOX_%,$(sort $(.VARIABLES)))),--build-arg="$(arg)=$($(arg))") --build-arg="BUILDKIT_INLINE_CACHE=1"
-
-SHELL:=/bin/bash
+BLACKBOX:=problemsetters/blackbox:$(shell basename $(abspath $(firstword $(MAKEFILE_LIST))/../../../))
+BLACKBOX_BUILD_ARGS=$(foreach arg, $(filter-out BLACKBOX_BUILD_ARGS,$(filter BLACKBOX BLACKBOX_%,$(sort $(.VARIABLES)))),--build-arg="$(arg)=$($(arg))") --build-arg="BUILDKIT_INLINE_CACHE=1"
 
 build:
 	DOCKER_BUILDKIT=1 docker build $(BLACKBOX_BUILD_ARGS) --cache-from="$(BLACKBOX)" --progress="plain" --tag="$(BLACKBOX)" .

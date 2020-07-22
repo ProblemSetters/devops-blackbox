@@ -1,18 +1,16 @@
 #!/usr/bin/env bash
 blackbox() {
+  export BLACKBOX_FLAG__STEP_PROVISION=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_PROVISION" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
+  export BLACKBOX_FLAG__STEP_BUILD=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_BUILD" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
+  export BLACKBOX_FLAG__STEP_EVALUATE=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_EVALUATE" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
+
   export BLACKBOX_DIR=/blackbox
-
   export BLACKBOX_SPAWN=$(awk -v master="$(</proc/sys/kernel/random/uuid)" -v user="$BLACKBOX_SPAWN" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
-
   export BLACKBOX_USER=$(awk -v master="1000:1000" -v user="$BLACKBOX_USER" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
   export BLACKBOX_USER_NAME=$(awk -v master="ubuntu" -v user="$BLACKBOX_USER_NAME" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
   export BLACKBOX_USER_HOME=$(awk -v master="/home/${BLACKBOX_USER_NAME}" -v user="$BLACKBOX_USER_HOME" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
   export BLACKBOX_USER_QUESTION_DIR=$(awk -v master="${BLACKBOX_USER_HOME}/${3}" -v user="$BLACKBOX_USER_QUESTION_DIR" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
   export BLACKBOX_VERSION=$(awk -v master="master" -v user="$BLACKBOX_VERSION" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
-
-  export BLACKBOX_FLAG__STEP_PROVISION=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_PROVISION" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
-  export BLACKBOX_FLAG__STEP_BUILD=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_BUILD" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
-  export BLACKBOX_FLAG__STEP_EVALUATE=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_EVALUATE" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
 
   export BLACKBOX_PROVISION_WITH_OPTS=$(sed "s/[[:space:]];\([[:space:]]}\)/;\1/" <(awk '{ printf "%s%s", EOL, $0; EOL=" "}' <(sed '1,2d; $d; s/^[[:space:]]\+//g; s/^}/; &/g' <(declare -f BLACKBOX_PROVISION_WITH_OPTS))))
   export BLACKBOX_BUILD_WITH_OPTS=$(sed "s/[[:space:]];\([[:space:]]}\)/;\1/" <(awk '{ printf "%s%s", EOL, $0; EOL=" "}' <(sed '1,2d; $d; s/^[[:space:]]\+//g; s/^}/; &/g' <(declare -f BLACKBOX_BUILD_WITH_OPTS))))
@@ -43,6 +41,8 @@ blackbox() {
       local destination_definition_path=$(printf "%s/%s.%s" "$BLACKBOX_DIR" "$(sed "s/\./\//g" <(cut -d "." -f 2- <<<"$destination_namespace_name"))" "$destination_namespace_extension")
 
       if [ ! -e "$destination_definition_path" ]; then
+        blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+
         if ( ! declare -f blackbox.framework.exception.raise &>/dev/null ); then
           printf "error: *** definition '%s' does not exists\n" "$destination_definition_path"
 
@@ -57,6 +57,8 @@ blackbox() {
       local destination_definition_source_placeholder=$(sed -n '/^[[:space:]]*:[[:space:]]<<<[[:space:]]blackbox\.[[:lower:][:digit:].:]\+;\{0,1\}$/p' <<<"$destination_definition")
 
       if [ -z "$destination_definition_source_placeholder" ]; then
+        blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+
         source "$(printf "%s/%s.%s" "$BLACKBOX_DIR" "$(sed "s/\./\//g" <(cut -d "." -f 2- <<<"$destination_namespace_name"))" "$destination_namespace_extension")" && {
           eval "$destination_namespace_name" "${args[@]}"
         }
@@ -75,6 +77,8 @@ blackbox() {
       local source_definition_path=$(printf "%s/%s.%s" "$BLACKBOX_DIR" "$(sed "s/\./\//g" <(cut -d "." -f 2- <<<"$source_namespace_name"))" "$source_namespace_extension")
 
       if [ ! -e "$source_definition_path" ]; then
+        blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+
         if ( ! declare -f blackbox.framework.exception.raise &>/dev/null ); then
           printf "error: *** definition '%s' does not exists\n" "$source_definition_path"
 
@@ -90,6 +94,8 @@ blackbox() {
       local source_definition_destination_namespace=$(sed -n "s/[[:space:]]*:[[:space:]]<<<[[:space:]]\(blackbox\.[[:lower:][:digit:].*:]\+\);\{0,1\}/\1/p" <<<"$source_definition_destination_placeholder")
 
       if ( ! grep -q "$(printf '^%s$' "$source_definition_destination_namespace")" <<<"$destination_namespace_name" ); then
+        blackbox.framework.trace "${FUNCNAME[0]}" "$*" "$(printf '<%s> %s' "$source_definition_destination_namespace" "$destination_namespace_name")" <<<""
+
         if ( ! declare -f blackbox.framework.exception.raise &>/dev/null ); then
           printf "error: *** definition '%s' cannot be extended with '%s'\n" "$destination_namespace_name" "$source_definition_destination_namespace"
 
@@ -101,13 +107,45 @@ blackbox() {
 
       source_definition=$(sed '1,2d; $d' <<<"$source_definition")
       destination_definition=$(sed "$(printf '1,2d; $d; /%s/d' "$destination_definition_source_placeholder")" <<<"$destination_definition")
+
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" "$(printf '<%s> %s' "$source_namespace_name" "$destination_namespace_name")" <<<""
+
       eval "$(printf '%s() {\n%s\n}; %s' "$destination_namespace_name" "${source_definition/${source_definition_destination_placeholder}/${destination_definition}}" "$destination_namespace_name")" "${args[@]}"
+    }
+
+    function blackbox.framework.trace() {
+      declare header=$(</dev/stdin)
+
+      typeset entrypoint=$1
+      typeset args=("$2")
+      typeset opts=("$3")
+
+      if [ -n "${args[*]}" ]; then
+        args=("${args[*]/#/ < }")
+      fi
+
+      if [ -n "${opts[*]}" ]; then
+        opts=("${opts[*]/#/ | }")
+      fi
+
+      (
+        if [ -n "$header" ]; then
+          printf "\n"
+          printf "\033[0;37m// %s%s%s\033[0m\n" "${entrypoint[0]}" "${args[*]}" "${opts[*]}"
+          printf "\033[0;34m[%s]\033[0m\n" "${header^^}"
+          printf "\033[0;37m%s\033[0m\n" "..."
+        else
+          printf "\033[0;37m// %s%s%s {...}\033[0m\n" "${entrypoint[0]}" "${args[*]}" "${opts[*]}"
+        fi
+      ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi >&2
     }
   }; blackbox.framework
 
   function blackbox.__init() {
     typeset module_name=$1
     typeset -a module_args=("${@:2}")
+
+    blackbox.framework.trace "${FUNCNAME[@]}" "$*" <<<"initialize"
 
     if [ ! -e "$BLACKBOX_DIR" ]; then
       wget -S -O /tmp/blackbox --no-cache "https://github.com/ProblemSetters/devops-blackbox/archive/${BLACKBOX_VERSION}.zip" && {
@@ -118,13 +156,13 @@ blackbox() {
       } || printf "error: *** blackbox '%s' is not available\n" "$BLACKBOX_VERSION"
     fi
 
-    blackbox.framework.import "blackbox.framework.exception:framework"
-    blackbox.framework.import "blackbox.framework.flag:framework"
-    blackbox.framework.import "blackbox.framework.inventory:framework"
-    blackbox.framework.import "blackbox.framework.module:framework"
+    blackbox.framework.import blackbox.framework.exception
+    blackbox.framework.import blackbox.framework.flag
+    blackbox.framework.import blackbox.framework.inventory
+    blackbox.framework.import blackbox.framework.module
 
     blackbox.framework.inventory.install.directory "$BLACKBOX_USER_QUESTION_DIR" && {
-      pushd "$BLACKBOX_USER_QUESTION_DIR" && {
+      cd "$BLACKBOX_USER_QUESTION_DIR" && {
         blackbox.framework.module.load "$module_name" "${module_args[@]}"
       }
     }

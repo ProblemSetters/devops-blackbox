@@ -6,11 +6,13 @@ blackbox.framework.module.abstract.score.evaluate.assert() {
     typeset score=$3
     typeset message=$4
 
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+
     local score=$(blackbox.framework.module.abstract.score.evaluate.score.calculate "$score")
     local message=$(printf "$message" "$assert")
 
     (
-      printf "\033[0;32m.: SUCCESS:\033[0m %s\n" "$message"
+      printf "\033[0;32m++ SUCCESS:\033[0m %s\n" "$message"
       printf "\033[0;37m--\033[0m\n"
       printf "Partial Credit: %s\n" "$score"
       printf "\033[0;37m--\033[0m\n"
@@ -25,11 +27,13 @@ blackbox.framework.module.abstract.score.evaluate.assert() {
     typeset score=$3
     typeset message=$4
 
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+
     local score=$(blackbox.framework.module.abstract.score.evaluate.score.calculate "$score" &>/dev/null; echo 0)
     local message=$(printf "$message" "$assert")
 
     (
-      printf "\033[0;31m.: FAIL:\033[0m %s\n" "$message"
+      printf "\033[0;31m-- FAILURE:\033[0m %s\n" "$message"
       printf "\033[0;37m--\033[0m\n"
       printf "Partial Credit: %s\n" "$score"
       printf "\033[0;37m--\033[0m\n"

@@ -3,6 +3,8 @@ blackbox.framework.module.abstract.score.evaluate.expect.shell() {
   function blackbox.framework.module.abstract.score.evaluate.expect.shell.debug() {
     declare assert=$(</dev/stdin)
 
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:assert"
+
     assert=$(eval "$(printf "function assert() { %s }" "$(awk 'ORS="; "' <(sed '/^#/d' <<<"$assert"))")" && awk '{ printf "%s%s", EOL, $0; EOL=" " }' <(sed '1,2d; $d; s/^[[:space:]]\+//g;' <(declare -f assert)))
 
     (
@@ -21,6 +23,8 @@ blackbox.framework.module.abstract.score.evaluate.expect.shell() {
     typeset message_false=$3
     typeset message_args=("${@:4}")
 
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:assert"
+
     assert=$(awk 'BEGIN { printf "( " } { printf "%s%s", EOL, $0; EOL=" ); ( " } END { printf " )" }' <<<"$assert")
 
     if ( ! (echo "$assert" | docker exec -i -w "${BLACKBOX_USER_QUESTION_DIR}" "$BLACKBOX_SPAWN" /bin/bash &>/dev/null) ); then
@@ -37,6 +41,8 @@ blackbox.framework.module.abstract.score.evaluate.expect.shell() {
     typeset message_true=$2
     typeset message_false=$3
     typeset message_args=("${@:4}")
+
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:assert"
 
     assert=$(awk 'BEGIN { printf "( " } { printf "%s%s", EOL, $0; EOL=" ); ( " } END { printf " )" }' <<<"$assert")
 
@@ -55,6 +61,8 @@ blackbox.framework.module.abstract.score.evaluate.expect.shell() {
     typeset message_false=$3
     typeset message_args=("${@:4}")
 
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:assert"
+
     assert=$(awk 'BEGIN { printf "( " } { printf "%s%s", EOL, $0; EOL=" ); ( " } END { printf " )" }' <<<"$assert")
 
     if ( echo "$assert" | docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash 2>/dev/null | grep -q . ); then
@@ -71,6 +79,8 @@ blackbox.framework.module.abstract.score.evaluate.expect.shell() {
     typeset message_true=$2
     typeset message_false=$3
     typeset message_args=("${@:4}")
+
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:assert"
 
     assert=$(awk 'BEGIN { printf "( " } { printf "%s%s", EOL, $0; EOL=" ); ( " } END { printf " )" }' <<<"$assert")
 

@@ -8,6 +8,8 @@ blackbox.framework.module.abstract.score.evaluate.expect.file() {
     typeset message_false=$3
     typeset message_args=("${@:4}")
 
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:assert"
+
     if ( echo "test -f '$assert'" | docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash ); then
       blackbox.framework.module.abstract.score.evaluate.assert.true "${FUNCNAME[0]}" "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else

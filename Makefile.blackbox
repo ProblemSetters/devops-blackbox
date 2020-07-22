@@ -1,6 +1,8 @@
 #!/usr/bin/env make
 override blackbox/:=*
 
+SHELL:=/bin/bash
+
 ifeq ($(origin .FEATURES),undefined)
   $(error `make` executable version "$(MAKE_VERSION)" is unsupported. GNU Make 3.82 or above is required)
 endif
@@ -9,42 +11,43 @@ ifeq ($(words $(MAKEFILE_LIST)),1)
   $(error `Makefile.blackbox` should be included, direct usage is not allowed)
 endif
 
-BLACKBOX_FLAG__STEP_PROVISION:=yes
-BLACKBOX_FLAG__STEP_BUILD:=yes
-BLACKBOX_FLAG__STEP_EVALUATE:=yes
+BLACKBOX_FLAG__STEP_PROVISION?=yes
+BLACKBOX_FLAG__STEP_BUILD?=yes
+BLACKBOX_FLAG__STEP_EVALUATE?=yes
 
 BLACKBOX_DIR=$(call blackbox/pwd,$(dir $(lastword $(MAKEFILE_LIST))))
-
-BLACKBOX_HOST=blackbox-$(shell basename $(PWD) | cut -c 1-36)
-BLACKBOX_SPAWN=blackbox-spawn-$(shell basename $(PWD) | cut -c 1-36)
-BLACKBOX_USER=$(shell id -u):$(shell id -g)
-BLACKBOX_USER_NAME=ubuntu
-BLACKBOX_USER_HOME=/home/$(BLACKBOX_USER_NAME)
-BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_HOME)/$(shell basename $(PWD))
+BLACKBOX_HOST:=blackbox-$(shell basename $(PWD) | cut -c 1-36)
+BLACKBOX_SPAWN:=blackbox-spawn-$(shell basename $(PWD) | cut -c 1-36)
+BLACKBOX_USER:=$(shell id -u):$(shell id -g)
+BLACKBOX_USER_NAME:=ubuntu
+BLACKBOX_USER_HOME:=/home/$(BLACKBOX_USER_NAME)
+BLACKBOX_USER_QUESTION_DIR:=$(BLACKBOX_USER_HOME)/$(shell basename $(PWD))
+BLACKBOX_VERSION:=master
 
 define blackbox/pwd=
 $(abspath $(dir $(firstword $(MAKEFILE_LIST)))/$(1))
 endef
 
-SHELL:=/bin/bash
-
 debug:
-	:
+	$(foreach variable,BLACKBOX_FLAG__STEP_PROVISION BLACKBOX_FLAG__STEP_BUILD BLACKBOX_FLAG__STEP_EVALUATE,$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
+	$(info $(shell printf "\033[0;37m%s\033[0m" \\))
+	$(foreach variable,$(filter-out BLACKBOX_FLAG__%,$(filter BLACKBOX_%,$(sort $(.VARIABLES)))),$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
+	$(if $(filter-out $(words $(MAKECMDGOALS)),1),$(info $(shell printf "\033[0;37m%s\033[0m" --)))
 
-all: uninstall prune install setup solution score
+all: uninstall install setup solution score
 
 install:
-	cat <(echo FROM problemsetters/blackbox:abstract) <(echo RUN groupadd docker) | DOCKER_BUILDKIT=1 docker build --build-arg="BLACKBOX_USER=$(BLACKBOX_USER)" --build-arg="BLACKBOX_USER_NAME=$(BLACKBOX_USER_NAME)" --build-arg="BLACKBOX_USER_HOME=$(BLACKBOX_USER_HOME)" --build-arg="BUILDKIT_INLINE_CACHE=1" --cache-from="problemsetters/blackbox:abstract" --tag="blackbox:$(BLACKBOX_HOST)" -
+	cat <(echo FROM problemsetters/blackbox:abstract) <(echo RUN groupadd docker) | DOCKER_BUILDKIT=1 docker build --build-arg="BLACKBOX_USER=$(BLACKBOX_USER)" --build-arg="BLACKBOX_USER_NAME=$(BLACKBOX_USER_NAME)" --build-arg="BLACKBOX_USER_HOME=$(BLACKBOX_USER_HOME)" --build-arg="BLACKBOX_VERSION=$(BLACKBOX_VERSION)" --build-arg="BUILDKIT_INLINE_CACHE=1" --cache-from="problemsetters/blackbox:abstract" --progress="plain" --tag="blackbox:$(BLACKBOX_HOST)" -
 	docker run -di --group-add docker --hostname="blackbox" --name="$(BLACKBOX_HOST)" --privileged --volume="$(BLACKBOX_DIR):/blackbox:ro" --volume="$(call blackbox/pwd)/setup.sh:$(BLACKBOX_USER_HOME)/setup.sh:ro" --volume="$(call blackbox/pwd)/score.sh:$(BLACKBOX_USER_HOME)/score.sh:ro" blackbox:$(BLACKBOX_HOST) >/dev/null
 
 setup:
-	docker exec -it --env="BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_QUESTION_DIR)" --env="BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION)" $(BLACKBOX_HOST) /bin/bash setup.sh
+	docker exec -it --env="BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION)" --env="BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_QUESTION_DIR)" --env="BLACKBOX_VERSION=$(BLACKBOX_VERSION)" $(BLACKBOX_HOST) /bin/bash setup.sh
 
 solution:
 	docker cp $(call blackbox/pwd)/.solution/* $(BLACKBOX_HOST):$(BLACKBOX_USER_QUESTION_DIR)
 
 score:
-	docker exec -it --env="BLACKBOX_SPAWN=$(BLACKBOX_SPAWN)" --env="BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_QUESTION_DIR)" --env="BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION)" --env="BLACKBOX_FLAG__STEP_BUILD=$(BLACKBOX_FLAG__STEP_BUILD)" --env="BLACKBOX_FLAG__STEP_EVALUATE=$(BLACKBOX_FLAG__STEP_EVALUATE)" $(BLACKBOX_HOST) /bin/bash score.sh
+	docker exec -it --env="BLACKBOX_SPAWN=$(BLACKBOX_SPAWN)" --env="BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_QUESTION_DIR)" --env="BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION)" --env="BLACKBOX_FLAG__STEP_BUILD=$(BLACKBOX_FLAG__STEP_BUILD)" --env="BLACKBOX_FLAG__STEP_EVALUATE=$(BLACKBOX_FLAG__STEP_EVALUATE)" --env="BLACKBOX_VERSION=$(BLACKBOX_VERSION)" $(BLACKBOX_HOST) /bin/bash score.sh
 
 shell:
 	docker exec -it --user="$(BLACKBOX_USER)" $(BLACKBOX_HOST) /bin/bash
@@ -60,4 +63,6 @@ prune:
 	docker ps -aq -f "name=blackbox-" | xargs -r docker stop >/dev/null
 	docker system prune -a --volumes
 
+ifneq ($(filter debug,$(MAKECMDGOALS)),)
 .SILENT:
+endif

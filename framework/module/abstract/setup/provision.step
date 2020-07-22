@@ -2,6 +2,8 @@
 blackbox.framework.module.abstract.setup.provision() {
   typeset -a args=("$@")
 
+  blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"provision"
+
   if ( ! blackbox.framework.flag.enabled STEP_PROVISION ); then
     printf "skip: BLACKBOX_FLAG__STEP_PROVISION=no\n"
 

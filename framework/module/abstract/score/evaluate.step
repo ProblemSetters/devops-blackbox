@@ -2,9 +2,11 @@
 blackbox.framework.module.abstract.score.evaluate() {
   typeset -a args=("$@")
 
-  blackbox.framework.import "blackbox.framework.module.abstract.score.evaluate.assert"
-  blackbox.framework.import "blackbox.framework.module.abstract.score.evaluate.expect"
-  blackbox.framework.import "blackbox.framework.module.abstract.score.evaluate.score"
+  blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate"
+
+  blackbox.framework.import blackbox.framework.module.abstract.score.evaluate.assert
+  blackbox.framework.import blackbox.framework.module.abstract.score.evaluate.expect
+  blackbox.framework.import blackbox.framework.module.abstract.score.evaluate.score
 
   local -a from_namespace=(
     blackbox.framework.module.abstract.score.evaluate.expect.artifact.collection
@@ -16,21 +18,18 @@ blackbox.framework.module.abstract.score.evaluate() {
     blackbox.framework.module.abstract.score.evaluate.expect.shell.success
   )
 
-  for namespace in "${from_namespace[@]}"; do
-    local to_namespace=${namespace/framework.module.abstract.score.evaluate./}
-    local to_namespace_definition=$(declare -f "$namespace")
+  if ( blackbox.framework.flag.enabled STEP_EVALUATE ); then
+    for namespace in "${from_namespace[@]}"; do
+      local definition=$(declare -f "$namespace")
 
-    if ( ! blackbox.framework.flag.enabled STEP_EVALUATE ); then
-      to_namespace_definition="(){ :; }"
-    fi
-
-    eval "$(printf "function %s %s" "$to_namespace" "${to_namespace_definition#*"()"}")"
-  done
-
-  if ( ! blackbox.framework.flag.enabled STEP_EVALUATE ); then
+      eval "$(printf "function %s %s" "${namespace/framework.module.abstract.score.evaluate./}" "${definition#*"()"}")"
+    done
+  else
     printf "skip: BLACKBOX_FLAG__STEP_EVALUATE=no\n"
 
-    return
+    for namespace in "${from_namespace[@]}"; do
+      eval "$(printf "function %s (){ :; }" "${namespace/framework.module.abstract.score.evaluate./}")"
+    done
   fi
 
   : <<< blackbox.module.*.score.evaluate

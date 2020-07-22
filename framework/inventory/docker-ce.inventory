@@ -3,6 +3,8 @@ blackbox.framework.inventory.docker-ce() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")
 
+  blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+
   sed "s/\x1b\[[0-9;]*m//g" <(dpkg-query -W "$package_name" "${with_packages[@]}" 2>&1)
 
   if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then

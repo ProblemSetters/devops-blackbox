@@ -89,6 +89,7 @@ ONBUILD RUN printenv \
               -S \
               -O \
                 /tmp/blackbox \
+              --no-cache \
               "https://github.com/ProblemSetters/devops-blackbox/archive/${BLACKBOX_VERSION}.zip" \
                 \
                 2>&1; \

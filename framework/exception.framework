@@ -4,6 +4,8 @@ blackbox.framework.exception() {
     typeset message=$1
     typeset -a args=("${@:2}")
 
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+
     (
       printf '\033[0;37m%s < "%s" %s\033[0m\n' "${FUNCNAME[0]}" "$message" "${args[*]}"
       printf "\033[0;31mexception: *** %s.\033[0m\n" "$(printf "$message" "${args[@]}")"
