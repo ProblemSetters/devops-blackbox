@@ -5,7 +5,7 @@ blackbox.framework.module.abstract.score.evaluate.expect.shell() {
 
     blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
 
-    assert=$(eval "$(printf "function assert() { %s }" "$(awk 'ORS="; "' <(sed '/^#/d' <<<"$assert"))")" && awk '{ printf "%s%s", EOL, $0; EOL=" " }' <(sed '1,2d; $d; s/^[[:space:]]\+//g;' <(declare -f assert)))
+    assert=$(sed "s/\({\);/\1/g; s/\(;\)\{2\}/\1/g" <(awk 'ORS="; "' <(sed '1,2d; $d; s/[[:space:]]$//g; s/^[[:space:]]\+//g' <(eval "$(printf "function _() { %s }" "$(sed "s/\({\);/\1/g" <(awk 'ORS="; "' <(sed '/^#/d; /^$/d; s/;$//g; s/^[[:space:]]\+//g' <<<"$assert")))")"; declare -f _))))
 
     (
       printf "\033[0;33m@@ DEBUG:\033[0m %s\n" "$assert"

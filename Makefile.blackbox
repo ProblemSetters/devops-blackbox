@@ -39,6 +39,7 @@ debug:
 	$(info $(shell printf "\033[0;37m%s\033[0m" \\))
 	$(foreach variable,$(filter-out BLACKBOX_FLAG__%,$(filter BLACKBOX_%,$(sort $(.VARIABLES)))),$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
 	$(if $(filter-out $(words $(MAKECMDGOALS)),1),$(info $(shell printf "\033[0;37m%s\033[0m" --)))
+	@true
 
 all: uninstall install setup solution score
 
@@ -56,10 +57,10 @@ score:
 	docker exec -it --env="BLACKBOX_SPAWN=$(BLACKBOX_SPAWN)" --env="BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_QUESTION_DIR)" --env="BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE)" --env="BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION)" --env="BLACKBOX_FLAG__STEP_BUILD=$(BLACKBOX_FLAG__STEP_BUILD)" --env="BLACKBOX_FLAG__STEP_EVALUATE=$(BLACKBOX_FLAG__STEP_EVALUATE)" --env="BLACKBOX_VERSION=$(BLACKBOX_VERSION)" $(BLACKBOX_HOST) /bin/bash score.sh
 
 shell:
-	docker exec -it --user="$(BLACKBOX_USER)" $(BLACKBOX_HOST) /bin/bash
+	docker exec -it -w $(BLACKBOX_USER_QUESTION_DIR) --user="$(BLACKBOX_USER)" $(BLACKBOX_HOST) /bin/bash
 
 shell\:spawn:
-	docker exec -it --user="$(BLACKBOX_USER)" $(BLACKBOX_HOST) /bin/bash -c "docker exec -it $(BLACKBOX_SPAWN) /bin/bash"
+	docker exec -it $(BLACKBOX_HOST) /bin/bash -c "docker exec -it -w $(BLACKBOX_USER_QUESTION_DIR) $(BLACKBOX_SPAWN) /bin/bash"
 
 uninstall:
 	docker ps -aq -f "name=$(BLACKBOX_HOST)" | xargs -r docker rm -f >/dev/null
