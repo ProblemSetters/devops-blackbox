@@ -63,7 +63,7 @@ shell\:spawn:
 
 uninstall:
 	docker ps -aq -f "name=$(BLACKBOX_HOST)" | xargs -r docker rm -f >/dev/null
-	docker images -aq -f "reference=blackbox:$(BLACKBOX_HOST)" | xargs -r docker rmi -f
+	docker rmi blackbox:$(BLACKBOX_HOST) 2>/dev/null || true
 
 prune:
 	docker ps -aq -f "name=blackbox-" | xargs -r docker stop >/dev/null
