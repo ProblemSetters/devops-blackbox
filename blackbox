@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 blackbox() {
-  export BLACKBOX_FLAG__STEP_PROVISION=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_PROVISION" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
-  export BLACKBOX_FLAG__STEP_BUILD=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_BUILD" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
-  export BLACKBOX_FLAG__STEP_EVALUATE=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_EVALUATE" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
-
   export BLACKBOX_DIR=/blackbox
   export BLACKBOX_SPAWN=$(awk -v master="$(</proc/sys/kernel/random/uuid)" -v user="$BLACKBOX_SPAWN" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
   export BLACKBOX_USER=$(awk -v master="1000:1000" -v user="$BLACKBOX_USER" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
@@ -11,6 +7,11 @@ blackbox() {
   export BLACKBOX_USER_HOME=$(awk -v master="/home/${BLACKBOX_USER_NAME}" -v user="$BLACKBOX_USER_HOME" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
   export BLACKBOX_USER_QUESTION_DIR=$(awk -v master="${BLACKBOX_USER_HOME}/${3}" -v user="$BLACKBOX_USER_QUESTION_DIR" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
   export BLACKBOX_VERSION=$(awk -v master="master" -v user="$BLACKBOX_VERSION" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
+
+  export BLACKBOX_FLAG__DEBUG_MODE=${BLACKBOX_FLAG__DEBUG_MODE:-no}
+  export BLACKBOX_FLAG__STEP_PROVISION=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_PROVISION" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
+  export BLACKBOX_FLAG__STEP_BUILD=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_BUILD" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
+  export BLACKBOX_FLAG__STEP_EVALUATE=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_EVALUATE" 'END { print ($0 == "init") ? master : user }' <(ps -p 1 -o comm=))
 
   export BLACKBOX_PROVISION_WITH_OPTS=$(sed "s/[[:space:]];\([[:space:]]}\)/;\1/" <(awk '{ printf "%s%s", EOL, $0; EOL=" "}' <(sed '1,2d; $d; s/^[[:space:]]\+//g; s/^}/; &/g' <(declare -f BLACKBOX_PROVISION_WITH_OPTS))))
   export BLACKBOX_BUILD_WITH_OPTS=$(sed "s/[[:space:]];\([[:space:]]}\)/;\1/" <(awk '{ printf "%s%s", EOL, $0; EOL=" "}' <(sed '1,2d; $d; s/^[[:space:]]\+//g; s/^}/; &/g' <(declare -f BLACKBOX_BUILD_WITH_OPTS))))
@@ -131,19 +132,33 @@ blackbox() {
       (
         if [ -n "$header" ]; then
           printf "\n"
-          printf "\033[0;37m// %s%s%s\033[0m\n" "${entrypoint[0]}" "${args[*]}" "${opts[*]}"
+
+          if [[ "$BLACKBOX_FLAG__DEBUG_MODE" == "yes" ]]; then
+            printf "\033[0;37m// %s%s%s\033[0m\n" "${entrypoint[0]}" "${args[*]}" "${opts[*]}"
+          fi
+
           printf "\033[0;34m[%s]\033[0m\n" "${header^^}"
-          printf "\033[0;37m%s\033[0m\n" "..."
+          printf "\033[0;37m%s\033[0m\n" "$(printenv | sort | awk 'ORS=" "')"
+          printf "\033[0;37m--\033[0m\n"
         else
+          if [[ "$BLACKBOX_FLAG__DEBUG_MODE" != "yes" ]]; then
+            return
+          fi
+
           printf "\033[0;37m// %s%s%s {...}\033[0m\n" "${entrypoint[0]}" "${args[*]}" "${opts[*]}"
         fi
-      ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi >&2
+      ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi | if [[ "$BLACKBOX_FLAG__DEBUG_MODE" == "yes" ]]; then cat >&2; else cat; fi
     }
   }; blackbox.framework
 
   function blackbox.__init() {
     typeset module_name=$1
     typeset -a module_args=("${@:2}")
+
+    shopt -os allexport && {
+      . /etc/environment
+      shopt -ou allexport
+    }
 
     blackbox.framework.trace "${FUNCNAME[@]}" "$*" <<<"initialize"
 
@@ -161,8 +176,12 @@ blackbox() {
     blackbox.framework.import blackbox.framework.inventory
     blackbox.framework.import blackbox.framework.module
 
+    if [ -z "$module_name" ]; then
+      return;
+    fi
+
     blackbox.framework.inventory.install.directory "$BLACKBOX_USER_QUESTION_DIR" && {
-      cd "$BLACKBOX_USER_QUESTION_DIR" && {
+      pushd "$BLACKBOX_USER_QUESTION_DIR" && {
         blackbox.framework.module.load "$module_name" "${module_args[@]}"
       }
     }

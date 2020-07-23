@@ -2,6 +2,8 @@ FROM ubuntu:18.04
 
 COPY rootfs/ /
 
+ENV BLACKBOX=problemsetters/blackbox:abstract
+
 RUN apt-get \
       update \
     && \

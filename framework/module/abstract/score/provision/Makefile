@@ -1,17 +1,24 @@
 #!/usr/bin/env make
 override blackbox/framework/module/abstract/score/provision/:=*
 
-SHELL:=/bin/bash
-
 ifeq ($(origin .FEATURES),undefined)
-  $(error `make` executable version "$(MAKE_VERSION)" is unsupported. GNU Make 3.82 or above is required)
+  $(error `make` executable version "$(MAKE_VERSION)" is not supported. GNU Make 3.82 or above is required)
+endif
+
+override SHELL:=/bin/bash
+
+ifneq ($(value SHELL),$(shell echo $$BASH))
+  $(error current shell executable is not supported. GNU Bash 4.3 or above is required)
 endif
 
 BLACKBOX:=problemsetters/blackbox:$(shell basename $(abspath $(firstword $(MAKEFILE_LIST))/../../../))
-BLACKBOX_BUILD_ARGS=$(foreach arg, $(filter-out BLACKBOX_BUILD_ARGS,$(filter BLACKBOX BLACKBOX_%,$(sort $(.VARIABLES)))),--build-arg="$(arg)=$($(arg))") --build-arg="BUILDKIT_INLINE_CACHE=1"
+BLACKBOX_USER:=1000:1000
+BLACKBOX_USER_NAME:=ubuntu
+BLACKBOX_USER_HOME:=/home/$(BLACKBOX_USER_NAME)
+BLACKBOX_VERSION:=master
 
 build:
-	DOCKER_BUILDKIT=1 docker build $(BLACKBOX_BUILD_ARGS) --cache-from="$(BLACKBOX)" --progress="plain" --tag="$(BLACKBOX)" .
+	DOCKER_BUILDKIT=1 docker build $(foreach arg, $(filter BLACKBOX%,$(sort $(.VARIABLES))),--build-arg="$(arg)=$($(arg))") --build-arg="BUILDKIT_INLINE_CACHE=1" --cache-from="$(BLACKBOX)" --progress="plain" --tag="$(BLACKBOX)" .
 
 run:
 	docker run -it --rm $(BLACKBOX)

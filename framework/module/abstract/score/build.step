@@ -25,6 +25,6 @@ blackbox.framework.module.abstract.score.build() {
 
   if [ -n "$BLACKBOX_BUILD_WITH_OPTS" ]; then
     printf "BLACKBOX_BUILD_WITH_OPTS=%s\n" "$BLACKBOX_BUILD_WITH_OPTS"
-    docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash -c "$BLACKBOX_BUILD_WITH_OPTS"
+    docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash <<<"source /blackbox/blackbox &>/dev/null && ${BLACKBOX_BUILD_WITH_OPTS}"
   fi
 }
