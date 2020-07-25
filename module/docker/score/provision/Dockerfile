@@ -6,24 +6,14 @@ ENV BLACKBOX_USER_NAME=${BLACKBOX_USER_NAME}
 
 COPY rootfs/ /
 
-RUN apt-get \
-      update \
-    && \
-    wget \
-      -qO- \
-      https://download.docker.com/linux/ubuntu/gpg \
+SHELL ["/bin/bash", "-c"]
+
+RUN source \
+      /blackbox/blackbox \
         \
-        | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=true apt-key \
-            add \
-              -; \
-    add-apt-repository \
-      -y \
-      "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"; \
-    DEBIAN_FRONTEND=noninteractive apt-get \
-      install \
-        -y \
-        --no-install-recommends \
-        "docker-ce"; \
+        &>/dev/null; \
+    blackbox.framework.inventory.provision \
+      docker-ce; \
     usermod \
       -a \
       -G \
