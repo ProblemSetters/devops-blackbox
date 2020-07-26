@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+blackbox.module.ansible.setup() {
+  : <<< blackbox.framework.module.abstract.setup:action
+}

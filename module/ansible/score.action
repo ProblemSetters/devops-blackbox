@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+blackbox.module.ansible.score() {
+  : <<< blackbox.framework.module.abstract.score:action
+}

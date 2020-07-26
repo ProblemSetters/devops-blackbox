@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+blackbox.module.docker.score.build() {
+  : <<< blackbox.framework.module.abstract.score.build:step
+
+  docker exec -i "$BLACKBOX_SPAWN" /bin/bash -c "docker ps -aq | xargs -r docker stop >/dev/null"
+  docker exec -i "$BLACKBOX_SPAWN" docker system prune -af --volumes
+}

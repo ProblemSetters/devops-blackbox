@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+blackbox.module.ansible() {
+  : <<< blackbox.framework.module.abstract
+}
