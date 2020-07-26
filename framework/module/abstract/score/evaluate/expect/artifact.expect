@@ -10,19 +10,19 @@ blackbox.framework.module.abstract.score.evaluate.expect.artifact() {
     readarray -t collection <<<"${assert[*]}"
 
     for artifact in "${!collection[@]}"; do
-      local store_cache="${BLACKBOX_ARTIFACT_STORE_CACHE_DIR}/artifact__${collection[$artifact]//[^A-Za-z0-9]/_}.cache"
+      local store_cache="${BLACKBOX_ARTIFACT_STORE_CACHE_DIR}/${collection[$artifact]//[^A-Za-z0-9]/_}.artifact"
 
       (
-        printf "\033[0;35m** ARTIFACT:\033[0m %s\n" "${collection[$artifact]}"
+        printf "\033[0;35m** ARTIFACT:\033[0m %s \033[0;37m> %s\033[0m\n" "${collection[$artifact]}" "$store_cache"
         printf "\033[0;37m--\033[0m\n"
-        printf "\033[0;38m%s\033[0m\n" "$(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${collection[$artifact]}")"
+        printf "\033[0;38m%s\033[0m\n" "$(tee "$store_cache" < <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${collection[$artifact]}"))"
         printf "\033[0;37m--\033[0m\n"
 
         if [ "$artifact" -lt "$(( ${#collection[@]} - 1 ))" ]; then
           printf "\n"
         fi
 
-      ) | tee "$store_cache" | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+      ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
       sed -i "s/\x1b\[[0-9;]*m//g" "$store_cache"
     done
