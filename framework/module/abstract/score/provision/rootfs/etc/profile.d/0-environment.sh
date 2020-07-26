@@ -1,6 +1,7 @@
-if [ -z "$PS1" ]; then
-  return
-fi
+case $- in
+  *i*) [ -z "$PS1" ] && return ;;
+  *) return ;;
+esac
 
 shopt -os allexport && {
   . /etc/environment
