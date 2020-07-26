@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-blackbox.module.docker.score.evaluate() {
+blackbox.module.ansible.score.evaluate() {
   : <<< blackbox.framework.module.abstract.score.evaluate:step
 }

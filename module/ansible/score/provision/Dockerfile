@@ -1,7 +1,5 @@
 FROM problemsetters/blackbox:abstract
 
-COPY rootfs/ /
-
 SHELL ["/bin/bash", "-c"]
 
 RUN source \
@@ -9,7 +7,7 @@ RUN source \
         \
         &>/dev/null; \
     blackbox.framework.inventory.provision \
-      ansible
+      ansible \
     && \
     rm \
       -rf \
