@@ -23,7 +23,7 @@ blackbox.framework.module.abstract.score.provision() {
 
   if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
     printf "BLACKBOX_PROVISION_WITH_OPTS=%s\n" "$BLACKBOX_PROVISION_WITH_OPTS"
-    docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash <<<"source /blackbox/blackbox &>/dev/null && ${BLACKBOX_PROVISION_WITH_OPTS}"
+    docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash <<<"source /blackbox/blackbox &>/dev/null; ${BLACKBOX_PROVISION_WITH_OPTS}"
   fi
 }
 

@@ -10,9 +10,9 @@ blackbox.framework.module.abstract.score.build() {
     return
   fi
 
-  declare -a build_cmd=(
-    "/bin/bash"
-    script.sh
+  declare build_cmd=(
+    "source %s"
+    "script.sh"
   )
 
   : <<< blackbox.module.*.score.build
@@ -21,10 +21,10 @@ blackbox.framework.module.abstract.score.build() {
     blackbox.framework.exception.raise "solution stub '%s' does not exists" "${build_cmd[1]}"
   fi
 
-  docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "${build_cmd[@]}"
+  docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash <<<"source /blackbox/blackbox &>/dev/null; $(printf "${build_cmd[0]}" "${build_cmd[1]}")"
 
   if [ -n "$BLACKBOX_BUILD_WITH_OPTS" ]; then
     printf "BLACKBOX_BUILD_WITH_OPTS=%s\n" "$BLACKBOX_BUILD_WITH_OPTS"
-    docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash <<<"source /blackbox/blackbox &>/dev/null && ${BLACKBOX_BUILD_WITH_OPTS}"
+    docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash <<<"source /blackbox/blackbox &>/dev/null; ${BLACKBOX_BUILD_WITH_OPTS}"
   fi
 }

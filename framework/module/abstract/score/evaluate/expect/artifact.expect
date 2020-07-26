@@ -15,7 +15,7 @@ blackbox.framework.module.abstract.score.evaluate.expect.artifact() {
       (
         printf "\033[0;35m** ARTIFACT:\033[0m %s\n" "${collection[$artifact]}"
         printf "\033[0;37m--\033[0m\n"
-        printf "\033[0;38m%s\033[0m\n" "$(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash 2>&1 <<<"source /blackbox/blackbox &>/dev/null && ${collection[$artifact]}")"
+        printf "\033[0;38m%s\033[0m\n" "$(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${collection[$artifact]}")"
         printf "\033[0;37m--\033[0m\n"
 
         if [ "$artifact" -lt "$(( ${#collection[@]} - 1 ))" ]; then

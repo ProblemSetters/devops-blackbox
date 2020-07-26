@@ -10,7 +10,7 @@ blackbox.framework.module.abstract.score.evaluate.expect.file() {
 
     blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:expect"
 
-    if ( docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash &>/dev/null <<<"source /blackbox/blackbox &>/dev/null" <<<"test -f '${assert}'"); then
+    if ( docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; test -f '${assert}'"); then
       blackbox.framework.module.abstract.score.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else
       blackbox.framework.module.abstract.score.evaluate.assert.false "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"

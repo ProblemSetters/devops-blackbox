@@ -8,7 +8,7 @@ blackbox.framework.module.abstract.score.evaluate.expect.shell() {
     (
       printf "\033[0;33m@@ DEBUG:\033[0m %s\n" "$(blackbox.framework.module.abstract.score.evaluate.assert.normalize "$assert")"
       printf "\033[0;37m--\033[0m\n"
-      printf "\033[0;38m%s\033[0m\n" "$(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash 2>&1 <<<"source /blackbox/blackbox &>/dev/null" <<<"$assert")"
+      printf "\033[0;38m%s\033[0m\n" "$(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}")"
       printf "\033[0;37m--\033[0m\n"
     ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
@@ -25,7 +25,7 @@ blackbox.framework.module.abstract.score.evaluate.expect.shell() {
 
     blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:expect"
 
-    if ( ! (docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash &>/dev/null <<<"source /blackbox/blackbox &>/dev/null" <<<"$assert") ); then
+    if ( ! (docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}") ); then
       blackbox.framework.module.abstract.score.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else
       blackbox.framework.module.abstract.score.evaluate.assert.false "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
@@ -59,7 +59,7 @@ blackbox.framework.module.abstract.score.evaluate.expect.shell() {
 
     blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:expect"
 
-    if ( grep -q . <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash 2>/dev/null <<<"source /blackbox/blackbox &>/dev/null" <<<"$assert") ); then
+    if ( grep -q . <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash 2>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}") ); then
       blackbox.framework.module.abstract.score.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else
       blackbox.framework.module.abstract.score.evaluate.assert.false "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
@@ -76,7 +76,7 @@ blackbox.framework.module.abstract.score.evaluate.expect.shell() {
 
     blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:expect"
 
-    if ( docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash &>/dev/null <<<"source /blackbox/blackbox &>/dev/null" <<<"$assert"); then
+    if ( docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}"); then
       blackbox.framework.module.abstract.score.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else
       blackbox.framework.module.abstract.score.evaluate.assert.false "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
