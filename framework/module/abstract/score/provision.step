@@ -12,7 +12,7 @@ blackbox.framework.module.abstract.score.provision() {
     return
   fi
 
-  docker ps -aq -f "name=${BLACKBOX_SPAWN}" | xargs -r docker rm -f >/dev/null
+  docker ps -aq | xargs -r docker rm -f >/dev/null
 
   if (blackbox.framework.flag.enabled "DEBUG_MODE"); then
     docker system prune -af --volumes
