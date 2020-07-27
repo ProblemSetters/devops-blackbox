@@ -38,14 +38,14 @@ debug:
 	$(foreach variable,BLACKBOX_FLAG__DEBUG_MODE BLACKBOX_FLAG__STEP_PROVISION BLACKBOX_FLAG__STEP_BUILD BLACKBOX_FLAG__STEP_EVALUATE,$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
 	$(info $(shell printf "\033[0;37m%s\033[0m" \\))
 	$(foreach variable,$(filter-out BLACKBOX_FLAG__%,$(filter BLACKBOX_%,$(sort $(.VARIABLES)))),$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
-	$(if $(filter-out $(words $(MAKECMDGOALS)),1),$(info $(shell printf "\033[0;37m%s\033[0m" --)))
+	$(if $(and $(filter-out $(words $(MAKECMDGOALS)),0),$(filter-out $(words $(MAKECMDGOALS)),1)),$(info $(shell printf "\033[0;37m%s\033[0m" --)))
 	@true
 
 all: uninstall install setup solution score
 
 install:
 	cat <(echo FROM problemsetters/blackbox:abstract) <(echo RUN groupadd docker) | DOCKER_BUILDKIT=1 docker build --build-arg="BLACKBOX_USER=$(BLACKBOX_USER)" --build-arg="BLACKBOX_USER_NAME=$(BLACKBOX_USER_NAME)" --build-arg="BLACKBOX_USER_HOME=$(BLACKBOX_USER_HOME)" --build-arg="BLACKBOX_VERSION=$(BLACKBOX_VERSION)" --build-arg="BUILDKIT_INLINE_CACHE=1" --cache-from="problemsetters/blackbox:abstract" --progress="plain" --tag="blackbox:$(BLACKBOX_HOST)" -
-	docker run -di --group-add docker --hostname="blackbox" --name="$(BLACKBOX_HOST)" --privileged --volume="$(BLACKBOX_DIR):/blackbox:ro" --volume="$(call blackbox/pwd)/setup.sh:$(BLACKBOX_USER_HOME)/setup.sh:ro" --volume="$(call blackbox/pwd)/score.sh:$(BLACKBOX_USER_HOME)/score.sh:ro" blackbox:$(BLACKBOX_HOST) >/dev/null
+	docker run -di --group-add docker --hostname="blackbox" --name="$(BLACKBOX_HOST)" --privileged $(if $(filter debug,$(MAKECMDGOALS)),--volume="$(BLACKBOX_DIR):/blackbox:ro") --volume="$(call blackbox/pwd)/setup.sh:$(BLACKBOX_USER_HOME)/setup.sh:ro" --volume="$(call blackbox/pwd)/score.sh:$(BLACKBOX_USER_HOME)/score.sh:ro" blackbox:$(BLACKBOX_HOST) >/dev/null
 
 setup:
 	docker exec -it --env="BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE)" --env="BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION)" --env="BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_QUESTION_DIR)" --env="BLACKBOX_VERSION=$(BLACKBOX_VERSION)" $(BLACKBOX_HOST) /bin/bash setup.sh
