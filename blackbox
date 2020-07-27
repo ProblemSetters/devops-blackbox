@@ -6,7 +6,7 @@ blackbox() {
   export BLACKBOX_USER_NAME=$(awk -v master="ubuntu" -v user="$BLACKBOX_USER_NAME" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
   export BLACKBOX_USER_HOME=$(awk -v master="/home/${BLACKBOX_USER_NAME}" -v user="$BLACKBOX_USER_HOME" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
   export BLACKBOX_USER_QUESTION_DIR=$(awk -v master="${BLACKBOX_USER_HOME}/${3}" -v user="$BLACKBOX_USER_QUESTION_DIR" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
-  export BLACKBOX_VERSION=$(awk -v master="shell-module-implementation" -v user="$BLACKBOX_VERSION" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
+  export BLACKBOX_VERSION=$(awk -v master="master" -v user="$BLACKBOX_VERSION" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
 
   export BLACKBOX_FLAG__DEBUG_MODE=${BLACKBOX_FLAG__DEBUG_MODE:-no}
   export BLACKBOX_FLAG__STEP_PROVISION=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_PROVISION" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
