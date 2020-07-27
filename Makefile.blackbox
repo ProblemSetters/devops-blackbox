@@ -20,7 +20,10 @@ BLACKBOX_FLAG__STEP_PROVISION:=yes
 BLACKBOX_FLAG__STEP_BUILD:=yes
 BLACKBOX_FLAG__STEP_EVALUATE:=yes
 
-BLACKBOX_DIR=$(call blackbox/pwd,$(dir $(lastword $(MAKEFILE_LIST))))
+ifneq ($(BLACKBOX_DIR),$(abspath $(dir $(lastword $(MAKEFILE_LIST)))))
+  $(error `BLACKBOX_DIR` configuration is not valid)
+endif
+
 BLACKBOX_HOST:=blackbox-$(shell basename $(PWD) | cut -c 1-36)
 BLACKBOX_SPAWN:=blackbox-spawn-$(shell basename $(PWD) | cut -c 1-36)
 BLACKBOX_USER:=$(shell id -u):$(shell id -g)
