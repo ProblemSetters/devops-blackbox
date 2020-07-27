@@ -3,9 +3,12 @@ blackbox.framework.flag() {
   function blackbox.framework.flag.enabled() {
     typeset name=$1
 
+    # shellcheck disable=SC2016
     local value=$(eval "$(printf 'cat <<<$BLACKBOX_FLAG__%s' "$name")")
 
-    blackbox.framework.trace "${FUNCNAME[0]}" "$*" "$(printf '<bool> %s' "$value")" <<<""
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" "$(printf '<bool> %s' "$value")" <<<""
+    }
 
     if [ -z "$value" ]; then
       blackbox.framework.exception.raise "flag '%s' not found" "$name"

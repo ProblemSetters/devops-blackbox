@@ -3,9 +3,11 @@ blackbox.framework.module.abstract() {
   typeset action_name=$1
   typeset -a action_args=("${@:2}")
 
-  blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
 
-  blackbox.framework.import "blackbox.module.${module_name}.${action_name}:action" "${action_args[@]}"
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.${action_name}:action" "${action_args[@]}"
 
   : <<< blackbox.module.*
 }

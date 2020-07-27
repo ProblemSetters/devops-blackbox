@@ -3,13 +3,15 @@ blackbox.framework.module.abstract.setup() {
   typeset question_id=$1
   typeset -a step_args=("${@:2}")
 
-  blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
 
-  if [ ! -e "/blackbox/module/${module_name}/setup.action" ]; then
-    blackbox.framework.exception.raise "action '%s:setup' not found" "$module_name"
+  if [ ! -e "/blackbox/module/${BLACKBOX_MODULE_NAME}/setup.action" ]; then
+    blackbox.framework.exception.raise "action '%s:setup' not found" "$BLACKBOX_MODULE_NAME"
   fi
 
-  blackbox.framework.import "blackbox.module.${module_name}.setup.provision:step" "${step_args[@]}"
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.setup.provision:step" "${step_args[@]}"
 
   : <<< blackbox.module.*.setup
 }

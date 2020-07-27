@@ -2,7 +2,9 @@
 blackbox.framework.module.abstract.score.evaluate() {
   typeset -a args=("$@")
 
-  blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate"
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate"
+  }
 
   blackbox.framework.import blackbox.framework.module.abstract.score.evaluate.assert
   blackbox.framework.import blackbox.framework.module.abstract.score.evaluate.expect

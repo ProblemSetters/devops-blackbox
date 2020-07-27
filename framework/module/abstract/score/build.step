@@ -2,7 +2,9 @@
 blackbox.framework.module.abstract.score.build() {
   typeset -a args=("$@")
 
-  blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"build"
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"build"
+  }
 
   if ( ! blackbox.framework.flag.enabled STEP_BUILD ); then
     printf "skip: BLACKBOX_FLAG__STEP_BUILD=no\n"
@@ -22,6 +24,7 @@ blackbox.framework.module.abstract.score.build() {
   fi
 
   (
+    # shellcheck disable=SC2059
     docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash 2>&1 <<<"source /blackbox/blackbox &>/dev/null; $(printf "${build_cmd[0]}" "${build_cmd[1]}")"
   ) | sed "s/\x1b\[[0-9;]*m//g; s/Partial Credit/***/g"
 

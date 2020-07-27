@@ -2,6 +2,7 @@
 blackbox.module.ansible.setup.provision() {
   : <<< blackbox.framework.module.abstract.setup.provision:step
 
-  blackbox.framework.inventory.provision ansible
-  blackbox.framework.inventory.install.file playbook.yml </blackbox/module/ansible/setup/provision/rootfs/home/%/%/playbook.yml
+  blackbox.framework.inventory.provision ansible && {
+    blackbox.framework.inventory.install.file playbook.yml </blackbox/module/ansible/setup/provision/rootfs/home/%/%/playbook.yml
+  }
 }

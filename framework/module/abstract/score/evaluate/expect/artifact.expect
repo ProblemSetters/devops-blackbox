@@ -5,7 +5,9 @@ blackbox.framework.module.abstract.score.evaluate.expect.artifact() {
   function blackbox.framework.module.abstract.score.evaluate.expect.artifact.collection() {
     declare assert=$(</dev/stdin)
 
-    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
 
     readarray -t collection <<<"${assert[*]}"
 
@@ -18,18 +20,19 @@ blackbox.framework.module.abstract.score.evaluate.expect.artifact() {
         printf "\033[0;38m%s\033[0m\n" "$(tee "$store_cache" < <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${collection[$artifact]}"))"
         printf "\033[0;37m--\033[0m\n"
 
-        if [ "$artifact" -lt "$(( ${#collection[@]} - 1 ))" ]; then
+        if [ "$artifact" -lt "$((${#collection[@]} - 1))" ]; then
           printf "\n"
         fi
-
-      ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+      ) | if (tput setaf &>/dev/null); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
       sed -i "s/\x1b\[[0-9;]*m//g" "$store_cache"
     done
   }
 
   blackbox.framework.module.abstract.score.evaluate.expect.artifact.__init() {
-    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
 
     blackbox.framework.inventory.install.directory "$BLACKBOX_ARTIFACT_STORE_CACHE_DIR"
   } && blackbox.framework.module.abstract.score.evaluate.expect.artifact.__init "$@"

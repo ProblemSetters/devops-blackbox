@@ -6,7 +6,9 @@ blackbox.framework.inventory() {
       typeset owner=${2:-$(cut -d ":" -f 1 <<<"$BLACKBOX_USER")}
       typeset group=${3:-$(cut -d ":" -f 2 <<<"$BLACKBOX_USER"))}
 
-      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+      {
+        blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+      }
 
       install -o "$owner" -g "$group" -m 0775 -d "$destination"
     }
@@ -18,7 +20,9 @@ blackbox.framework.inventory() {
       typeset owner=${2:-$(cut -d ":" -f 1 <<<"$BLACKBOX_USER")}
       typeset group=${3:-$(cut -d ":" -f 2 <<<"$BLACKBOX_USER")}
 
-      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+      {
+        blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+      }
 
       install -o "$owner" -g "$group" -m 0775 -d "$(dirname "$destination")" && {
         if [ -n "$source" ]; then
@@ -34,7 +38,9 @@ blackbox.framework.inventory() {
     typeset name=$1
     typeset -a with_deps=("${@:2}")
 
-    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
 
     if [ ! -e "/blackbox/framework/inventory/${name}.inventory" ]; then
       blackbox.framework.exception.raise "inventory '%s' not found" "$name"

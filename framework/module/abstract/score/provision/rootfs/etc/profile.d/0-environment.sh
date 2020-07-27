@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 case $- in
   *i*) [ -z "$PS1" ] && return ;;
   *) return ;;

@@ -16,9 +16,13 @@ blackbox() {
   export BLACKBOX_PROVISION_WITH_OPTS=$(sed "s/\({\);/\1/g; s/\(;\)\{2\}/\1/g" <(awk 'ORS="; "' <(sed '1,2d; $d; s/[[:space:]]$//g; s/^[[:space:]]\+//g' <(declare -f BLACKBOX_PROVISION_WITH_OPTS))))
   export BLACKBOX_BUILD_WITH_OPTS=$(sed "s/\({\);/\1/g; s/\(;\)\{2\}/\1/g" <(awk 'ORS="; "' <(sed '1,2d; $d; s/[[:space:]]$//g; s/^[[:space:]]\+//g' <(declare -f BLACKBOX_BUILD_WITH_OPTS))))
 
+  # shellcheck disable=SC2034
   typeset -gx BLACKBOX_SCENARIO_PATH=$(realpath "$0")
+  # shellcheck disable=SC2034
   typeset -gx BLACKBOX_MODULE_NAME=$1
+  # shellcheck disable=SC2034
   typeset -gx BLACKBOX_MODULE_ACTION_NAME=$2
+  # shellcheck disable=SC2034
   typeset -gx BLACKBOX_QUESTION_ID=$3
 
   blackbox.framework() {
@@ -53,6 +57,7 @@ blackbox() {
         blackbox.framework.exception.raise "definition '%s' does not exists" "$destination_definition_path"
       fi
 
+      # shellcheck disable=SC1090
       destination_definition=$(source "$destination_definition_path" && declare -f "$destination_namespace_name")
 
       local destination_definition_source_placeholder=$(sed -n '/^[[:space:]]*:[[:space:]]<<<[[:space:]]blackbox\.[[:lower:][:digit:].:]\+;\{0,1\}$/p' <<<"$destination_definition")
@@ -60,6 +65,7 @@ blackbox() {
       if [ -z "$destination_definition_source_placeholder" ]; then
         blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
 
+        # shellcheck disable=SC1090
         source "$(printf "%s/%s.%s" "$BLACKBOX_DIR" "$(sed "s/\./\//g" <(cut -d "." -f 2- <<<"$destination_namespace_name"))" "$destination_namespace_extension")" && {
           eval "$destination_namespace_name" "${args[@]}"
         }
@@ -89,6 +95,7 @@ blackbox() {
         blackbox.framework.exception.raise "definition '%s' does not exists" "$source_definition_path"
       fi
 
+      # shellcheck disable=SC1090
       source_definition=$(source "$source_definition_path" && declare -f "$source_namespace_name")
 
       local source_definition_destination_placeholder=$(sed -n "/[[:space:]]*:[[:space:]]<<<[[:space:]]blackbox\.[[:lower:][:digit:].*:]\+;\{0,1\}/p" <<<"$source_definition")
@@ -107,6 +114,7 @@ blackbox() {
       fi
 
       source_definition=$(sed '1,2d; $d' <<<"$source_definition")
+      # shellcheck disable=SC2016
       destination_definition=$(sed "$(printf '1,2d; $d; /%s/d' "$destination_definition_source_placeholder")" <<<"$destination_definition")
 
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" "$(printf '<%s> %s' "$source_namespace_name" "$destination_namespace_name")" <<<""
@@ -155,12 +163,15 @@ blackbox() {
     typeset module_name=$1
     typeset -a module_args=("${@:2}")
 
-    shopt -os allexport && {
+    {
+      shopt -os allexport
       . /etc/environment
       shopt -ou allexport
     }
 
-    blackbox.framework.trace "${FUNCNAME[@]}" "$*" <<<"initialize"
+    {
+      blackbox.framework.trace "${FUNCNAME[@]}" "$*" <<<"initialize"
+    }
 
     if [ ! -e "$BLACKBOX_DIR" ]; then
       wget -S -O /tmp/blackbox --no-cache "https://github.com/ProblemSetters/devops-blackbox/archive/${BLACKBOX_VERSION}.zip" && {

@@ -5,7 +5,9 @@ blackbox.framework.module.abstract.score.evaluate.score() {
   function blackbox.framework.module.abstract.score.evaluate.score.calculate() {
     typeset assert_score=$1
 
-    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
 
     if [[ ! "$assert_score" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
       if [[ "$assert_score" == "-" ]]; then
@@ -21,7 +23,9 @@ blackbox.framework.module.abstract.score.evaluate.score() {
   }
 
   blackbox.framework.module.abstract.score.evaluate.score.__init() {
-    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
 
     blackbox.framework.inventory.install.file "$BLACKBOX_SCORE_EVALUATE_CACHE" </dev/null
   } && blackbox.framework.module.abstract.score.evaluate.score.__init "$@"
