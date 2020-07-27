@@ -15,7 +15,7 @@ BLACKBOX:=problemsetters/blackbox:$(shell basename $(abspath $(firstword $(MAKEF
 BLACKBOX_USER:=1000:1000
 BLACKBOX_USER_NAME:=ubuntu
 BLACKBOX_USER_HOME:=/home/$(BLACKBOX_USER_NAME)
-BLACKBOX_VERSION:=master
+BLACKBOX_VERSION:=$(shell git rev-parse --abbrev-ref HEAD)
 
 build:
 	DOCKER_BUILDKIT=1 docker build $(foreach arg, $(filter BLACKBOX%,$(sort $(.VARIABLES))),--build-arg="$(arg)=$($(arg))") --build-arg="BUILDKIT_INLINE_CACHE=1" --cache-from="$(BLACKBOX)" --progress="plain" --tag="$(BLACKBOX)" .
