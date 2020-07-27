@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
 blackbox.module.docker() {
-  typeset action_name=$1
-  typeset -a action_args=("${@:2}")
-
-  blackbox.trace.entrypoint docker.module "${FUNCNAME[0]}" "$*"
-  blackbox.module.load "docker/${action_name}.action" "${action_args[@]}"
-}; blackbox.module.docker "$@"
+  : <<< blackbox.framework.module.abstract
+}

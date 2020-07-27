@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
 blackbox.module.ansible() {
-  typeset action_name=$1
-  typeset -a action_args=("${@:2}")
-
-  blackbox.trace.entrypoint ansible.module "${FUNCNAME[0]}" "$*"
-  blackbox.module.load "ansible/${action_name}.action" "${action_args[@]}"
-}; blackbox.module.ansible "$@"
+  : <<< blackbox.framework.module.abstract
+}

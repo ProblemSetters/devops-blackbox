@@ -1,36 +1,4 @@
 #!/usr/bin/env bash
 blackbox.module.docker.score() {
-  typeset question_id=$1
-  typeset -a step_args=("${@:2}")
-
-  blackbox.trace.entrypoint score.action "${FUNCNAME[0]}" "$*"
-
-  if (( ! ${#step_args[@]} )); then
-    step_args=("")
-  fi
-
-  blackbox.module.load docker/score/provision.step "${step_args[@]}"
-  blackbox.module.load docker/score/build.step "${step_args[@]}"
-
-  blackbox.module.load docker/score/evaluate.step "${step_args[@]}" && {
-    local -a override_from=(
-      blackbox.module.docker.score.evaluate.expect.artifact.collection
-      blackbox.module.docker.score.evaluate.expect.file.exists
-      blackbox.module.docker.score.evaluate.expect.shell.debug
-      blackbox.module.docker.score.evaluate.expect.shell.failure
-      blackbox.module.docker.score.evaluate.expect.shell.stderr
-      blackbox.module.docker.score.evaluate.expect.shell.stdout
-      blackbox.module.docker.score.evaluate.expect.shell.success
-    )
-
-    for override_definition in "${override_from[@]}"; do
-      local override_to=${override_definition/module.docker.score.evaluate./}
-
-      if ( ! blackbox.flag.enabled STEP_EVALUATE ); then
-        override_definition=
-      fi
-
-      blackbox.module.override "$override_to" "$override_definition"
-    done
-  }
-}; blackbox.module.docker.score "$@"
+  : <<< blackbox.framework.module.abstract.score:action
+}

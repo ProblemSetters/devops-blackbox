@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+blackbox.framework.module.abstract.score.provision() {
+  typeset -a args=("$@")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"provision"
+  }
+
+  if ( ! blackbox.framework.flag.enabled STEP_PROVISION ); then
+    printf "skip: BLACKBOX_FLAG__STEP_PROVISION=no\n"
+
+    return
+  fi
+
+  docker ps -aq -f "name=${BLACKBOX_SPAWN}" | xargs -r docker stop >/dev/null
+  docker system prune -f --volumes
+
+  if ( grep -q '^init$' <(ps -p 1 -o comm=) ); then
+    docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --privileged --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" "problemsetters/blackbox:${BLACKBOX_MODULE_NAME}"
+  else
+    docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --privileged --volume="${BLACKBOX_DIR}:${BLACKBOX_DIR}:ro" --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" "problemsetters/blackbox:${BLACKBOX_MODULE_NAME}"
+  fi
+
+  : <<< blackbox.module.*.score.provision
+
+  if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
+    printf "BLACKBOX_PROVISION_WITH_OPTS=%s\n" "$BLACKBOX_PROVISION_WITH_OPTS"
+    docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" /bin/bash <<<"source /blackbox/blackbox &>/dev/null; ${BLACKBOX_PROVISION_WITH_OPTS}"
+  fi
+}
+

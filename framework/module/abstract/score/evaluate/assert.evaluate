@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+blackbox.framework.module.abstract.score.evaluate.assert() {
+  function blackbox.framework.module.abstract.score.evaluate.assert.false() {
+    typeset assert=$1
+    typeset score=$2
+    typeset message=$3
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    assert=$(blackbox.framework.module.abstract.score.evaluate.assert.normalize "$assert")
+    # shellcheck disable=SC2059
+    message=$(printf "${message:-%s}" "$assert")
+
+    local score=$(
+      blackbox.framework.module.abstract.score.evaluate.score.calculate "$score" &>/dev/null
+      cat <<<0
+    )
+
+    (
+      printf "\033[0;31m-- FAILURE:\033[0m %s\n" "$message"
+      printf "\033[0;37m--\033[0m\n"
+      printf "Partial Credit: %s\n" "$score"
+      printf "\033[0;37m--\033[0m\n"
+    ) | if (tput setaf &>/dev/null); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+
+    if (blackbox.framework.flag.enabled "DEBUG_MODE"); then
+      blackbox.framework.exception.raise "assert '%s' failed with message '%s'" "$assert" "$message"
+    fi
+
+    false
+  }
+
+  function blackbox.framework.module.abstract.score.evaluate.assert.normalize() {
+    typeset assert=$1
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    awk '{ printf "%s%s", EOL, $0; EOL=" "}' <(sed 's/#.*$//; /^$/d; s/^[[:space:]]\+//g' <<<"$assert")
+  }
+
+  function blackbox.framework.module.abstract.score.evaluate.assert.true() {
+    typeset assert=$1
+    typeset score=$2
+    typeset message=$3
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    assert=$(blackbox.framework.module.abstract.score.evaluate.assert.normalize "$assert")
+    # shellcheck disable=SC2059
+    message=$(printf "${message:-%s}" "$assert")
+
+    local score=$(blackbox.framework.module.abstract.score.evaluate.score.calculate "$score")
+
+    (
+      printf "\033[0;32m++ SUCCESS:\033[0m %s\n" "$message"
+      printf "\033[0;37m--\033[0m\n"
+      printf "Partial Credit: %s\n" "$score"
+      printf "\033[0;37m--\033[0m\n"
+    ) | if (tput setaf &>/dev/null); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+
+    true
+  }
+}

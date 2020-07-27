@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+blackbox.framework.exception() {
+  function blackbox.framework.exception.raise() {
+    typeset message=$1
+    typeset -a args=("${@:2}")
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    (
+      printf '\033[0;37m%s < "%s" %s\033[0m\n' "${FUNCNAME[0]}" "$message" "${args[*]}"
+      # shellcheck disable=SC2059
+      printf "\033[0;31mexception: *** %s.\033[0m\n" "$(printf "$message" "${args[@]}")"
+      printf "\033[0;33m^^\033[0m\n"
+      # shellcheck disable=SC2091
+      # shellcheck disable=SC2116
+      awk '{ printf "\033[0;33mat %s (%s:%d)\033[0m\n", $2, $3, $1 }' <(local depth=0; while $(echo caller "$depth"); do ((depth++)); done)
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+
+    kill $$
+  }
+}

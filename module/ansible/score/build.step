@@ -1,31 +1,9 @@
 #!/usr/bin/env bash
-blackbox.module.docker.score.build() {
-  typeset -a args=("$@")
+blackbox.module.ansible.score.build() {
+  : <<< blackbox.framework.module.abstract.score.build:step
 
-  blackbox.trace.entrypoint build.step "${FUNCNAME[0]}" "$*" "$(printf "BLACKBOX_FLAG__STEP_BUILD=%s" "$BLACKBOX_FLAG__STEP_BUILD")"
-
-  if ( ! blackbox.flag.enabled STEP_BUILD ); then
-    printf "\n"
-    printf "skip: BLACKBOX_FLAG__STEP_BUILD=no\n"
-
-    return
-  fi
-
-  if [ ! -f "playbook.yml" ]; then
-    blackbox.exception.raise "File 'playbook.yml' does not exist"
-  fi
-
-  printf "\n"
-
-  if ( blackbox.flag.enabled DEBUG_MODE ); then
-    ansible-playbook -v playbook.yml
-  else
-    ansible-playbook playbook.yml 2>&1 | sed "s/Partial Credit/*POSSIBLE_INJECTION*/g"
-  fi
-
-  if [ -n "$BLACKBOX_BUILD_SOLUTION_WITH_OPTS" ]; then
-    printf "\n"
-    printf "BLACKBOX_BUILD_SOLUTION_WITH_OPTS=%s\n" "$BLACKBOX_BUILD_SOLUTION_WITH_OPTS"
-    docker exec -i -w "$BLACKBOX_USER_QUESTION_DIRECTORY" "$BLACKBOX_SPAWN" /bin/bash -c "source /dev/blackbox >/dev/null; ${BLACKBOX_BUILD_SOLUTION_WITH_OPTS}"
-  fi
-}; blackbox.module.docker.score.build "$@"
+  declare build_cmd=(
+    "ansible-playbook %s"
+    "playbook.yml"
+  )
+}
