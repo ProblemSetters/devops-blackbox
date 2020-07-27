@@ -12,8 +12,11 @@ blackbox.framework.module.abstract.score.provision() {
     return
   fi
 
-  docker ps -aq -f "name=${BLACKBOX_SPAWN}" | xargs -r docker stop >/dev/null
-  docker system prune -f --volumes
+  docker ps -aq | xargs -r docker rm -f >/dev/null
+
+  if (blackbox.framework.flag.enabled "DEBUG_MODE"); then
+    docker system prune -af --volumes
+  fi
 
   if ( grep -q '^init$' <(ps -p 1 -o comm=) ); then
     docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --privileged --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" "problemsetters/blackbox:${BLACKBOX_MODULE_NAME}"
