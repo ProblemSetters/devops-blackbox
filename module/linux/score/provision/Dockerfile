@@ -1,0 +1,1 @@
+FROM problemsetters/blackbox:abstract

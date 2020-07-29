@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+blackbox.module.linux.score.evaluate() {
+  : <<< blackbox.framework.module.abstract.score.evaluate:step
+}
