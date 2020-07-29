@@ -18,7 +18,7 @@ BLACKBOX_USER_HOME:=/home/$(BLACKBOX_USER_NAME)
 BLACKBOX_VERSION:=$(shell git rev-parse --abbrev-ref HEAD)
 
 build:
-	DOCKER_BUILDKIT=1 docker build $(foreach arg, $(filter BLACKBOX%,$(sort $(.VARIABLES))),--build-arg="$(arg)=$($(arg))") --build-arg="BUILDKIT_INLINE_CACHE=1" --cache-from="$(BLACKBOX)" --progress="plain" --tag="$(BLACKBOX)" .
+	DOCKER_BUILDKIT=1 docker build $(foreach arg, $(filter BLACKBOX%,$(sort $(.VARIABLES))),--build-arg="$(arg)=$($(arg))") --progress="plain" --tag="$(BLACKBOX)" .
 
 run:
 	docker run -it --rm $(BLACKBOX)

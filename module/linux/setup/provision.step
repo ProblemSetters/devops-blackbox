@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+blackbox.module.linux.setup.provision() {
+  : <<< blackbox.framework.module.abstract.setup.provision:step
+
+  blackbox.framework.inventory.install.file script.sh </blackbox/module/linux/setup/provision/rootfs/home/%/%/script.sh
+}

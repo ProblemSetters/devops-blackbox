@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+blackbox.module.linux.score.provision() {
+  : <<< blackbox.framework.module.abstract.score.provision:step
+}
+
