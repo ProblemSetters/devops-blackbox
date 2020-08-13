@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+blackbox.module.ansible.check.build() {
+  : <<< blackbox.framework.module.abstract.check.build:step
+
+  declare build_cmd=(
+    "ansible-playbook %s"
+    "playbook.yml"
+  )
+}

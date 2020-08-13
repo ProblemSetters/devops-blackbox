@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+blackbox.module.ansible.check.evaluate() {
+  : <<< blackbox.framework.module.abstract.check.evaluate:step
+}

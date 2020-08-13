@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+blackbox.framework.module.abstract.check.build() {
+  typeset -a args=("$@")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"build"
+  }
+
+  if ( ! blackbox.framework.flag.enabled STEP_BUILD ); then
+    printf "skip: BLACKBOX_FLAG__STEP_BUILD=no\n"
+
+    return
+  fi
+
+  declare build_cmd=(
+    "source %s"
+    "script.sh"
+  )
+
+  : <<< blackbox.module.*.check.build
+
+  if [ ! -e "${build_cmd[1]}" ]; then
+    blackbox.framework.exception.raise "solution stub '%s' does not exists" "${build_cmd[1]}"
+  fi
+
+  (
+    # shellcheck disable=SC2059
+    docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; $(printf "${build_cmd[0]}" "${build_cmd[1]}")"
+  ) | sed "s/\x1b\[[0-9;]*m//g; s/Partial Credit/***/g"
+
+  if [ -n "$BLACKBOX_BUILD_WITH_OPTS" ]; then
+    printf "BLACKBOX_BUILD_WITH_OPTS=%s\n" "$BLACKBOX_BUILD_WITH_OPTS"
+    docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" <<<"source /blackbox/blackbox &>/dev/null; ${BLACKBOX_BUILD_WITH_OPTS}"
+  fi
+}

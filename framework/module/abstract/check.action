@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+blackbox.framework.module.abstract.check() {
+  typeset question_id=$1
+  typeset -a step_args=("${@:2}")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  if [ ! -e "/blackbox/module/${BLACKBOX_MODULE_NAME}/check.action" ]; then
+    blackbox.framework.exception.raise "action '%s:check' not found" "$BLACKBOX_MODULE_NAME"
+  fi
+
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.provision:step" "${step_args[@]}"
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.build:step" "${step_args[@]}"
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate:step" "${step_args[@]}"
+
+  : <<< blackbox.module.*.check
+}

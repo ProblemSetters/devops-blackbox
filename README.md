@@ -12,7 +12,7 @@ for the concrete technology (for example "ansible", "docker" etc).
 Each module contains two actions:
 - setup: this action triggers on "setup" flow of hackerrank and using to
   prepare a sandbox for the person, who makes a test
-- score: this action triggers on "score" flow of hackerrank and using to
+- check: this action triggers on "check" flow of hackerrank and using to
   evaluate "closed" test, calculate score and make the result
 
 ## Setup action
@@ -80,10 +80,10 @@ BLACKBOX_PROVISION_WITH_OPTS() {
 exit 0
 ```
 
-## Score action
+## Check action
 
 This action contains the next steps:
-- provision: this step uses to make a provision within the score action,
+- provision: this step uses to make a provision within the check action,
   usually it installs the remains of technology stack to perform some
   preparation tasks
 - build: this step uses to:
@@ -115,7 +115,7 @@ BLACKBOX_BUILD_WITH_OPTS() {
 }
 ```
 
-### Example of usage (score.sh)
+### Example of usage (check.sh)
 
 ```
 #!/usr/bin/env bash
@@ -135,7 +135,7 @@ BLACKBOX_BUILD_WITH_OPTS() {
   return
 }
 
-. /blackbox/blackbox MODULE_NAME score "QUESTION_GIT_REPOSITORY_NAME"
+. /blackbox/blackbox MODULE_NAME check "QUESTION_GIT_REPOSITORY_NAME"
 
 :'
   Gathers an artifacts list to collection, each of artifact should be the valid linux command, for example: whoami
@@ -220,11 +220,11 @@ GNU make is using as orchestrator and launcher to provide an ability to work on 
 
 Possible targets are:
 - debug: meta-target, adds useful debug information to the flow output
-- all: alias for "uninstall install setup solution score", usually this is the targets chain is using to full-cycle of question development
+- all: alias for "uninstall install setup solve check", usually this is the targets chain is using to full-cycle of question development
 - install: creates a question docker-based sandbox (equals to the hackerrank question sandbox), dedicated to particular question (one question = one sandbox)
 - setup: executes "setup" action within recently created sandbox
-- solution: copies all the contents from ".solution" folder to the question directory
-- score: executes "score" action within sandbox
+- solve: solves the task
+- check: executes "check" action within sandbox
 - shell: opens bash shell to the question sandbox
 - shell\:spawn: opens bash shell to the question sandbox spawn (where all the evaluation does)
 - uninstall: removes the question sandbox

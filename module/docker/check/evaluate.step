@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+blackbox.module.docker.check.evaluate() {
+  : <<< blackbox.framework.module.abstract.check.evaluate:step
+}

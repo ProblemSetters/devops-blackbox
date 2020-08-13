@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-blackbox.module.linux.score() {
-  : <<< blackbox.framework.module.abstract.score:action
-}
