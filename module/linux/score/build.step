@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-blackbox.module.linux.score.build() {
-  : <<< blackbox.framework.module.abstract.score.build:step
-}

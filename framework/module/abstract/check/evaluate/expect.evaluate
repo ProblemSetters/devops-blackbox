@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+blackbox.framework.module.abstract.check.evaluate.expect() {
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  blackbox.framework.import blackbox.framework.module.abstract.check.evaluate.expect.artifact
+  blackbox.framework.import blackbox.framework.module.abstract.check.evaluate.expect.file
+  blackbox.framework.import blackbox.framework.module.abstract.check.evaluate.expect.shell
+}

@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+blackbox.framework.module.abstract.check.evaluate() {
+  typeset -a args=("$@")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate"
+  }
+
+  blackbox.framework.import blackbox.framework.module.abstract.check.evaluate.assert
+  blackbox.framework.import blackbox.framework.module.abstract.check.evaluate.expect
+  blackbox.framework.import blackbox.framework.module.abstract.check.evaluate.score
+
+  local -a from_namespace=(
+    blackbox.framework.module.abstract.check.evaluate.expect.artifact.collection
+    blackbox.framework.module.abstract.check.evaluate.expect.file.exists
+    blackbox.framework.module.abstract.check.evaluate.expect.shell.debug
+    blackbox.framework.module.abstract.check.evaluate.expect.shell.failure
+    blackbox.framework.module.abstract.check.evaluate.expect.shell.stderr
+    blackbox.framework.module.abstract.check.evaluate.expect.shell.stdout
+    blackbox.framework.module.abstract.check.evaluate.expect.shell.success
+  )
+
+  if ( blackbox.framework.flag.enabled STEP_EVALUATE ); then
+    for namespace in "${from_namespace[@]}"; do
+      local definition=$(declare -f "$namespace")
+
+      eval "$(printf "function %s %s" "${namespace/framework.module.abstract.check.evaluate./}" "${definition#*"()"}")"
+    done
+  else
+    printf "skip: BLACKBOX_FLAG__STEP_EVALUATE=no\n"
+
+    for namespace in "${from_namespace[@]}"; do
+      eval "$(printf "function %s (){ :; }" "${namespace/framework.module.abstract.check.evaluate./}")"
+    done
+  fi
+
+  : <<< blackbox.module.*.check.evaluate
+}

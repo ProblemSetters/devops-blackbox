@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+blackbox.framework.module.abstract.check.evaluate.score() {
+  export BLACKBOX_SCORE_EVALUATE_CACHE="/tmp/evaluate.cache-${RANDOM}"
+
+  function blackbox.framework.module.abstract.check.evaluate.score.calculate() {
+    typeset assert_score=$1
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    if [[ ! "$assert_score" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+      if [[ "$assert_score" == "-" ]]; then
+        assert_score=0
+      else
+        local expect_total=$(awk "/^cat <<ASSERT/ { asserts_count++ } END { print asserts_count }" <(sed "$(printf '/^\. \/blackbox\/blackbox %s check "%s"$/,/^exit 0$/!d' "$BLACKBOX_MODULE_NAME" "$BLACKBOX_QUESTION_ID")" "$BLACKBOX_SCENARIO_PATH"))
+
+        assert_score=$(awk -v expect_total="$expect_total" '{ current_score += $1 } END { expect_current=NR; print int((100 - current_score) / (expect_total - expect_current) + 0.5) }' "$BLACKBOX_SCORE_EVALUATE_CACHE")
+      fi
+    fi
+
+    tee -a "$BLACKBOX_SCORE_EVALUATE_CACHE" <<<"$assert_score"
+  }
+
+  blackbox.framework.module.abstract.check.evaluate.score.__init() {
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    blackbox.framework.inventory.install.file "$BLACKBOX_SCORE_EVALUATE_CACHE" </dev/null
+  } && blackbox.framework.module.abstract.check.evaluate.score.__init "$@"
+}

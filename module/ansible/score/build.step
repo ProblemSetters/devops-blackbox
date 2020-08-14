@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-blackbox.module.ansible.score.build() {
-  : <<< blackbox.framework.module.abstract.score.build:step
-
-  declare build_cmd=(
-    "ansible-playbook %s"
-    "playbook.yml"
-  )
-}
