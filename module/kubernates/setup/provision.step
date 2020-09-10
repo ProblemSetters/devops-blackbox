@@ -2,7 +2,7 @@
 blackbox.module.kubernates.setup.provision() {
   : <<< blackbox.framework.module.abstract.setup.provision:step
 
-#  blackbox.framework.inventory.provision kubernates && {
-#    blackbox.framework.inventory.install.file script.sh </blackbox/module/kubernates/setup/provision/rootfs/home/%/%/script.sh
-#  }
+  blackbox.framework.inventory.provision k3s && {
+    blackbox.framework.inventory.install.file script.sh </blackbox/module/kubernates/setup/provision/rootfs/home/%/%/script.sh
+  }
 }

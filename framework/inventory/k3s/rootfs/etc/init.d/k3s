@@ -1,0 +1,108 @@
+#!/bin/sh
+set -e
+
+### BEGIN INIT INFO
+# Provides:           k3s
+# Required-Start:     $syslog $remote_fs
+# Required-Stop:      $syslog $remote_fs
+# Default-Start:      2 3 4 5
+# Default-Stop:       0 1 6
+# Short-Description:  Lightweight Kubernetes.
+# Description:
+#  Lightweight Kubernetes.
+### END INIT INFO
+
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+
+BASE=k3s
+
+K3S=/usr/local/bin/k3s
+K3S_PIDFILE=/var/run/$BASE.pid
+K3S_LOGFILE=/var/log/$BASE.log
+K3S_OPTS="server --docker --node-name=$(hostname) --tls-san=$(hostname) --log=$K3S_LOGFILE"
+K3S_DESC="k3s"
+
+. /lib/lsb/init-functions
+
+if [ ! -x "$K3S" ]; then
+  log_failure_msg "${K3S} not present or not executable"
+
+  exit 1
+fi
+
+# shellcheck disable=SC2120
+check_init() {
+  if [ -x /sbin/initctl ] && /sbin/initctl version 2>/dev/null | grep -q upstart; then
+    log_failure_msg "${K3S_DESC} is managed via upstart, try using service $BASE $1"
+
+    exit 1
+  fi
+}
+
+fail_unless_root() {
+  if [ "$(id -u)" != '0' ]; then
+    log_failure_msg "${K3S_DESC} must be run as root"
+
+    exit 1
+  fi
+}
+
+case "$1" in
+  start)
+    check_init
+    fail_unless_root
+    touch "$K3S_LOGFILE"
+    ulimit -n 1048576
+
+    if [ "$BASH" ]; then
+      ulimit -u unlimited
+    else
+      ulimit -p unlimited
+    fi
+
+    log_begin_msg "Starting ${K3S_DESC}: ${BASE}"
+    start-stop-daemon --start --background \
+      --no-close \
+      --exec "$K3S" \
+      --pidfile "$K3S_PIDFILE" \
+      --make-pidfile \
+      -- $K3S_OPTS >>"$K3S_LOGFILE" 2>&1
+    log_end_msg $?
+    ;;
+
+  stop)
+    check_init
+    fail_unless_root
+    if [ -f "$DOCKER_SSD_PIDFILE" ]; then
+      log_begin_msg "Stopping $DOCKER_DESC: $BASE"
+      start-stop-daemon --stop --pidfile "$DOCKER_SSD_PIDFILE" --retry 10
+      log_end_msg $?
+    else
+      log_warning_msg "Docker already stopped - file $DOCKER_SSD_PIDFILE not found."
+    fi
+    ;;
+
+  restart)
+    check_init
+    fail_unless_root
+    k3s_pid=$(cat "$K3S_PIDFILE" 2>/dev/null)
+    [ -n "$k3s_pid" ] && ps -p "$k3s_pid" >/dev/null 2>&1 && $0 stop
+    $0 start
+    ;;
+
+  force-reload)
+    check_init
+    fail_unless_root
+    $0 restart
+    ;;
+
+  status)
+    check_init
+    status_of_proc -p "$K3S_PIDFILE" "$K3S" "$K3S_DESC"
+    ;;
+
+  *)
+    echo "Usage: service k3s {start|stop|restart|status}"
+    exit 1
+    ;;
+esac
