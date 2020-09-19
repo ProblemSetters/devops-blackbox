@@ -29,9 +29,7 @@ blackbox.framework.inventory.k3s() {
     cp /blackbox/framework/inventory/k3s/rootfs/usr/local/bin/kubectl /usr/local/bin/ && {
       chmod +x /usr/local/bin/kubectl
     }
-    update-rc.d k3s defaults && {
-      service k3s start
-    }
+    update-rc.d k3s defaults
 
     if (( ${#with_packages[@]} )); then
       dpkg-query -W "${with_packages[@]}" 2>&1
