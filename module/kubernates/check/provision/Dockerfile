@@ -7,7 +7,7 @@ RUN source \
         \
         &>/dev/null; \
     blackbox.framework.inventory.provision \
-      kubernates \
+      k3s \
     && \
     rm \
       -rf \

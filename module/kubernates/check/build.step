@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
 blackbox.module.kubernates.check.build() {
   : <<< blackbox.framework.module.abstract.check.build:step
-
-  declare build_cmd=(
-    "kubernates-playbook %s"
-    "playbook.yml"
-  )
 }
