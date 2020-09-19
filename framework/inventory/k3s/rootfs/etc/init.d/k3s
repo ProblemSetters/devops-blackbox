@@ -30,15 +30,6 @@ if [ ! -x "$K3S" ]; then
   exit 1
 fi
 
-# shellcheck disable=SC2120
-check_init() {
-  if [ -x /sbin/initctl ] && /sbin/initctl version 2>/dev/null | grep -q upstart; then
-    log_failure_msg "${K3S_DESC} is managed via upstart, try using service $BASE $1"
-
-    exit 1
-  fi
-}
-
 fail_unless_root() {
   if [ "$(id -u)" != '0' ]; then
     log_failure_msg "${K3S_DESC} must be run as root"
@@ -49,7 +40,6 @@ fail_unless_root() {
 
 case "$1" in
   start)
-    check_init
     fail_unless_root
     touch "$K3S_LOGFILE"
     ulimit -n 1048576
@@ -71,19 +61,17 @@ case "$1" in
     ;;
 
   stop)
-    check_init
     fail_unless_root
     if [ -f "$K3S_PIDFILE" ]; then
-      log_begin_msg "Stopping $DOCKER_DESC: $BASE"
-      start-stop-daemon --stop --pidfile "$K3S_PIDFILE" --retry 10
+      log_begin_msg "Stopping ${K3S_DESC}: ${BASE}"
+      start-stop-daemon --stop --pidfile "$K3S_PIDFILE" --remove-pidfile --retry 10
       log_end_msg $?
     else
-      log_warning_msg "Docker already stopped - file $K3S_PIDFILE not found."
+      log_warning_msg "K3S already stopped - file ${K3S_PIDFILE} not found."
     fi
     ;;
 
   restart)
-    check_init
     fail_unless_root
     k3s_pid=$(cat "$K3S_PIDFILE" 2>/dev/null)
     [ -n "$k3s_pid" ] && ps -p "$k3s_pid" >/dev/null 2>&1 && $0 stop
@@ -91,13 +79,11 @@ case "$1" in
     ;;
 
   force-reload)
-    check_init
     fail_unless_root
     $0 restart
     ;;
 
   status)
-    check_init
     status_of_proc -p "$K3S_PIDFILE" "$K3S" "$K3S_DESC"
     ;;
 
