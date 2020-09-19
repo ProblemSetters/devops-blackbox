@@ -3,6 +3,7 @@ blackbox.module.kubernates.check.provision() {
   : <<< blackbox.framework.module.abstract.check.provision:step
 
   docker exec -i "$BLACKBOX_SPAWN" service docker start
-  docker exec -i "$BLACKBOX_SPAWN" service k3s start
+  docker exec -i "$BLACKBOX_SPAWN" service k3s start && {
+    sleep 30 # TODO: implement healthcheck
+  }
 }
-
