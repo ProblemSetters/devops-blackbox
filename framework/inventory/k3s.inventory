@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+blackbox.framework.inventory.k3s() {
+  typeset package_name=$1
+  typeset -a with_packages=("${@:2}")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  sed "s/\x1b\[[0-9;]*m//g" <(dpkg-query -W "$package_name" "${with_packages[@]}" 2>&1)
+
+  if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
+    false
+
+    return
+  fi
+
+  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
+    apt-get update
+  fi
+
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common wget && {
+    wget -S -P /usr/local/bin/ "https://github.com/rancher/k3s/releases/download/v1.18.9%2Bk3s1/k3s" && {
+      chmod +x /usr/local/bin/k3s
+    }
+    cp /blackbox/framework/inventory/k3s/rootfs/etc/init.d/k3s /etc/init.d && {
+      chmod +x /etc/init.d/k3s
+    }
+    cp /blackbox/framework/inventory/k3s/rootfs/usr/local/bin/kubectl /usr/local/bin/ && {
+      chmod +x /usr/local/bin/kubectl
+    }
+    update-rc.d k3s defaults
+
+    if (( ${#with_packages[@]} )); then
+      dpkg-query -W "${with_packages[@]}" 2>&1
+
+      if ( dpkg-query -L "${with_packages[@]}" >/dev/null 2>&1); then
+        return
+      fi
+
+      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${with_packages[@]}"
+    fi
+  }
+}
