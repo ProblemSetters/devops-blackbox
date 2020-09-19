@@ -51,7 +51,7 @@ case "$1" in
     fi
 
     log_begin_msg "Starting ${K3S_DESC}: ${BASE}"
-    start-stop-daemon --start --exec "$K3S" --pidfile "$K3S_PIDFILE" --make-pidfile -- $K3S_OPTS >>"$K3S_LOGFILE" 2>&1
+    start-stop-daemon --start --background --no-close --exec "$K3S" --pidfile "$K3S_PIDFILE" --make-pidfile -- $K3S_OPTS >>"$K3S_LOGFILE" 2>&1
     log_end_msg $?
     ;;
 
