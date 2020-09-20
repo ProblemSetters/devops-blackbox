@@ -3,7 +3,9 @@ blackbox.module.kubernates.setup.provision() {
   : <<< blackbox.framework.module.abstract.setup.provision:step
 
   blackbox.framework.inventory.provision k3s && {
-    service k3s start
+    service k3s start && {
+      sleep 30 # TODO: implement healthcheck
+    }
   }
 
   blackbox.framework.inventory.install.file script.sh </blackbox/module/kubernates/setup/provision/rootfs/home/%/%/script.sh
