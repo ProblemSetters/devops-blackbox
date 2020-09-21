@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-blackbox.module.kubernates.check.build() {
+blackbox.module.kubernetes.check.build() {
   : <<< blackbox.framework.module.abstract.check.build:step
 }

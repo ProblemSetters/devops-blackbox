@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-blackbox.module.kubernates.check.provision() {
+blackbox.module.kubernetes.check.provision() {
   : <<< blackbox.framework.module.abstract.check.provision:step
 
   docker exec -i "$BLACKBOX_SPAWN" service docker start

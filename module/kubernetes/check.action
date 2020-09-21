@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-blackbox.module.kubernates.check() {
+blackbox.module.kubernetes.check() {
   : <<< blackbox.framework.module.abstract.check:action
 }

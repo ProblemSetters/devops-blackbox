@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-blackbox.module.kubernates() {
+blackbox.module.kubernetes() {
   : <<< blackbox.framework.module.abstract
 }
