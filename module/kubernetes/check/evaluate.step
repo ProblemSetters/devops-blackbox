@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-blackbox.module.kubernates.check.evaluate() {
+blackbox.module.kubernetes.check.evaluate() {
   : <<< blackbox.framework.module.abstract.check.evaluate:step
 }
