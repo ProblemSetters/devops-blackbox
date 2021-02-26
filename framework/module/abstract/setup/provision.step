@@ -17,6 +17,8 @@ blackbox.framework.module.abstract.setup.provision() {
     service docker start
   }
 
+  blackbox.framework.inventory.install.file /usr/local/bin/solve 0 0 0755 </blackbox/framework/module/abstract/setup/provision/rootfs/usr/local/bin/solve
+
   : <<< blackbox.module.*.setup.provision
 
   if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
