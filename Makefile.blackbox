@@ -26,7 +26,7 @@ endif
 
 BLACKBOX_HOST:=blackbox-$(shell basename $(PWD) | cut -c 1-36)
 BLACKBOX_SPAWN:=blackbox-spawn-$(shell basename $(PWD) | cut -c 1-36)
-BLACKBOX_USER:=$(shell id -u):$(shell id -g)
+BLACKBOX_USER?=$(shell id -u):$(shell id -g)
 BLACKBOX_USER_NAME:=ubuntu
 BLACKBOX_USER_HOME:=/home/$(BLACKBOX_USER_NAME)
 BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_HOME)/$(shell basename $(call blackbox/pwd))

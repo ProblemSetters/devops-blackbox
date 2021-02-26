@@ -5,12 +5,13 @@ blackbox.framework.inventory() {
       typeset destination=$1
       typeset owner=${2:-$(cut -d ":" -f 1 <<<"$BLACKBOX_USER")}
       typeset group=${3:-$(cut -d ":" -f 2 <<<"$BLACKBOX_USER"))}
+      typeset mode=${4:-0775}
 
       {
         blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
       }
 
-      install -o "$owner" -g "$group" -m 0775 -d "$destination"
+      install -o "$owner" -g "$group" -m "$mode" -d "$destination"
     }
 
     function blackbox.framework.inventory.install.file() {
@@ -19,6 +20,7 @@ blackbox.framework.inventory() {
       typeset destination=$1
       typeset owner=${2:-$(cut -d ":" -f 1 <<<"$BLACKBOX_USER")}
       typeset group=${3:-$(cut -d ":" -f 2 <<<"$BLACKBOX_USER")}
+      typeset mode=${4:-0664}
 
       {
         blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
@@ -26,9 +28,9 @@ blackbox.framework.inventory() {
 
       install -o "$owner" -g "$group" -m 0775 -d "$(dirname "$destination")" && {
         if [ -n "$source" ]; then
-          install -o "$owner" -g "$group" -m 0664 /dev/stdin "$destination" <<<"$source"
+          install -o "$owner" -g "$group" -m "$mode" /dev/stdin "$destination" <<<"$source"
         else
-          install -o "$owner" -g "$group" -m 0664 /dev/null "$destination"
+          install -o "$owner" -g "$group" -m "$mode" /dev/null "$destination"
         fi
       }
     }
