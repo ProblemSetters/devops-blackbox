@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 blackbox.framework.module.abstract.check.evaluate.expect.artifact() {
-  export BLACKBOX_ARTIFACT_STORE_CACHE_DIR="/var/save"
+  export BLACKBOX_ARTIFACT_STORE_CACHE_DIR="/var/save/${BLACKBOX_QUESTION_ID}"
 
   function blackbox.framework.module.abstract.check.evaluate.expect.artifact.collection() {
     declare assert=$(</dev/stdin)
