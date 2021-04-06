@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+blackbox.module.terraform.setup.provision() {
+  : <<< blackbox.framework.module.abstract.setup.provision:step
+
+  blackbox.framework.inventory.provision terraform
+
+  blackbox.framework.inventory.install.file main.tf </blackbox/module/terraform/setup/provision/rootfs/home/%/%/main.tf
+  blackbox.framework.inventory.install.file script.sh </blackbox/module/terraform/setup/provision/rootfs/home/%/%/script.sh
+}

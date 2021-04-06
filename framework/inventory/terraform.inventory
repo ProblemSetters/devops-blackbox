@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-blackbox.framework.inventory.docker-ce() {
+blackbox.framework.inventory.terraform() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")
 
@@ -20,10 +20,8 @@ blackbox.framework.inventory.docker-ce() {
   fi
 
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget && {
-    wget -qO- https://download.docker.com/linux/ubuntu/gpg | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=true apt-key add -
-    add-apt-repository -y "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package_name" "${with_packages[@]}" && {
-      install -m 0644 -D /dev/stdin /etc/docker/daemon.json <<<'{ "storage-driver": "vfs" }'
-    }
+    wget -qO- https://apt.releases.hashicorp.com/gpg | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=true apt-key add -
+    add-apt-repository -y "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package_name" "${with_packages[@]}"
   }
 }
