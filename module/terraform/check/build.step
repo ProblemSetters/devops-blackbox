@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+blackbox.module.terraform.check.build() {
+  : <<< blackbox.framework.module.abstract.check.build:step
+}

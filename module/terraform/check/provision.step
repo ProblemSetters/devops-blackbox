@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+blackbox.module.terraform.check.provision() {
+  : <<< blackbox.framework.module.abstract.check.provision:step
+}
