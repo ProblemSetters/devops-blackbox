@@ -18,16 +18,18 @@ blackbox.framework.module.abstract.check.evaluate.assert() {
     message=$(printf "${message:-%s}" "${normalized_assert##* }")
 
     (
+      local output=$(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}")
+
       printf "\033[0;31m-- FAILURE:\033[0m %s\n" "$message"
       printf "\033[0;37m%s\033[0m\n" "$normalized_assert"
       printf "\033[0;37m--\033[0m\n"
-      printf "\033[0;37m%s\033[0m\n" "$(cat -nv <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}"))"
+      printf "\033[0;37m%s\033[0m\n" "$(cat -nv <<<"${output:-<null>}")";
       printf "\033[0;37m--\033[0m\n"
       printf "Partial Credit: %s\n" "$score"
       printf "\033[0;37m--\033[0m\n"
-    ) | if (tput setaf &>/dev/null); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
-    if (blackbox.framework.flag.enabled "DEBUG_MODE"); then
+    if ( blackbox.framework.flag.enabled "DEBUG_MODE" ); then
       blackbox.framework.exception.raise "assert '%s' failed with message '%s'" "$normalized_assert" "$message"
     fi
 
@@ -59,14 +61,16 @@ blackbox.framework.module.abstract.check.evaluate.assert() {
     message=$(printf "${message:-%s}" "${normalized_assert##* }")
 
     (
+      local output=$(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}")
+
       printf "\033[0;32m++ SUCCESS:\033[0m %s\n" "$message"
       printf "\033[0;37m%s\033[0m\n" "$normalized_assert"
       printf "\033[0;37m--\033[0m\n"
-      printf "\033[0;37m%s\033[0m\n" "$(cat -nv <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}"))"
+      printf "\033[0;37m%s\033[0m\n" "$(cat -nv <<<"${output:-<null>}")";
       printf "\033[0;37m--\033[0m\n"
       printf "Partial Credit: %s\n" "$score"
       printf "\033[0;37m--\033[0m\n"
-    ) | if (tput setaf &>/dev/null); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
     true
   }

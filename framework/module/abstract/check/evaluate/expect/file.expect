@@ -14,7 +14,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.file() {
 
     assert=$(printf "test -f %s" "$assert")
 
-    if ( docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}"); then
+    if ( docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}" ); then
       # shellcheck disable=SC2059
       blackbox.framework.module.abstract.check.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else

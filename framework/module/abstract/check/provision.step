@@ -14,7 +14,7 @@ blackbox.framework.module.abstract.check.provision() {
 
   docker ps -aq | xargs -r docker rm -f >/dev/null
 
-  if (blackbox.framework.flag.enabled "DEBUG_MODE"); then
+  if ( blackbox.framework.flag.enabled "DEBUG_MODE" ); then
     docker system prune -af --volumes
   fi
 
@@ -31,4 +31,3 @@ blackbox.framework.module.abstract.check.provision() {
     docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" <<<"source /blackbox/blackbox &>/dev/null; ${BLACKBOX_PROVISION_WITH_OPTS}"
   fi
 }
-
