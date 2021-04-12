@@ -34,7 +34,7 @@ blackbox.framework.inventory.k3s() {
     if (( ${#with_packages[@]} )); then
       dpkg-query -W "${with_packages[@]}" 2>&1
 
-      if ( dpkg-query -L "${with_packages[@]}" >/dev/null 2>&1); then
+      if ( dpkg-query -L "${with_packages[@]}" &>/dev/null ); then
         return
       fi
 

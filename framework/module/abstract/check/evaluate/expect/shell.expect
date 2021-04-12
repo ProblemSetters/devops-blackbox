@@ -12,7 +12,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
       printf "\033[0;37m--\033[0m\n"
       printf "\033[0;38m%s\033[0m\n" "$(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}")"
       printf "\033[0;37m--\033[0m\n"
-    ) | if (tput setaf &>/dev/null); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
     kill $$
   }
@@ -29,7 +29,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:expect"
     }
 
-    if ( ! (docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}")); then
+    if ( ! (docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}") ); then
       # shellcheck disable=SC2059
       blackbox.framework.module.abstract.check.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else
@@ -50,7 +50,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:expect"
     }
 
-    if (grep -q . <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 1>/dev/null <<<"source /blackbox/blackbox &>/dev/null" <<<"$assert")); then
+    if ( grep -q . <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 1>/dev/null <<<"source /blackbox/blackbox &>/dev/null" <<<"$assert") ); then
       # shellcheck disable=SC2059
       blackbox.framework.module.abstract.check.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else
@@ -71,7 +71,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:expect"
     }
 
-    if (grep -q . <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}")); then
+    if ( grep -q . <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}") ); then
       # shellcheck disable=SC2059
       blackbox.framework.module.abstract.check.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else
@@ -92,7 +92,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:expect"
     }
 
-    if (docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}"); then
+    if ( docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}" ); then
       # shellcheck disable=SC2059
       blackbox.framework.module.abstract.check.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else

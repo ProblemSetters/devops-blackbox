@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 blackbox.framework.module.abstract.check.evaluate.expect.artifact() {
+  export BLACKBOX_ARTIFACT_CONTENT_DISPLAY_LINES=256
   export BLACKBOX_ARTIFACT_STORE_CACHE_DIR="/var/save/${BLACKBOX_QUESTION_ID}"
 
   function blackbox.framework.module.abstract.check.evaluate.expect.artifact.collection() {
@@ -15,15 +16,26 @@ blackbox.framework.module.abstract.check.evaluate.expect.artifact() {
       local store_cache="${BLACKBOX_ARTIFACT_STORE_CACHE_DIR}/${collection[$artifact]//[^A-Za-z0-9]/_}.artifact"
 
       (
-        printf "\033[0;35m** ARTIFACT:\033[0m %s \033[0;37m> %s\033[0m\n" "${collection[$artifact]}" "$store_cache"
+        # shellcheck disable=SC2155
+        local content="$(cat -nv <(tee "$store_cache" < <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${collection[$artifact]}")))"
+
+        printf "\033[0;35m** ARTIFACT:\033[0m %s \033[0;37m> %s (%d bytes)\033[0m\n" "${collection[$artifact]}" "$store_cache" "$(wc -c < "$store_cache")"
         printf "\033[0;37m--\033[0m\n"
-        printf "\033[0;38m%s\033[0m\n" "$(tee "$store_cache" < <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${collection[$artifact]}"))"
+
+        if [ "$(wc -l <<<"$content")" -gt "$BLACKBOX_ARTIFACT_CONTENT_DISPLAY_LINES" ]; then
+          printf "\033[0;38m%s\n" "$(head -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_ARTIFACT_CONTENT_DISPLAY_LINES")" <<<"$content")"
+          printf "\033[0;37m%s        ...\033[0m\n"
+          printf "\033[0;38m%s\033[0m\n" "$(tail -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_ARTIFACT_CONTENT_DISPLAY_LINES")" <<<"$content")"
+        else
+          printf "\033[0;38m%s\033[0m\n" "$content";
+        fi
+
         printf "\033[0;37m--\033[0m\n"
 
         if [ "$artifact" -lt "$((${#collection[@]} - 1))" ]; then
           printf "\n"
         fi
-      ) | if (tput setaf &>/dev/null); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+      ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
       sed -i "s/\x1b\[[0-9;]*m//g" "$store_cache"
     done
