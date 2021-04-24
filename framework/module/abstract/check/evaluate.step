@@ -27,7 +27,10 @@ blackbox.framework.module.abstract.check.evaluate() {
       eval "$(printf "function %s %s" "${namespace/framework.module.abstract.check.evaluate./}" "${definition#*"()"}")"
     done
   else
-    printf "skip: BLACKBOX_FLAG__STEP_EVALUATE=no\n"
+    printf "\033[0;36m** BLACKBOX_FLAG__STEP_EVALUATE:\033[0m %s\n" "$BLACKBOX_FLAG__STEP_EVALUATE"
+    printf "\033[0;37m--\033[0m\n"
+    cat -n <(printf "BLACKBOX_FLAG__STEP_EVALUATE=%s\n" "$BLACKBOX_FLAG__STEP_EVALUATE")
+    printf "\033[0;37m--\033[0m\n"
 
     for namespace in "${from_namespace[@]}"; do
       eval "$(printf "function %s (){ :; }" "${namespace/framework.module.abstract.check.evaluate./}")"

@@ -11,8 +11,11 @@ blackbox.framework.module.abstract.check() {
     blackbox.framework.exception.raise "action '%s:check' not found" "$BLACKBOX_MODULE_NAME"
   fi
 
+  printf "\n"
   blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.provision:step" "${step_args[@]}"
+  printf "\n"
   blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.build:step" "${step_args[@]}"
+  printf "\n"
   blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate:step" "${step_args[@]}"
 
   : <<< blackbox.module.*.check

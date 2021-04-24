@@ -16,6 +16,10 @@ blackbox() {
   export BLACKBOX_PROVISION_WITH_OPTS=$(sed "s/\({\);/\1/g; s/\(;\)\{2\}/\1/g" <(awk 'ORS="; "' <(sed '1,2d; $d; s/[[:space:]]$//g; s/^[[:space:]]\+//g' <(declare -f BLACKBOX_PROVISION_WITH_OPTS))))
   export BLACKBOX_BUILD_WITH_OPTS=$(sed "s/\({\);/\1/g; s/\(;\)\{2\}/\1/g" <(awk 'ORS="; "' <(sed '1,2d; $d; s/[[:space:]]$//g; s/^[[:space:]]\+//g' <(declare -f BLACKBOX_BUILD_WITH_OPTS))))
 
+  export BLACKBOX_STORAGE_DIR="/var/save/${3}"
+  export BLACKBOX_BUILD_LOG="${BLACKBOX_STORAGE_DIR}/build.log"
+  export BLACKBOX_BUILD_STREAM_DISPLAY_LINES=255
+
   # shellcheck disable=SC2034
   typeset -gx BLACKBOX_SCENARIO_PATH=$(realpath "$0")
   # shellcheck disable=SC2034
@@ -139,7 +143,7 @@ blackbox() {
 
       (
         if [ -n "$header" ]; then
-          printf "\n"
+#          printf "\n"
 
           if [[ "$BLACKBOX_FLAG__DEBUG_MODE" == "yes" ]]; then
             printf "\033[0;37m// %s%s%s\033[0m\n" "${entrypoint[0]}" "${args[*]}" "${opts[*]}"
@@ -169,6 +173,8 @@ blackbox() {
       shopt -ou allexport
     }
 
+    printf "\n"
+
     {
       blackbox.framework.trace "${FUNCNAME[@]}" "$*" <<<"initialize"
     }
@@ -192,8 +198,10 @@ blackbox() {
     fi
 
     blackbox.framework.inventory.install.directory "$BLACKBOX_USER_QUESTION_DIR" && {
-      pushd "$BLACKBOX_USER_QUESTION_DIR" && {
-        blackbox.framework.module.load "$module_name" "${module_args[@]}"
+      cd "$BLACKBOX_USER_QUESTION_DIR" && {
+        blackbox.framework.module.load "$module_name" "${module_args[@]}" && {
+          blackbox.framework.inventory.install.file "$BLACKBOX_BUILD_LOG" </dev/null
+        }
       }
     }
   } && blackbox.__init "$@"

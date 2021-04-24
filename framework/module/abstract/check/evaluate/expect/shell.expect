@@ -3,14 +3,17 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
   function blackbox.framework.module.abstract.check.evaluate.expect.shell.debug() {
     declare assert=$(</dev/stdin)
 
+    printf "\n"
+
     {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
 
     (
-      printf "\033[0;33m@@ DEBUG:\033[0m %s\n" "$(blackbox.framework.module.abstract.check.evaluate.assert.normalize "$assert")"
+      printf "\033[0;33m** DEBUG\033[0m\n"
+      printf "\033[0;37m%s\033[0m\n" "$assert"
       printf "\033[0;37m--\033[0m\n"
-      printf "\033[0;38m%s\033[0m\n" "$(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}")"
+      printf "\033[0;37m%s\033[0m\n" "$(cat -n <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}"))"
       printf "\033[0;37m--\033[0m\n"
     ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
@@ -25,8 +28,10 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
     typeset message_false=$3
     typeset message_args=("${@:4}")
 
+    printf "\n"
+
     {
-      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:expect"
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
 
     if ( ! (docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}") ); then
@@ -46,8 +51,10 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
     typeset message_false=$3
     typeset message_args=("${@:4}")
 
+    printf "\n"
+
     {
-      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:expect"
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
 
     if ( grep -q . <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 1>/dev/null <<<"source /blackbox/blackbox &>/dev/null" <<<"$assert") ); then
@@ -67,8 +74,10 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
     typeset message_false=$3
     typeset message_args=("${@:4}")
 
+    printf "\n"
+
     {
-      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:expect"
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
 
     if ( grep -q . <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}") ); then
@@ -88,8 +97,10 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
     typeset message_false=$3
     typeset message_args=("${@:4}")
 
+    printf "\n"
+
     {
-      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:expect"
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
 
     if ( docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}" ); then

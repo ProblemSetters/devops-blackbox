@@ -8,8 +8,10 @@ blackbox.framework.module.abstract.check.evaluate.expect.file() {
     typeset message_false=$3
     typeset message_args=("${@:4}")
 
+    printf "\n"
+
     {
-      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate:expect"
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
 
     assert=$(printf "test -f %s" "$assert")

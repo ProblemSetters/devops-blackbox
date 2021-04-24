@@ -20,10 +20,10 @@ blackbox.framework.module.abstract.check.evaluate.assert() {
     (
       local output=$(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}")
 
-      printf "\033[0;31m-- FAILURE:\033[0m %s\n" "$message"
+      printf "\033[0;31m** ASSERT:\033[0m %s\n" "$message"
       printf "\033[0;37m%s\033[0m\n" "$normalized_assert"
       printf "\033[0;37m--\033[0m\n"
-      printf "\033[0;37m%s\033[0m\n" "$(cat -nv <<<"${output:-<null>}")";
+      printf "\033[0;37m%s\033[0m\n" "$(cat -nv <<<"${output:-"<null>"}")";
       printf "\033[0;37m--\033[0m\n"
       printf "Partial Credit: %s\n" "$score"
       printf "\033[0;37m--\033[0m\n"
@@ -63,10 +63,10 @@ blackbox.framework.module.abstract.check.evaluate.assert() {
     (
       local output=$(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}")
 
-      printf "\033[0;32m++ SUCCESS:\033[0m %s\n" "$message"
+      printf "\033[0;32m** ASSERT:\033[0m %s\n" "$message"
       printf "\033[0;37m%s\033[0m\n" "$normalized_assert"
       printf "\033[0;37m--\033[0m\n"
-      printf "\033[0;37m%s\033[0m\n" "$(cat -nv <<<"${output:-<null>}")";
+      printf "\033[0;37m%s\033[0m\n" "$(cat -nv <<<"${output:-"<null>"}")";
       printf "\033[0;37m--\033[0m\n"
       printf "Partial Credit: %s\n" "$score"
       printf "\033[0;37m--\033[0m\n"

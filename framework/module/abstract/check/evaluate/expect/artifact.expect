@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 blackbox.framework.module.abstract.check.evaluate.expect.artifact() {
-  export BLACKBOX_ARTIFACT_CONTENT_DISPLAY_LINES=256
-  export BLACKBOX_ARTIFACT_STORE_CACHE_DIR="/var/save/${BLACKBOX_QUESTION_ID}"
-
   function blackbox.framework.module.abstract.check.evaluate.expect.artifact.collection() {
     declare assert=$(</dev/stdin)
 
@@ -13,21 +10,22 @@ blackbox.framework.module.abstract.check.evaluate.expect.artifact() {
     readarray -t collection <<<"${assert[*]}"
 
     for artifact in "${!collection[@]}"; do
-      local store_cache="${BLACKBOX_ARTIFACT_STORE_CACHE_DIR}/${collection[$artifact]//[^A-Za-z0-9]/_}.artifact"
+      local artifact_cache="${BLACKBOX_STORAGE_DIR}/${collection[$artifact]//[^A-Za-z0-9]/_}.artifact"
+      local artifact_stream=$(cat -n <(tee "$artifact_cache" < <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${collection[$artifact]}")))
+
+      sed -i "s/\x1b\[[0-9;]*m//g" "$artifact_cache"
 
       (
-        # shellcheck disable=SC2155
-        local content="$(cat -nv <(tee "$store_cache" < <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${collection[$artifact]}")))"
-
-        printf "\033[0;35m** ARTIFACT:\033[0m %s \033[0;37m> %s (%d bytes)\033[0m\n" "${collection[$artifact]}" "$store_cache" "$(wc -c < "$store_cache")"
+        printf "\033[0;35m** ARTIFACT:\033[0m %s \033[0;37m> %s (%d bytes)\033[0m\n" "${collection[$artifact]//[^A-Za-z0-9]/_}.artifact" "$artifact_cache" "$(wc -c < "$artifact_cache")"
+        printf "\033[0;37m%s\033[0m\n" "${collection[$artifact]}"
         printf "\033[0;37m--\033[0m\n"
 
-        if [ "$(wc -l <<<"$content")" -gt "$BLACKBOX_ARTIFACT_CONTENT_DISPLAY_LINES" ]; then
-          printf "\033[0;38m%s\n" "$(head -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_ARTIFACT_CONTENT_DISPLAY_LINES")" <<<"$content")"
+        if [ "$(wc -l <<<"$artifact_stream")" -gt "$BLACKBOX_BUILD_STREAM_DISPLAY_LINES" ]; then
+          printf "\033[0;38m%s\n" "$(head -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$artifact_stream")"
           printf "\033[0;37m%s        ...\033[0m\n"
-          printf "\033[0;38m%s\033[0m\n" "$(tail -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_ARTIFACT_CONTENT_DISPLAY_LINES")" <<<"$content")"
+          printf "\033[0;38m%s\033[0m\n" "$(tail -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$artifact_stream")"
         else
-          printf "\033[0;38m%s\033[0m\n" "$content";
+          printf "\033[0;38m%s\033[0m\n" "$artifact_stream"
         fi
 
         printf "\033[0;37m--\033[0m\n"
@@ -36,16 +34,6 @@ blackbox.framework.module.abstract.check.evaluate.expect.artifact() {
           printf "\n"
         fi
       ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
-
-      sed -i "s/\x1b\[[0-9;]*m//g" "$store_cache"
     done
   }
-
-  blackbox.framework.module.abstract.check.evaluate.expect.artifact.__init() {
-    {
-      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
-    }
-
-    blackbox.framework.inventory.install.directory "$BLACKBOX_ARTIFACT_STORE_CACHE_DIR"
-  } && blackbox.framework.module.abstract.check.evaluate.expect.artifact.__init "$@"
 }
