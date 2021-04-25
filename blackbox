@@ -143,7 +143,7 @@ blackbox() {
 
       (
         if [ -n "$header" ]; then
-#          printf "\n"
+          printf "\n"
 
           if [[ "$BLACKBOX_FLAG__DEBUG_MODE" == "yes" ]]; then
             printf "\033[0;37m// %s%s%s\033[0m\n" "${entrypoint[0]}" "${args[*]}" "${opts[*]}"
@@ -172,8 +172,6 @@ blackbox() {
       . /etc/environment
       shopt -ou allexport
     }
-
-    printf "\n"
 
     {
       blackbox.framework.trace "${FUNCNAME[@]}" "$*" <<<"initialize"
