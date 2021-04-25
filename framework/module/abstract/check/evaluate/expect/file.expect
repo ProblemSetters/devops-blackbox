@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 blackbox.framework.module.abstract.check.evaluate.expect.file() {
   function blackbox.framework.module.abstract.check.evaluate.expect.file.exists() {
+    # shellcheck disable=SC2155
     declare assert=$(</dev/stdin)
 
     typeset score=$1

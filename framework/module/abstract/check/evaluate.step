@@ -22,6 +22,7 @@ blackbox.framework.module.abstract.check.evaluate() {
 
   if ( blackbox.framework.flag.enabled STEP_EVALUATE ); then
     for namespace in "${from_namespace[@]}"; do
+      # shellcheck disable=SC2155
       local definition=$(declare -f "$namespace")
 
       eval "$(printf "function %s %s" "${namespace/framework.module.abstract.check.evaluate./}" "${definition#*"()"}")"

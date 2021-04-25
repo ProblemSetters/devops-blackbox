@@ -13,6 +13,7 @@ blackbox.framework.module.abstract.check.evaluate.score() {
       if [[ "$assert_score" == "-" ]]; then
         assert_score=0
       else
+        # shellcheck disable=SC2155
         local expect_total=$(awk "/^cat <<ASSERT/ { asserts_count++ } END { print asserts_count }" <(sed "$(printf '/^\. \/blackbox\/blackbox %s check "%s"$/,/^exit 0$/!d' "$BLACKBOX_MODULE_NAME" "$BLACKBOX_QUESTION_ID")" "$BLACKBOX_SCENARIO_PATH"))
 
         assert_score=$(awk -v expect_total="$expect_total" '{ current_score += $1 } END { expect_current=NR; print int((100 - current_score) / (expect_total - expect_current) + 0.5) }' "$BLACKBOX_CHECK_EVALUATE_SCORE_CALCULATE_CACHE")

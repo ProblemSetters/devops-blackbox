@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 blackbox.framework.module.abstract.setup.provision() {
+  # shellcheck disable=SC2034
   typeset -a args=("$@")
 
   {

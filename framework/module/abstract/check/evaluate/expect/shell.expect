@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 blackbox.framework.module.abstract.check.evaluate.expect.shell() {
   function blackbox.framework.module.abstract.check.evaluate.expect.shell.debug() {
+    # shellcheck disable=SC2155
     declare assert=$(</dev/stdin)
 
     printf "\n"
@@ -21,6 +22,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
   }
 
   function blackbox.framework.module.abstract.check.evaluate.expect.shell.failure() {
+    # shellcheck disable=SC2155
     declare assert=$(</dev/stdin)
 
     typeset score=$1
@@ -44,6 +46,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
   }
 
   function blackbox.framework.module.abstract.check.evaluate.expect.shell.stderr() {
+    # shellcheck disable=SC2155
     declare assert=$(</dev/stdin)
 
     typeset score=$1
@@ -67,6 +70,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
   }
 
   function blackbox.framework.module.abstract.check.evaluate.expect.shell.stdout() {
+    # shellcheck disable=SC2155
     declare assert=$(</dev/stdin)
 
     typeset score=$1
@@ -90,6 +94,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
   }
 
   function blackbox.framework.module.abstract.check.evaluate.expect.shell.success() {
+    # shellcheck disable=SC2155
     declare assert=$(</dev/stdin)
 
     typeset score=$1

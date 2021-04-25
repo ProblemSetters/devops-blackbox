@@ -9,15 +9,18 @@ blackbox.framework.module.abstract.check.evaluate.assert() {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
 
+    # shellcheck disable=SC2155
     local normalized_assert=$(blackbox.framework.module.abstract.check.evaluate.assert.normalize "$assert")
 
     score=$(
       blackbox.framework.module.abstract.check.evaluate.score.calculate "$score" &>/dev/null
       cat <<<0
     )
+    # shellcheck disable=SC2059
     message=$(printf "${message:-%s}" "${normalized_assert##* }")
 
     (
+      # shellcheck disable=SC2155
       local output=$(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}")
 
       printf "\033[0;31m** ASSERT:\033[0m %s\n" "$message"
@@ -55,12 +58,15 @@ blackbox.framework.module.abstract.check.evaluate.assert() {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
 
+    # shellcheck disable=SC2155
     local normalized_assert=$(blackbox.framework.module.abstract.check.evaluate.assert.normalize "$assert")
 
     score=$(blackbox.framework.module.abstract.check.evaluate.score.calculate "$score")
+    # shellcheck disable=SC2059
     message=$(printf "${message:-%s}" "${normalized_assert##* }")
 
     (
+      # shellcheck disable=SC2155
       local output=$(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}")
 
       printf "\033[0;32m** ASSERT:\033[0m %s\n" "$message"

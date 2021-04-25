@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 blackbox.framework.module.abstract.check.build() {
+  # shellcheck disable=SC2034
   typeset -a args=("$@")
 
   {
@@ -26,17 +27,20 @@ blackbox.framework.module.abstract.check.build() {
     blackbox.framework.exception.raise "solution stub '%s' does not exists" "${build_cmd[1]}"
   fi
 
+  # shellcheck disable=SC2155
+  # shellcheck disable=SC2059
   local build_stream=$(cat -n <(tee "$BLACKBOX_BUILD_LOG" < <(sed "s/\x1b\[[0-9;]*m//g" <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; $(printf "${build_cmd[0]}" "${build_cmd[1]}")"))))
 
   (
+    # shellcheck disable=SC2059
     printf "\033[0;36m** BUILD:\033[0m %s \033[0;37m> %s (%d bytes)\033[0m\n" "$(printf "${build_cmd[0]}" "${build_cmd[@]:1}")" "$BLACKBOX_BUILD_LOG" "$(wc -c < "$BLACKBOX_BUILD_LOG")"
     printf "\033[0;37m--\033[0m\n"
-    printf "\033[0;37m%s\033[0m\n" "$(cat -n ${build_cmd[1]})"
+    printf "\033[0;37m%s\033[0m\n" "$(cat -n "${build_cmd[1]}")"
     printf "\033[0;37m--\033[0m\n"
 
     if [ "$(wc -l <<<"$build_stream")" -gt "$BLACKBOX_BUILD_STREAM_DISPLAY_LINES" ]; then
       printf "\033[0;38m%s\n" "$(head -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$build_stream")"
-      printf "\033[0;37m%s        ...\033[0m\n"
+      printf "\033[0;37m        ...\033[0m\n"
       printf "\033[0;38m%s\033[0m\n" "$(tail -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$build_stream")"
     else
       printf "\033[0;38m%s\033[0m\n" "$build_stream"
@@ -46,6 +50,7 @@ blackbox.framework.module.abstract.check.build() {
   ) | sed "s/Partial Credit/***/g"
 
   if [ -n "$BLACKBOX_BUILD_WITH_OPTS" ]; then
+    # shellcheck disable=SC2155
     local build_with_opts_stream=$(cat -n <(tee -a "$BLACKBOX_BUILD_LOG" < <(sed "s/\x1b\[[0-9;]*m//g" <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" <<<"source /blackbox/blackbox &>/dev/null; ${BLACKBOX_BUILD_WITH_OPTS}"))))
 
     printf "\n"
@@ -55,7 +60,7 @@ blackbox.framework.module.abstract.check.build() {
 
     if [ "$(wc -l <<<"$build_with_opts_stream")" -gt "$BLACKBOX_BUILD_STREAM_DISPLAY_LINES" ]; then
       printf "\033[0;38m%s\n" "$(head -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$build_with_opts_stream")"
-      printf "\033[0;37m%s        ...\033[0m\n"
+      printf "\033[0;37m        ...\033[0m\n"
       printf "\033[0;38m%s\033[0m\n" "$(tail -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$build_with_opts_stream")"
     else
       printf "\033[0;38m%s\033[0m\n" "$build_with_opts_stream"
