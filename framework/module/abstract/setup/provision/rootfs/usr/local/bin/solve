@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+printf "\n"
 printf "\033[0;34m[%s]\033[0m\n" "SOLVE"
 printf '\033[0;37m%s < "%s/%s"\033[0m\n' "$(which solve)" "$(pwd)" script.sh
 printf "\033[0;37m--\033[0m\n"

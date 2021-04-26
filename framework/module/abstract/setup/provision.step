@@ -8,10 +8,12 @@ blackbox.framework.module.abstract.setup.provision() {
   }
 
   if ( ! blackbox.framework.flag.enabled STEP_PROVISION ); then
-    printf "\033[0;36m** BLACKBOX_FLAG__STEP_PROVISION:\033[0m %s\n" "$BLACKBOX_FLAG__STEP_PROVISION"
-    printf "\033[0;37m--\033[0m\n"
-    cat -n <<<"BLACKBOX_FLAG__STEP_PROVISION=no"
-    printf "\033[0;37m--\033[0m\n"
+    (
+      printf "\033[0;36m** BLACKBOX_FLAG__STEP_PROVISION:\033[0m %s\n" "$BLACKBOX_FLAG__STEP_PROVISION"
+      printf "\033[0;37m--\033[0m\n"
+      cat -n <<<"BLACKBOX_FLAG__STEP_PROVISION=no"
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
     return
   fi
@@ -26,10 +28,12 @@ blackbox.framework.module.abstract.setup.provision() {
   : <<< blackbox.module.*.setup.provision
 
   if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
-    printf "\n"
-    printf "\033[0;36m** BLACKBOX_PROVISION_WITH_OPTS:\033[0m {...}\n"
-    printf "\033[0;37m--\033[0m\n"
-    cat -n <(eval "$BLACKBOX_PROVISION_WITH_OPTS")
-    printf "\033[0;37m--\033[0m\n"
+    (
+      printf "\n"
+      printf "\033[0;36m** BLACKBOX_PROVISION_WITH_OPTS:\033[0m {...}\n"
+      printf "\033[0;37m--\033[0m\n"
+      cat -n <(eval "$BLACKBOX_PROVISION_WITH_OPTS")
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
   fi
 }

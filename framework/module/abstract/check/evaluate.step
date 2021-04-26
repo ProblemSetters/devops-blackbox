@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 blackbox.framework.module.abstract.check.evaluate() {
+  # shellcheck disable=SC2034
   typeset -a args=("$@")
 
   {
@@ -28,10 +29,12 @@ blackbox.framework.module.abstract.check.evaluate() {
       eval "$(printf "function %s %s" "${namespace/framework.module.abstract.check.evaluate./}" "${definition#*"()"}")"
     done
   else
-    printf "\033[0;36m** BLACKBOX_FLAG__STEP_EVALUATE:\033[0m %s\n" "$BLACKBOX_FLAG__STEP_EVALUATE"
-    printf "\033[0;37m--\033[0m\n"
-    cat -n <(printf "BLACKBOX_FLAG__STEP_EVALUATE=%s\n" "$BLACKBOX_FLAG__STEP_EVALUATE")
-    printf "\033[0;37m--\033[0m\n"
+    (
+      printf "\033[0;36m** BLACKBOX_FLAG__STEP_EVALUATE:\033[0m %s\n" "$BLACKBOX_FLAG__STEP_EVALUATE"
+      printf "\033[0;37m--\033[0m\n"
+      cat -n <(printf "BLACKBOX_FLAG__STEP_EVALUATE=%s\n" "$BLACKBOX_FLAG__STEP_EVALUATE")
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
     for namespace in "${from_namespace[@]}"; do
       eval "$(printf "function %s (){ :; }" "${namespace/framework.module.abstract.check.evaluate./}")"
