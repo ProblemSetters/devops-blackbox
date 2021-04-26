@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 blackbox.framework.module.abstract.setup() {
+  # shellcheck disable=SC2034
   typeset question_id=$1
   typeset -a step_args=("${@:2}")
 

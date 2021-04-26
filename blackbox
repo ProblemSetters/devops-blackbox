@@ -1,20 +1,35 @@
 #!/usr/bin/env bash
 blackbox() {
   export BLACKBOX_DIR=/blackbox
+  # shellcheck disable=SC2155
   export BLACKBOX_SPAWN=$(awk -v master="$(</proc/sys/kernel/random/uuid)" -v user="$BLACKBOX_SPAWN" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
+  # shellcheck disable=SC2155
   export BLACKBOX_USER=$(awk -v master="1000:1000" -v user="$BLACKBOX_USER" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
+  # shellcheck disable=SC2155
   export BLACKBOX_USER_NAME=$(awk -v master="ubuntu" -v user="$BLACKBOX_USER_NAME" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
+  # shellcheck disable=SC2155
   export BLACKBOX_USER_HOME=$(awk -v master="/home/${BLACKBOX_USER_NAME}" -v user="$BLACKBOX_USER_HOME" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
+  # shellcheck disable=SC2155
   export BLACKBOX_USER_QUESTION_DIR=$(awk -v master="${BLACKBOX_USER_HOME}/${3}" -v user="$BLACKBOX_USER_QUESTION_DIR" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
+  # shellcheck disable=SC2155
   export BLACKBOX_VERSION=$(awk -v master="master" -v user="$BLACKBOX_VERSION" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
 
   export BLACKBOX_FLAG__DEBUG_MODE=${BLACKBOX_FLAG__DEBUG_MODE:-no}
+  # shellcheck disable=SC2155
   export BLACKBOX_FLAG__STEP_PROVISION=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_PROVISION" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
+  # shellcheck disable=SC2155
   export BLACKBOX_FLAG__STEP_BUILD=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_BUILD" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
+  # shellcheck disable=SC2155
   export BLACKBOX_FLAG__STEP_EVALUATE=$(awk -v master="yes" -v user="$BLACKBOX_FLAG__STEP_EVALUATE" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
 
+  # shellcheck disable=SC2155
   export BLACKBOX_PROVISION_WITH_OPTS=$(sed "s/\({\);/\1/g; s/\(;\)\{2\}/\1/g" <(awk 'ORS="; "' <(sed '1,2d; $d; s/[[:space:]]$//g; s/^[[:space:]]\+//g' <(declare -f BLACKBOX_PROVISION_WITH_OPTS))))
+  # shellcheck disable=SC2155
   export BLACKBOX_BUILD_WITH_OPTS=$(sed "s/\({\);/\1/g; s/\(;\)\{2\}/\1/g" <(awk 'ORS="; "' <(sed '1,2d; $d; s/[[:space:]]$//g; s/^[[:space:]]\+//g' <(declare -f BLACKBOX_BUILD_WITH_OPTS))))
+
+  export BLACKBOX_STORAGE_DIR="/var/save/${3}"
+  export BLACKBOX_BUILD_LOG="${BLACKBOX_STORAGE_DIR}/build.log"
+  export BLACKBOX_BUILD_STREAM_DISPLAY_LINES=255
 
   # shellcheck disable=SC2034
   typeset -gx BLACKBOX_SCENARIO_PATH=$(realpath "$0")
@@ -31,18 +46,21 @@ blackbox() {
       typeset -a args=("${@:2}")
 
       local destination_namespace_name=${namespace%:*}
+      # shellcheck disable=SC2155
       local destination_namespace_extension=$(sed -n "s/.*://p" <<<"$namespace")
 
       if [ -z "$destination_namespace_extension" ]; then
         destination_namespace_extension=$(rev <(cut -d "." -f 2 <(rev <<<"$namespace")))
       fi
 
+      # shellcheck disable=SC2155
       local destination_definition=$(declare -f "$destination_namespace_name")
 
       if [ -n "$destination_definition" ]; then
         return
       fi
 
+      # shellcheck disable=SC2155
       local destination_definition_path=$(printf "%s/%s.%s" "$BLACKBOX_DIR" "$(sed "s/\./\//g" <(cut -d "." -f 2- <<<"$destination_namespace_name"))" "$destination_namespace_extension")
 
       if [ ! -e "$destination_definition_path" ]; then
@@ -60,6 +78,7 @@ blackbox() {
       # shellcheck disable=SC1090
       destination_definition=$(source "$destination_definition_path" && declare -f "$destination_namespace_name")
 
+      # shellcheck disable=SC2155
       local destination_definition_source_placeholder=$(sed -n '/^[[:space:]]*:[[:space:]]<<<[[:space:]]blackbox\.[[:lower:][:digit:].:]\+;\{0,1\}$/p' <<<"$destination_definition")
 
       if [ -z "$destination_definition_source_placeholder" ]; then
@@ -73,14 +92,17 @@ blackbox() {
         return
       fi
 
+      # shellcheck disable=SC2155
       local source_namespace=$(sed -n 's/^[[:space:]]*:[[:space:]]<<<[[:space:]]\(blackbox\.[[:lower:][:digit:].:]\+\);\{0,1\}$/\1/p' <<<"$destination_definition")
       local source_namespace_name=${source_namespace%:*}
+      # shellcheck disable=SC2155
       local source_namespace_extension=$(sed -n "s/.*://p" <<<"$source_namespace")
 
       if [ -z "$source_namespace_extension" ]; then
         source_namespace_extension=$(rev <(cut -d "." -f 2 <(rev <<<"$source_namespace")))
       fi
 
+      # shellcheck disable=SC2155
       local source_definition_path=$(printf "%s/%s.%s" "$BLACKBOX_DIR" "$(sed "s/\./\//g" <(cut -d "." -f 2- <<<"$source_namespace_name"))" "$source_namespace_extension")
 
       if [ ! -e "$source_definition_path" ]; then
@@ -98,7 +120,9 @@ blackbox() {
       # shellcheck disable=SC1090
       source_definition=$(source "$source_definition_path" && declare -f "$source_namespace_name")
 
+      # shellcheck disable=SC2155
       local source_definition_destination_placeholder=$(sed -n "/[[:space:]]*:[[:space:]]<<<[[:space:]]blackbox\.[[:lower:][:digit:].*:]\+;\{0,1\}/p" <<<"$source_definition")
+      # shellcheck disable=SC2155
       local source_definition_destination_namespace=$(sed -n "s/[[:space:]]*:[[:space:]]<<<[[:space:]]\(blackbox\.[[:lower:][:digit:].*:]\+\);\{0,1\}/\1/p" <<<"$source_definition_destination_placeholder")
 
       if ( ! grep -q "$(printf '^%s$' "$source_definition_destination_namespace")" <<<"$destination_namespace_name" ); then
@@ -123,6 +147,7 @@ blackbox() {
     }
 
     function blackbox.framework.trace() {
+      # shellcheck disable=SC2155
       declare header=$(</dev/stdin)
 
       typeset entrypoint=$1
@@ -192,8 +217,10 @@ blackbox() {
     fi
 
     blackbox.framework.inventory.install.directory "$BLACKBOX_USER_QUESTION_DIR" && {
-      pushd "$BLACKBOX_USER_QUESTION_DIR" && {
-        blackbox.framework.module.load "$module_name" "${module_args[@]}"
+      cd "$BLACKBOX_USER_QUESTION_DIR" && {
+        blackbox.framework.module.load "$module_name" "${module_args[@]}" && {
+          blackbox.framework.inventory.install.file "$BLACKBOX_BUILD_LOG" </dev/null
+        }
       }
     }
   } && blackbox.__init "$@"

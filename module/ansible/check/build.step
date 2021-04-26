@@ -2,6 +2,7 @@
 blackbox.module.ansible.check.build() {
   : <<< blackbox.framework.module.abstract.check.build:step
 
+  # shellcheck disable=SC2034
   declare build_cmd=(
     "ansible-playbook %s"
     "playbook.yml"

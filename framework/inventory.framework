@@ -15,6 +15,7 @@ blackbox.framework.inventory() {
     }
 
     function blackbox.framework.inventory.install.file() {
+      # shellcheck disable=SC2155
       declare source=$(</dev/stdin)
 
       typeset destination=$1

@@ -42,11 +42,14 @@ case "$1" in
   start)
     fail_unless_root
     touch "$K3S_LOGFILE"
+    # shellcheck disable=SC2039
     ulimit -n 1048576
 
     if [ "$BASH" ]; then
+      # shellcheck disable=SC2039
       ulimit -u unlimited
     else
+      # shellcheck disable=SC2039
       ulimit -p unlimited
     fi
 
