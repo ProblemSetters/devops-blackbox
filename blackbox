@@ -141,7 +141,7 @@ blackbox() {
       # shellcheck disable=SC2016
       destination_definition=$(sed "$(printf '1,2d; $d; /%s/d' "$destination_definition_source_placeholder")" <<<"$destination_definition")
 
-      blackbox.framework.trace "${FUNCNAME[0]}" "$*" "$(printf '<%s> %s' "$source_namespace_name" "$destination_namespace_name")" <<<""
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" "$(printf '&%s %s' "$source_namespace_name" "$destination_namespace_name")" <<<""
 
       eval "$(printf '%s() { %s }; %s' "$destination_namespace_name" "${source_definition/${source_definition_destination_placeholder}/${destination_definition}}" "$destination_namespace_name")" "${args[@]}"
     }
@@ -217,7 +217,7 @@ blackbox() {
     fi
 
     blackbox.framework.inventory.install.directory "$BLACKBOX_USER_QUESTION_DIR" && {
-      cd "$BLACKBOX_USER_QUESTION_DIR" && {
+      pushd "$BLACKBOX_USER_QUESTION_DIR" && {
         blackbox.framework.module.load "$module_name" "${module_args[@]}" && {
           blackbox.framework.inventory.install.file "$BLACKBOX_BUILD_LOG" </dev/null
         }

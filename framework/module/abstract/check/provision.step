@@ -8,10 +8,12 @@ blackbox.framework.module.abstract.check.provision() {
   }
 
   if ( ! blackbox.framework.flag.enabled STEP_PROVISION ); then
-    printf "\033[0;36m** BLACKBOX_FLAG__STEP_PROVISION:\033[0m %s\n" "$BLACKBOX_FLAG__STEP_PROVISION"
-    printf "\033[0;37m--\033[0m\n"
-    cat -n <<<"BLACKBOX_FLAG__STEP_PROVISION=no"
-    printf "\033[0;37m--\033[0m\n"
+    (
+      printf "\033[0;36m** BLACKBOX_FLAG__STEP_PROVISION:\033[0m %s\n" "$BLACKBOX_FLAG__STEP_PROVISION"
+      printf "\033[0;37m--\033[0m\n"
+      cat -n <<<"BLACKBOX_FLAG__STEP_PROVISION=no"
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
     return
   fi
@@ -31,10 +33,12 @@ blackbox.framework.module.abstract.check.provision() {
   : <<< blackbox.module.*.check.provision
 
   if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
-    printf "\n"
-    printf "\033[0;36m** BLACKBOX_PROVISION_WITH_OPTS:\033[0m {...}\n"
-    printf "\033[0;37m--\033[0m\n"
-    cat -n <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" <<<"source /blackbox/blackbox &>/dev/null; ${BLACKBOX_PROVISION_WITH_OPTS}")
-    printf "\033[0;37m--\033[0m\n"
+    (
+      printf "\n"
+      printf "\033[0;36m** BLACKBOX_PROVISION_WITH_OPTS:\033[0m {...}\n"
+      printf "\033[0;37m--\033[0m\n"
+      cat -n <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${BLACKBOX_PROVISION_WITH_OPTS}")
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
   fi
 }

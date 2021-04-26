@@ -26,7 +26,7 @@ blackbox.framework.module.abstract.check.evaluate.assert() {
       printf "\033[0;31m** ASSERT:\033[0m %s\n" "$message"
       printf "\033[0;37m%s\033[0m\n" "$normalized_assert"
       printf "\033[0;37m--\033[0m\n"
-      printf "\033[0;37m%s\033[0m\n" "$(cat -nv <<<"${output:-"<null>"}")";
+      printf "\033[0;37m%s\033[0m\n" "$(cat -nv <<<"${output:-"-empty-"}")";
       printf "\033[0;37m--\033[0m\n"
       printf "Partial Credit: %s\n" "$score"
       printf "\033[0;37m--\033[0m\n"
@@ -72,7 +72,7 @@ blackbox.framework.module.abstract.check.evaluate.assert() {
       printf "\033[0;32m** ASSERT:\033[0m %s\n" "$message"
       printf "\033[0;37m%s\033[0m\n" "$normalized_assert"
       printf "\033[0;37m--\033[0m\n"
-      printf "\033[0;37m%s\033[0m\n" "$(cat -nv <<<"${output:-"<null>"}")";
+      printf "\033[0;37m%s\033[0m\n" "$(cat -nv <<<"${output:-"-empty-"}")";
       printf "\033[0;37m--\033[0m\n"
       printf "Partial Credit: %s\n" "$score"
       printf "\033[0;37m--\033[0m\n"
