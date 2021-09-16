@@ -18,7 +18,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.artifact() {
       sed -i "s/\x1b\[[0-9;]*m//g" "$artifact_cache"
 
       (
-        printf "\033[0;35m** ARTIFACT:\033[0m %s \033[0;37m> %s (%d bytes)\033[0m\n" "${collection[$artifact]//[^A-Za-z0-9]/_}.artifact" "$artifact_cache" "$(wc -c < "$artifact_cache")"
+        printf "\033[0;35m** ARTIFACT:\033[0m %s \033[0;37m> %s (%d bytes)\033[0m\n" "${collection[$artifact]//[^A-Za-z0-9]/_}.artifact" "$artifact_cache" "$(stat -c "%s" "$artifact_cache")"
         printf "\033[0;37m%s\033[0m\n" "${collection[$artifact]}"
         printf "\033[0;37m--\033[0m\n"
 

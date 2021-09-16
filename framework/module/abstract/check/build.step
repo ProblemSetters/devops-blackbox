@@ -35,7 +35,7 @@ blackbox.framework.module.abstract.check.build() {
 
   (
     # shellcheck disable=SC2059
-    printf "\033[0;36m** BUILD:\033[0m %s \033[0;37m> %s (%d bytes)\033[0m\n" "$(printf "${build_cmd[0]}" "${build_cmd[@]:1}")" "$BLACKBOX_BUILD_LOG" "$(wc -c < "$BLACKBOX_BUILD_LOG")"
+    printf "\033[0;36m** BUILD:\033[0m %s \033[0;37m> %s (%d bytes)\033[0m\n" "$(printf "${build_cmd[0]}" "${build_cmd[@]:1}")" "$BLACKBOX_BUILD_LOG" "$(stat -c "%s" "$BLACKBOX_BUILD_LOG")"
     printf "\033[0;37m--\033[0m\n"
     printf "\033[0;37m%s\033[0m\n" "$(cat -n "${build_cmd[1]}")"
     printf "\033[0;37m--\033[0m\n"
@@ -57,7 +57,7 @@ blackbox.framework.module.abstract.check.build() {
 
     (
       printf "\n"
-      printf "\033[0;36m** BLACKBOX_BUILD_WITH_OPTS:\033[0m {...} \033[0;37m> %s (%d bytes)\033[0m\n" "$BLACKBOX_BUILD_LOG" "$(wc -c < "$BLACKBOX_BUILD_LOG")"
+      printf "\033[0;36m** BLACKBOX_BUILD_WITH_OPTS:\033[0m {...} \033[0;37m> %s (%d bytes)\033[0m\n" "$BLACKBOX_BUILD_LOG" "$(stat -c "%s" "$BLACKBOX_BUILD_LOG")"
       printf "\033[0;37m%s\033[0m\n" "$BLACKBOX_BUILD_WITH_OPTS"
       printf "\033[0;37m--\033[0m\n"
 
