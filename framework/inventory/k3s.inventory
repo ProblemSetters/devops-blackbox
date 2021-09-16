@@ -20,7 +20,7 @@ blackbox.framework.inventory.k3s() {
   fi
 
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common wget && {
-    wget -S -P /usr/local/bin/ "https://github.com/rancher/k3s/releases/download/v1.18.9%2Bk3s1/k3s" && {
+    wget -S -P /usr/local/bin/ "https://github.com/k3s-io/k3s/releases/download/v1.21.4%2Bk3s1/k3s" && {
       chmod +x /usr/local/bin/k3s
     }
     cp /blackbox/framework/inventory/k3s/rootfs/etc/init.d/k3s /etc/init.d && {
