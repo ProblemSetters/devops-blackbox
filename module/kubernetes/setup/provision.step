@@ -4,9 +4,7 @@ blackbox.module.kubernetes.setup.provision() {
 
   blackbox.framework.inventory.provision k3s && {
     service k3s start && {
-      sleep 30  &&  { # TODO: implement launcher
-        chmod +r /etc/rancher/k3s/k3s.yaml
-      }
+      sleep 30 # TODO: implement launcher
     }
   }
 
