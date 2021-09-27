@@ -19,7 +19,8 @@ BASE=k3s
 K3S=/usr/local/bin/k3s
 K3S_PIDFILE=/var/run/$BASE.pid
 K3S_LOGFILE=/var/log/$BASE.log
-K3S_OPTS="server --docker --node-name=$(hostname) --tls-san=$(hostname) --log=$K3S_LOGFILE"
+K3S_NODE_NAME="default"
+K3S_OPTS="server --docker --log=$K3S_LOGFILE --node-name=$K3S_NODE_NAME --tls-san=$(hostname) --write-kubeconfig-mode=0666"
 K3S_DESC="k3s"
 
 . /lib/lsb/init-functions
