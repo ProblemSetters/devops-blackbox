@@ -25,9 +25,9 @@ blackbox.framework.module.abstract.check.provision() {
   fi
 
   if ( grep -q '^init$' <(ps -p 1 -o comm=) ); then
-    docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --privileged --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_BUILD_LOG}:${BLACKBOX_BUILD_LOG}:ro" "problemsetters/blackbox:${BLACKBOX_MODULE_NAME}"
+    docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --privileged --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" "problemsetters/blackbox:${BLACKBOX_MODULE_NAME}"
   else
-    docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --privileged --volume="${BLACKBOX_DIR}:${BLACKBOX_DIR}:ro" --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_BUILD_LOG}:${BLACKBOX_BUILD_LOG}:ro" "problemsetters/blackbox:${BLACKBOX_MODULE_NAME}"
+    docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --privileged --volume="${BLACKBOX_DIR}:${BLACKBOX_DIR}:ro" --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" "problemsetters/blackbox:${BLACKBOX_MODULE_NAME}"
   fi
 
   : <<< blackbox.module.*.check.provision
@@ -37,7 +37,7 @@ blackbox.framework.module.abstract.check.provision() {
       printf "\n"
       printf "\033[0;36m** BLACKBOX_PROVISION_WITH_OPTS:\033[0m {...}\n"
       printf "\033[0;37m--\033[0m\n"
-      cat -n <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${BLACKBOX_PROVISION_WITH_OPTS}")
+      cat -n <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${BLACKBOX_PROVISION_WITH_OPTS}")
       printf "\033[0;37m--\033[0m\n"
     ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
   fi
