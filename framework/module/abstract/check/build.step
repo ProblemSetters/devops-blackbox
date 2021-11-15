@@ -29,9 +29,13 @@ blackbox.framework.module.abstract.check.build() {
     blackbox.framework.exception.raise "solution stub '%s' does not exists" "${build_cmd[1]}"
   fi
 
+  {
+    blackbox.framework.inventory.install.file "$BLACKBOX_BUILD_LOG" </dev/null
+  }
+
   # shellcheck disable=SC2155
   # shellcheck disable=SC2059
-  local build_stream=$(cat -n <(tee "$BLACKBOX_BUILD_LOG" < <(sed "s/\x1b\[[0-9;]*m//g" <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; $(printf "${build_cmd[0]}" "${build_cmd[1]}")"))))
+  local build_stream=$(cat -n <(tee "$BLACKBOX_BUILD_LOG" < <(sed "s/\x1b\[[0-9;]*m//g" <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; $(printf "${build_cmd[0]}" "${build_cmd[1]}")"))))
 
   (
     # shellcheck disable=SC2059
@@ -53,7 +57,7 @@ blackbox.framework.module.abstract.check.build() {
 
   if [ -n "$BLACKBOX_BUILD_WITH_OPTS" ]; then
     # shellcheck disable=SC2155
-    local build_with_opts_stream=$(cat -n <(tee -a "$BLACKBOX_BUILD_LOG" < <(sed "s/\x1b\[[0-9;]*m//g" <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${BLACKBOX_BUILD_WITH_OPTS}"))))
+    local build_with_opts_stream=$(cat -n <(tee -a "$BLACKBOX_BUILD_LOG" < <(sed "s/\x1b\[[0-9;]*m//g" <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${BLACKBOX_BUILD_WITH_OPTS}"))))
 
     (
       printf "\n"

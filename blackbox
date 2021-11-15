@@ -27,6 +27,7 @@ blackbox() {
   # shellcheck disable=SC2155
   export BLACKBOX_BUILD_WITH_OPTS=$(sed "s/\({\);/\1/g; s/\(;\)\{2\}/\1/g" <(awk 'ORS="; "' <(sed '1,2d; $d; s/[[:space:]]$//g; s/^[[:space:]]\+//g' <(declare -f BLACKBOX_BUILD_WITH_OPTS))))
 
+  export BLACKBOX_HEAP_DIR="/tmp/${3}"
   export BLACKBOX_STORAGE_DIR="/var/save/${3}"
   export BLACKBOX_BUILD_LOG="${BLACKBOX_STORAGE_DIR}/build.log"
   export BLACKBOX_BUILD_STREAM_DISPLAY_LINES=255
@@ -218,9 +219,7 @@ blackbox() {
 
     blackbox.framework.inventory.install.directory "$BLACKBOX_USER_QUESTION_DIR" && {
       pushd "$BLACKBOX_USER_QUESTION_DIR" && {
-        blackbox.framework.module.load "$module_name" "${module_args[@]}" && {
-          blackbox.framework.inventory.install.file "$BLACKBOX_BUILD_LOG" </dev/null
-        }
+        blackbox.framework.module.load "$module_name" "${module_args[@]}"
       }
     }
   } && blackbox.__init "$@"

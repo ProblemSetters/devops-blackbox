@@ -37,6 +37,28 @@ blackbox.framework.inventory() {
     }
   }; blackbox.framework.inventory.install
 
+  blackbox.framework.inventory.heap() {
+    function blackbox.framework.inventory.heap.allocate() {
+      {
+        blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+      }
+
+      blackbox.framework.inventory.install.directory "$BLACKBOX_HEAP_DIR" && {
+        # shellcheck disable=SC2164
+        pushd "$BLACKBOX_HEAP_DIR"
+      }
+    }
+
+    function blackbox.framework.inventory.heap.release() {
+      {
+        blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+      }
+
+      # shellcheck disable=SC2164
+      popd
+    }
+  }; blackbox.framework.inventory.heap
+
   function blackbox.framework.inventory.provision() {
     typeset name=$1
     typeset -a with_deps=("${@:2}")
