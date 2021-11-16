@@ -13,7 +13,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.artifact() {
     for artifact in "${!collection[@]}"; do
       local artifact_cache="${BLACKBOX_STORAGE_DIR}/${collection[$artifact]//[^A-Za-z0-9]/_}.artifact"
       # shellcheck disable=SC2155
-      local artifact_stream=$(cat -n <(tee "$artifact_cache" < <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${collection[$artifact]}")))
+      local artifact_stream=$(cat -n <(tee "$artifact_cache" < <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${collection[$artifact]}")))
 
       sed -i "s/\x1b\[[0-9;]*m//g" "$artifact_cache"
 
