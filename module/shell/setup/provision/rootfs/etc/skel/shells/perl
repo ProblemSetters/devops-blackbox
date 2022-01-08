@@ -1,2 +1,5 @@
 #!/usr/bin/env perl
-print "Good luck! :)\n"
+use strict;
+use warnings;
+
+print("Good luck! :)\n")

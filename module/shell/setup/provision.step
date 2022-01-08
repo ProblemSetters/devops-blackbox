@@ -2,11 +2,12 @@
 blackbox.module.shell.setup.provision() {
   : <<< blackbox.framework.module.abstract.setup.provision:step
 
+  blackbox.framework.inventory.provision perl
   blackbox.framework.inventory.provision php-cli
   blackbox.framework.inventory.provision ruby-full
 
   blackbox.framework.inventory.install.file /usr/local/bin/shell-set 0 0 0755 </blackbox/module/shell/setup/provision/rootfs/usr/local/bin/shell-set
-  blackbox.framework.inventory.install.file /usr/local/bin/solve 0 0 0755 </blackbox/framework/module/abstract/setup/provision/rootfs/usr/local/bin/solve
+  blackbox.framework.inventory.install.file /usr/local/bin/solve 0 0 0755 </blackbox/module/shell/setup/provision/rootfs/usr/local/bin/solve
 
   for shell in bash perl php python ruby; do
     blackbox.framework.inventory.install.file "/etc/skel/shells/${shell}" "$(cut -d ":" -f 1 <<<"$BLACKBOX_USER")" "$(cut -d ":" -f 2 <<<"$BLACKBOX_USER")" 0775 <"/blackbox/module/shell/setup/provision/rootfs/etc/skel/shells/${shell}"

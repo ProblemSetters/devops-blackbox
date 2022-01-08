@@ -1,2 +1,2 @@
 #!/usr/bin/env ruby
-puts 'Good luck! :)'
+puts "Good luck! :)"
