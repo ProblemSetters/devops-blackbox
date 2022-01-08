@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+blackbox.module.shell.check.evaluate() {
+  : <<< blackbox.framework.module.abstract.check.evaluate:step
+}
