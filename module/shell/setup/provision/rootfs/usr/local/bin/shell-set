@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+printf "\n"
+printf "\033[0;34m[%s]\033[0m\n" "SHELL SET"
+printf '\033[0;37m%s < "%s/%s"\033[0m\n' "$(which shell-set)" "$(pwd)" script.sh
+printf "\033[0;37m--\033[0m\n"
+
+if [ ! -e ./script.sh ]; then
+  printf "\033[0;31mexception: *** %s.\033[0m\n" "solution \`script.sh\` is missing. Are you in question directory?"
+  printf "\033[0;33m^^\033[0m\n"
+  kill $$
+fi
+
+PS3=$(printf '\nPlease choose a shell interpreter: ')
+shells=(
+  "bash"
+  "perl"
+  "php"
+  "python"
+  "ruby"
+)
+options=(
+  "GNU Bash v4.4.18"
+  "Perl v5.26.1"
+  "PHP v7.2"
+  "Python v2.7.15"
+  "Ruby v2.5.1"
+  "Quit (no change)"
+)
+
+select option in "${options[@]}"; do
+  case $REPLY in
+      1|2|3|4|5)
+        read -r -p "$(printf '\n`script.sh` file will be completely overwritten. Continue? [y/N] ')" confirm
+        case "$confirm" in
+            y)
+              shell=$((REPLY - 1))
+              cp -f "/etc/skel/shells/${shells[$shell]}" script.sh
+              printf '\n`%s` shell has been set. Done\n' "${options[$shell]}"
+              break
+              ;;
+        esac
+        ;;
+      6)
+          printf '\nnothing to be changed. Exit\n'
+          break
+          ;;
+      *)
+        printf '\ninvalid shell `%s`\n' "$REPLY"
+        ;;
+  esac
+done
+
+exit 0
