@@ -4,6 +4,7 @@ blackbox.module.shell.setup.provision() {
 
   blackbox.framework.inventory.provision perl
   blackbox.framework.inventory.provision php-cli
+  blackbox.framework.inventory.provision python3
   blackbox.framework.inventory.provision ruby-full
 
   blackbox.framework.inventory.install.file /usr/local/bin/shell-set 0 0 0755 </blackbox/module/shell/setup/provision/rootfs/usr/local/bin/shell-set
