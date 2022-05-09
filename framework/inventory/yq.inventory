@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-blackbox.framework.inventory.jq() {
+blackbox.framework.inventory.yq() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")
 
