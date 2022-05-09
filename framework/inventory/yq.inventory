@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+blackbox.framework.inventory.jq() {
+  typeset package_name=$1
+  typeset -a with_packages=("${@:2}")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  sed "s/\x1b\[[0-9;]*m//g" <(dpkg-query -W "$package_name" "${with_packages[@]}" 2>&1)
+
+  if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
+    false
+
+    return
+  fi
+
+  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
+    apt-get update
+  fi
+
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common && {
+    add-apt-repository -y ppa:rmescandon/yq
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package_name" "${with_packages[@]}"
+  }
+}
