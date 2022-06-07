@@ -18,6 +18,7 @@ RUN apt-get \
         python \
         sudo \
         unzip \
+        vim \
         wget \
     && \
     echo \
