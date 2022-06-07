@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+blackbox.module.puppet.check.build() {
+  : <<< blackbox.framework.module.abstract.check.build:step
+}
