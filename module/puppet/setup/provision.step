@@ -4,6 +4,6 @@ blackbox.module.puppet.setup.provision() {
 
   blackbox.framework.inventory.provision puppet
 
-  blackbox.framework.inventory.install.file manifest.pp </blackbox/module/puppet/setup/provision/rootfs/home/%/%/mainfest.pp
+  blackbox.framework.inventory.install.file manifest.pp </blackbox/module/puppet/setup/provision/rootfs/home/%/%/manifest.pp
   blackbox.framework.inventory.install.file script.sh </blackbox/module/puppet/setup/provision/rootfs/home/%/%/script.sh
 }
