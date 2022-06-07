@@ -1,3 +1,3 @@
-node "default" {
-  # Good luck! :)
+notify { "Good luck! :)":
+  loglevel => info
 }
