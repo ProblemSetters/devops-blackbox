@@ -1,3 +1,1 @@
-notify { "Good luck! :)":
-  loglevel => info
-}
+info('Good luck! :)')
