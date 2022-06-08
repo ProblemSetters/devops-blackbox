@@ -2,7 +2,7 @@
 blackbox.module.puppet.setup.provision() {
   : <<< blackbox.framework.module.abstract.setup.provision:step
 
-  blackbox.framework.inventory.provision puppet
+  blackbox.framework.inventory.provision puppet-agent
 
   blackbox.framework.inventory.install.file manifest.pp </blackbox/module/puppet/setup/provision/rootfs/home/%/%/manifest.pp
   blackbox.framework.inventory.install.file Puppetfile </blackbox/module/puppet/setup/provision/rootfs/home/%/%/Puppetfile
