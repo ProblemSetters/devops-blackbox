@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-blackbox.framework.inventory.puppet() {
+blackbox.framework.inventory.puppet-agent() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")
 
@@ -20,9 +20,20 @@ blackbox.framework.inventory.puppet() {
   fi
 
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget && {
-    wget --output-document="/tmp/puppet.deb" https://apt.puppet.com/puppet7-release-bionic.deb
-    DEBIAN_FRONTEND=noninteractive apt-get install -y /tmp/puppet.deb
-    DEBIAN_FRONTEND=noninteractive apt-get update -y
+    wget --output-document="/tmp/puppet.deb" https://apt.puppet.com/puppet7-release-bionic.deb && {
+      DEBIAN_FRONTEND=noninteractive apt-get install -y /tmp/puppet.deb && {
+        rm -f /tmp/puppet.deb
+      }
+    }
+
+    apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get install -y "$package_name" "${with_packages[@]}"
+
+    ln -rs /opt/puppetlabs/puppet/bin/r10k /opt/puppetlabs/bin && {
+      tee -a < <(printf "PATH=%s:/opt/puppetlabs/bin\n" "$PATH") /etc/environment && {
+        gem install r10k
+      }
+    }
+
   }
 }

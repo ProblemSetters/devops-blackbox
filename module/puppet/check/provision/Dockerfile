@@ -7,7 +7,7 @@ RUN source \
         \
         &>/dev/null; \
     blackbox.framework.inventory.provision \
-      puppet \
+      puppet-agent \
     && \
     rm \
       -rf \
