@@ -29,11 +29,14 @@ blackbox.framework.inventory.puppet-agent() {
     apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get install -y "$package_name" "${with_packages[@]}"
 
-    ln -rs /opt/puppetlabs/puppet/bin/r10k /opt/puppetlabs/bin && {
-      tee -a < <(printf "PATH=%s:/opt/puppetlabs/bin\n" "$PATH") /etc/environment && {
-        /opt/puppetlabs/puppet/bin/gem install r10k
-      }
-    }
+    ln -rs /opt/puppetlabs/puppet/bin/r10k /opt/puppetlabs/bin
 
+    ln -rs /opt/puppetlabs/puppet/bin/facter /usr/bin
+    ln -rs /opt/puppetlabs/puppet/bin/hiera /usr/bin
+    ln -rs /opt/puppetlabs/puppet/bin/puppet /usr/bin
+    ln -rs /opt/puppetlabs/puppet/bin/pxp-agent /usr/bin
+    ln -rs /opt/puppetlabs/puppet/bin/r10k /usr/bin
+
+    /opt/puppetlabs/puppet/bin/gem install r10k
   }
 }
