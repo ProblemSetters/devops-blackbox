@@ -31,7 +31,7 @@ blackbox.framework.inventory.puppet-agent() {
 
     ln -rs /opt/puppetlabs/puppet/bin/r10k /opt/puppetlabs/bin && {
       tee -a < <(printf "PATH=%s:/opt/puppetlabs/bin\n" "$PATH") /etc/environment && {
-        gem install r10k
+        /opt/puppetlabs/puppet/bin/gem install r10k
       }
     }
 
