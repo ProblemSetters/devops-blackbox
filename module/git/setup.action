@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+blackbox.module.git.setup() {
+  : <<< blackbox.framework.module.abstract.setup:action
+}
