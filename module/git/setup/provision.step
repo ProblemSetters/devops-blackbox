@@ -2,7 +2,6 @@
 blackbox.module.git.setup.provision() {
   : <<< blackbox.framework.module.abstract.setup.provision:step
 
-  blackbox.framework.inventory.provision git && {
-    sudo -u "$BLACKBOX_USER_NAME" git init
-  }
+  blackbox.framework.inventory.provision git
+  sudo -u "$BLACKBOX_USER_NAME" git init
 }
