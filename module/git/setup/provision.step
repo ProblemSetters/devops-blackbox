@@ -2,5 +2,7 @@
 blackbox.module.git.setup.provision() {
   : <<< blackbox.framework.module.abstract.setup.provision:step
 
-  blackbox.framework.inventory.provision git
+  blackbox.framework.inventory.provision git && {
+    git init
+  }
 }

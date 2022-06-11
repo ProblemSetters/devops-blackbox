@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
 blackbox.module.git.check.build() {
   : <<< blackbox.framework.module.abstract.check.build:step
+
+  # shellcheck disable=SC2034
+  declare build_cmd=(
+    "source %s"
+    "/dev/null"
+  )
 }
