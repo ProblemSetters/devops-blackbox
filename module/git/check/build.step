@@ -7,4 +7,6 @@ blackbox.module.git.check.build() {
     "source %s"
     "/dev/null"
   )
+
+  docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" git config --global --add safe.directory "$BLACKBOX_USER_QUESTION_DIR"
 }

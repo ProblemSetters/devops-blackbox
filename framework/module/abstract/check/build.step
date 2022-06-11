@@ -38,18 +38,23 @@ blackbox.framework.module.abstract.check.build() {
   local build_stream=$(cat -n <(tee "$BLACKBOX_BUILD_LOG" < <(sed "s/\x1b\[[0-9;]*m//g" <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; $(printf "${build_cmd[0]}" "${build_cmd[1]}")"))))
 
   (
+    # shellcheck disable=SC2155
+    local build_script=$(cat -n "${build_cmd[1]}")
+
     # shellcheck disable=SC2059
     printf "\033[0;36m** BUILD:\033[0m %s \033[0;37m> %s (%d bytes)\033[0m\n" "$(printf "${build_cmd[0]}" "${build_cmd[@]:1}")" "$BLACKBOX_BUILD_LOG" "$(stat -c "%s" "$BLACKBOX_BUILD_LOG")"
     printf "\033[0;37m--\033[0m\n"
-    printf "\033[0;37m%s\033[0m\n" "$(cat -n "${build_cmd[1]}")"
+    printf "\033[0;37m%s\033[0m\n" "${build_script:-$(cat -n <<<"-empty-")}"
     printf "\033[0;37m--\033[0m\n"
 
     if [ "$(wc -l <<<"$build_stream")" -gt "$BLACKBOX_BUILD_STREAM_DISPLAY_LINES" ]; then
       printf "\033[0;38m%s\n" "$(head -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$build_stream")"
       printf "\033[0;37m        ...\033[0m\n"
       printf "\033[0;38m%s\033[0m\n" "$(tail -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$build_stream")"
-    else
+    elif [ -n "$build_stream" ]; then
       printf "\033[0;38m%s\033[0m\n" "$build_stream"
+    else
+      printf "\033[0;37m%s\033[0m\n" "$(cat -n <<<"-empty-")"
     fi
 
     printf "\033[0;37m--\033[0m\n"
