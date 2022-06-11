@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+blackbox.module.git.setup.provision() {
+  : <<< blackbox.framework.module.abstract.setup.provision:step
+
+  blackbox.framework.inventory.provision git
+}

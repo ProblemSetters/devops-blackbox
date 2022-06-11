@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+blackbox.module.git() {
+  : <<< blackbox.framework.module.abstract
+}

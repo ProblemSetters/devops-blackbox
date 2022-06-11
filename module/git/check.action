@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+blackbox.module.git.check() {
+  : <<< blackbox.framework.module.abstract.check:action
+}
