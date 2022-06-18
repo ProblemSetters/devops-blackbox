@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+blackbox.module.chef.setup() {
+  : <<< blackbox.framework.module.abstract.setup:action
+}

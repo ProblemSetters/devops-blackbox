@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+blackbox.module.chef() {
+  : <<< blackbox.framework.module.abstract
+}
