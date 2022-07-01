@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+blackbox.module.aws.setup.provision() {
+  : <<< blackbox.framework.module.abstract.setup.provision:step
+
+  blackbox.framework.inventory.provision localstack
+  blackbox.framework.inventory.provision awscli
+
+  blackbox.framework.inventory.install.file script.sh </blackbox/module/aws/setup/provision/rootfs/home/%/%/script.sh
+}

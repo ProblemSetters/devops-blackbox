@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+blackbox.module.aws.check.provision() {
+  : <<< blackbox.framework.module.abstract.check.provision:step
+
+  docker exec -i "$BLACKBOX_SPAWN" service docker start
+  blackbox.framework.inventory.provision localstack
+}

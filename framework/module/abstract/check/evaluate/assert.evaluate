@@ -32,9 +32,9 @@ blackbox.framework.module.abstract.check.evaluate.assert() {
       printf "\033[0;37m--\033[0m\n"
     ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
-    if ( blackbox.framework.flag.enabled "DEBUG_MODE" ); then
-      blackbox.framework.exception.raise "assert '%s' failed with message '%s'" "$normalized_assert" "$message"
-    fi
+#    if ( blackbox.framework.flag.enabled "DEBUG_MODE" ); then
+#      blackbox.framework.exception.raise "assert '%s' failed with message '%s'" "$normalized_assert" "$message"
+#    fi
 
     false
   }
