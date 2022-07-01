@@ -14,7 +14,7 @@ endif
 BLACKBOX:=problemsetters/localstack:latest
 
 build:
-	DOCKER_BUILDKIT=1 docker build --progress="plain" --squash --tag="$(BLACKBOX)" .
+	DOCKER_BUILDKIT=1 docker build --progress="plain" --tag="$(BLACKBOX)" .
 
 run:
 	docker run -it --rm $(BLACKBOX)
