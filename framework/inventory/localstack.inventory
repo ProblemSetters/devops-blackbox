@@ -10,18 +10,4 @@ blackbox.framework.inventory.localstack() {
   if [[ -z "$(docker ps -aq --filter="ancestor=problemsetters/${package_name}")" ]] ; then
     docker run -di -p 4566:4566 "problemsetters/${package_name}"
   fi
-
-  sed "s/\x1b\[[0-9;]*m//g" <(dpkg-query -W "${with_packages[@]}" 2>&1)
-
-  if ( dpkg-query -L "${with_packages[@]}" &>/dev/null ); then
-    false
-
-    return
-  fi
-
-  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
-    apt-get update
-  fi
-
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${with_packages[@]}"
 }
