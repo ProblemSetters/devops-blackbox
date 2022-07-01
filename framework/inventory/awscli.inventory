@@ -21,7 +21,10 @@ blackbox.framework.inventory.awscli() {
         }
 
         rm /usr/local/bin/aws_completer
-        complete -C /usr/local/aws-cli/v2/current/bin/aws_completer aws
+        cp /blackbox/framework/inventory/awscli/rootfs/etc/profile.d/20-autocomplete.sh /etc/profile.d/ && {
+          # TODO: check if this needs
+          chmod +x /etc/profile.d/20-autocomplete.sh
+        }
 
         tee -a /etc/hosts < <(printf "127.0.0.1\teu-central-1.hackerrankaws.local\n")
         tee -a /etc/environment < <(printf "AWS_ACCESS_KEY_ID=A%sIA%s%s%s\n" "$(head -c 1 <(tr -dc SK </dev/urandom))" "$(head -c 1 <(tr -dc IJ </dev/urandom))" "$(head -c 14 <(tr -dc A-Z2-7 </dev/urandom))" "$(head -c 1 <(tr -dc AQ </dev/urandom))")
@@ -30,18 +33,4 @@ blackbox.framework.inventory.awscli() {
       }
     }
   fi
-
-  sed "s/\x1b\[[0-9;]*m//g" <(dpkg-query -W "${with_packages[@]}" 2>&1)
-
-  if ( dpkg-query -L "${with_packages[@]}" &>/dev/null ); then
-    false
-
-    return
-  fi
-
-  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
-    apt-get update
-  fi
-
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${with_packages[@]}"
 }
