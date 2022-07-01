@@ -4,7 +4,7 @@ blackbox.module.aws.check.provision() {
 
   docker exec -i "$BLACKBOX_SPAWN" service docker start
 
-  blackbox.framework.inventory.provision localstack
+  docker exec -i "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; blackbox.framework.inventory.provision localstack"
 
   docker exec -i "$BLACKBOX_SPAWN" $BASH <<<"tee -a /etc/hosts < <(printf '127.0.0.1\teu-central-1.hackerrankaws.local\n')"
   docker exec -i "$BLACKBOX_SPAWN" $BASH <<<"tee -a /etc/environment < <(printf 'AWS_ENDPOINT_URL=%s\n' 'eu-central-1.hackerrankaws.local')"
