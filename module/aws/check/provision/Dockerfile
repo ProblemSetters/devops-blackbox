@@ -8,17 +8,6 @@ RUN source \
         &>/dev/null; \
     blackbox.framework.inventory.provision \
       docker-ce; \
-    usermod \
-      -a \
-      -G \
-        docker \
-      ubuntu; \
-    service \
-      docker \
-      start; \
-    docker \
-      pull \
-        problemsetters/localstack; \
     blackbox.framework.inventory.provision \
       awscli \
     && \
