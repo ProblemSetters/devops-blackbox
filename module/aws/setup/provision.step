@@ -6,11 +6,7 @@ blackbox.module.aws.setup.provision() {
 
   blackbox.framework.inventory.provision awscli && {
     tee -a /etc/hosts < <(printf "127.0.0.1\teu-central-1.hackerrankaws.local\n")
-
     tee -a /etc/environment < <(printf "AWS_ENDPOINT_URL=%s\n" "eu-central-1.hackerrankaws.local")
-    tee -a /etc/environment < <(printf "AWS_ACCESS_KEY_ID=A%sIA%s%s%s\n" "$(head -c 1 <(tr -dc SK </dev/urandom))" "$(head -c 1 <(tr -dc IJ </dev/urandom))" "$(head -c 14 <(tr -dc A-Z2-7 </dev/urandom))" "$(head -c 1 <(tr -dc AQ </dev/urandom))")
-    tee -a /etc/environment < <(printf "AWS_SECRET_ACCESS_KEY=%s\n" "$(head -c 40 <(tr -dc A-Za-z0-9+/ </dev/urandom))")
-    tee -a /etc/environment < <(printf "AWS_DEFAULT_REGION=%s\n" "eu-central-1")
   }
 
   blackbox.framework.inventory.install.file script.sh </blackbox/module/aws/setup/provision/rootfs/home/%/%/script.sh
