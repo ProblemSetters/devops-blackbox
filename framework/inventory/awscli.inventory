@@ -20,10 +20,8 @@ blackbox.framework.inventory.awscli() {
           chmod +x /usr/local/bin/aws
         }
 
-        rm /usr/local/bin/aws_completer
-        cp /blackbox/framework/inventory/awscli/rootfs/etc/profile.d/20-autocomplete.sh /etc/profile.d/ && {
-          # TODO: check if this needs
-          chmod +x /etc/profile.d/20-autocomplete.sh
+        rm /usr/local/bin/aws_completer && {
+          tee -a /home/ubuntu/.bashrc <<<"complete -C /usr/local/aws-cli/v2/current/bin/aws_completer aws"
         }
 
         tee -a /etc/environment < <(printf "AWS_DEFAULT_REGION=%s\n" "eu-central-1")
