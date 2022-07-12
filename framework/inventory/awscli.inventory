@@ -8,7 +8,7 @@ blackbox.framework.inventory.awscli() {
   }
 
   if [[ ! -x "/usr/local/aws-cli/v2/current/bin/aws" ]]; then
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget less && {
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget && {
       wget -S -O /tmp/awscli.zip --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip && {
         unzip -q /tmp/awscli.zip -d /tmp && {
           /tmp/aws/install
