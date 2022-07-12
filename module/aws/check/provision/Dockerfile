@@ -7,8 +7,6 @@ RUN source \
         \
         &>/dev/null; \
     blackbox.framework.inventory.provision \
-      docker-ce; \
-    blackbox.framework.inventory.provision \
       awscli \
     && \
     rm \
