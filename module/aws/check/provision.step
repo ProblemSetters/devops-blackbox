@@ -1,11 +1,36 @@
 #!/usr/bin/env bash
 blackbox.module.aws.check.provision() {
-  : <<< blackbox.framework.module.abstract.check.provision:step
+  # shellcheck disable=SC2034
+  typeset -a args=("$@")
 
-  docker exec -i "$BLACKBOX_SPAWN" service docker start
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"provision"
+  }
 
-  docker exec -i "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; blackbox.framework.inventory.provision localstack"
+  if ( ! blackbox.framework.flag.enabled STEP_PROVISION ); then
+    (
+      printf "\033[0;36m** BLACKBOX_FLAG__STEP_PROVISION:\033[0m %s\n" "$BLACKBOX_FLAG__STEP_PROVISION"
+      printf "\033[0;37m--\033[0m\n"
+      cat -n <<<"BLACKBOX_FLAG__STEP_PROVISION=no"
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
-  docker exec -i "$BLACKBOX_SPAWN" $BASH <<<"tee -a /etc/hosts < <(printf '127.0.0.1\teu-central-1.hackerrankaws.local\n')"
-  docker exec -i "$BLACKBOX_SPAWN" $BASH <<<"tee -a /etc/environment < <(printf 'AWS_ENDPOINT_URL=%s\n' 'eu-central-1.hackerrankaws.local')"
+    return
+  fi
+
+  if ( grep -q '^init$' <(ps -p 1 -o comm=) ); then
+    docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --net=host --privileged --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" "problemsetters/blackbox:${BLACKBOX_MODULE_NAME}"
+  else
+    docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --net=host --privileged --volume="${BLACKBOX_DIR}:${BLACKBOX_DIR}:ro" --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" "problemsetters/blackbox:${BLACKBOX_MODULE_NAME}"
+  fi
+
+  if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
+    (
+      printf "\n"
+      printf "\033[0;36m** BLACKBOX_PROVISION_WITH_OPTS:\033[0m {...}\n"
+      printf "\033[0;37m--\033[0m\n"
+      cat -n <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${BLACKBOX_PROVISION_WITH_OPTS}")
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+  fi
 }
