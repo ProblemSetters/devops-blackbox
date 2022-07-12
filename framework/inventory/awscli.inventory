@@ -7,7 +7,7 @@ blackbox.framework.inventory.awscli() {
     blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
   }
 
-  if [[ ! -x "/usr/local/aws-cli/v2/current/bin/aws" ]]; then
+  if [[ -x "/usr/local/aws-cli/v2/current/bin/aws" ]]; then
     return
   fi
 
