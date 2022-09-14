@@ -4,4 +4,4 @@ case $- in
   *) return ;;
 esac
 
-export PS1=$(printf "%s[%s]\033[0m " "$(if [[ "$(whoami)" == "root" ]]; then cat <<<"\033[1;41m"; else cat <<<"\033[1;42m"; fi)" "\u@\h:\w")
+export PS1="\[\e[1;42m\][\u@\H:\w]\$\[\e[0m\] "
