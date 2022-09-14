@@ -66,6 +66,12 @@ check\:evaluate:
 shell:
 	docker exec -it -w $(BLACKBOX_USER_QUESTION_DIR) --user="$(BLACKBOX_USER)" $(BLACKBOX_HOST) $(SHELL)
 
+hr:
+	cat <(xargs -r xdg-open 2>/dev/null < <(grep -o 'https://www.hackerrank.com.*' README.md))
+
+gh:
+	cat <(xargs -r xdg-open 2>/dev/null < <(grep -o 'https://github.com.*' README.md))
+
 shell\:spawn:
 	docker exec -it $(BLACKBOX_HOST) $(SHELL) -c "docker exec -it -w $(BLACKBOX_USER_QUESTION_DIR) $(BLACKBOX_SPAWN) $(SHELL)"
 

@@ -7,10 +7,6 @@ blackbox.framework.inventory.awscli() {
     blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
   }
 
-  if [[ -x "/usr/local/aws-cli/v2/current/bin/aws" ]]; then
-    return
-  fi
-
   if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
     apt-get update
   fi
