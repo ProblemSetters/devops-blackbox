@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/localstack.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/localstack.inventory
+# @description Inventory "localstack"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "localstack" inventory
+#
+# @arg $1 readonly,type=string,default=localstack Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "localstack" inventory
+#  blackbox.framework.inventory.provision localstack
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.localstack() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

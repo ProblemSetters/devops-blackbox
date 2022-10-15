@@ -1,5 +1,25 @@
 #!/usr/bin/env bash
+# @file framework/module/abstract/check/evaluate/expect/shell.expect
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/module/abstract/check/evaluate/expect/shell.expect
+# @description Shell expressions expectant
+
+# @section blackbox.framework.module.abstract.check.evaluate.expect.*
 blackbox.framework.module.abstract.check.evaluate.expect.shell() {
+  # @section blackbox.framework.module.abstract.check.evaluate.expect.shell.*
+
+  # Expects a debug output, no score calculation
+  #
+  # @stdin Assert expression
+  #
+  # @noargs
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Debug output
+  #   cat <<ASSERT | blackbox.expect.shell.debug
+  #     printf "debug message"
+  #   ASSERT
   function blackbox.framework.module.abstract.check.evaluate.expect.shell.debug() {
     # shellcheck disable=SC2155
     declare assert=$(</dev/stdin)
@@ -16,11 +36,27 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
       printf "\033[0;37m--\033[0m\n"
       printf "\033[0;37m%s\033[0m\n" "$(cat -n <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}"))"
       printf "\033[0;37m--\033[0m\n"
-    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+    ) | if (tput setaf &>/dev/null); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
     kill $$
   }
 
+  # Expects a shell expression that fails
+  #
+  # @stdin Assert expression
+  #
+  # @arg $1 type=enum<1..100|-> Score value: absolute (if integer) or relative (if "-")
+  # @arg $3 type=string Assert success message
+  # @arg $3 type=string Assert failure message
+  # @arg $4 type=...mixed Assert message args
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Expression that should fail
+  #   cat <<ASSERT | blackbox.framework.module.abstract.check.evaluate.expect.shell.failure - "Success %s" "Fail %s" "message"
+  #     true -eq false
+  #   ASSERT
   function blackbox.framework.module.abstract.check.evaluate.expect.shell.failure() {
     # shellcheck disable=SC2155
     declare assert=$(</dev/stdin)
@@ -36,7 +72,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
 
-    if ( ! (docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}") ); then
+    if ( ! (docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}")); then
       # shellcheck disable=SC2059
       blackbox.framework.module.abstract.check.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else
@@ -45,6 +81,22 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
     fi
   }
 
+  # Expects a shell expression that outputs to the stderr
+  #
+  # @stdin Assert expression
+  #
+  # @arg $1 type=enum<1..100|-> Score value: absolute (if integer) or relative (if "-")
+  # @arg $3 type=string Assert success message
+  # @arg $3 type=string Assert failure message
+  # @arg $4 type=...mixed Assert message args
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Expression that should have a stderr
+  #   cat <<ASSERT | blackbox.framework.module.abstract.check.evaluate.expect.shell.stderr - "Success %s" "Fail %s" "message"
+  #     command-that-does-not-exist
+  #   ASSERT
   function blackbox.framework.module.abstract.check.evaluate.expect.shell.stderr() {
     # shellcheck disable=SC2155
     declare assert=$(</dev/stdin)
@@ -60,7 +112,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
 
-    if ( grep -q . <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 1>/dev/null <<<"source /blackbox/blackbox &>/dev/null" <<<"$assert") ); then
+    if (grep -q . <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 1>/dev/null <<<"source /blackbox/blackbox &>/dev/null" <<<"$assert")); then
       # shellcheck disable=SC2059
       blackbox.framework.module.abstract.check.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else
@@ -69,6 +121,22 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
     fi
   }
 
+  # Expects a shell expression that outputs to the stdout
+  #
+  # @stdin Assert expression
+  #
+  # @arg $1 type=enum<1..100|-> Score value: absolute (if integer) or relative (if "-")
+  # @arg $3 type=string Assert success message
+  # @arg $3 type=string Assert failure message
+  # @arg $4 type=...mixed Assert message args
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Expression that should have a stdout
+  #   cat <<ASSERT | blackbox.framework.module.abstract.check.evaluate.expect.shell.stdout - "Success %s" "Fail %s" "message"
+  #     whoami
+  #   ASSERT
   function blackbox.framework.module.abstract.check.evaluate.expect.shell.stdout() {
     # shellcheck disable=SC2155
     declare assert=$(</dev/stdin)
@@ -84,7 +152,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
 
-    if ( grep -q . <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}") ); then
+    if (grep -q . <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}")); then
       # shellcheck disable=SC2059
       blackbox.framework.module.abstract.check.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else
@@ -93,6 +161,22 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
     fi
   }
 
+  # Expects a shell expression that succeeds
+  #
+  # @stdin Assert expression
+  #
+  # @arg $1 type=enum<1..100|-> Score value: absolute (if integer) or relative (if "-")
+  # @arg $3 type=string Assert success message
+  # @arg $3 type=string Assert failure message
+  # @arg $4 type=...mixed Assert message args
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Expression that should succeed
+  #   cat <<ASSERT | blackbox.framework.module.abstract.check.evaluate.expect.shell.success - "Success %s" "Fail %s" "message"
+  #     true -eq true
+  #   ASSERT
   function blackbox.framework.module.abstract.check.evaluate.expect.shell.success() {
     # shellcheck disable=SC2155
     declare assert=$(</dev/stdin)
@@ -108,7 +192,7 @@ blackbox.framework.module.abstract.check.evaluate.expect.shell() {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
 
-    if ( docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}" ); then
+    if (docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}"); then
       # shellcheck disable=SC2059
       blackbox.framework.module.abstract.check.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else

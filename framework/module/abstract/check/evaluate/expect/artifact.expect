@@ -1,5 +1,28 @@
 #!/usr/bin/env bash
+# @file framework/module/abstract/check/evaluate/expect/artifact.expect
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/module/abstract/check/evaluate/expect/artifact.expect
+# @description Artifact collection expectant
+
+# @section blackbox.framework.module.abstract.check.evaluate.expect.*
 blackbox.framework.module.abstract.check.evaluate.expect.artifact() {
+  # @section blackbox.framework.module.abstract.check.evaluate.expect.artifact.*
+
+  # Expects a list of artifacts to collect
+  #
+  # @stdin Assert expression
+  #
+  # @noargs
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Collect a list of artifacts
+  #   cat <<ASSERT | blackbox.framework.module.abstract.check.evaluate.expect.artifact.collection
+  #     printenv
+  #     /etc/passwd
+  #     whoami
+  #     any-other-command-output-or-file
+  #   ASSERT
   function blackbox.framework.module.abstract.check.evaluate.expect.artifact.collection() {
     # shellcheck disable=SC2155
     declare assert=$(</dev/stdin)

@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/kubernetes.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/kubernetes.module
+# @description Kubernetes module
+
+# @section blackbox.module.*
 blackbox.module.kubernetes() {
   : <<< blackbox.framework.module.abstract
 }

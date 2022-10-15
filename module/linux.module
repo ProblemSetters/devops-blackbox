@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/linux.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/linux.module
+# @description Linux module
+
+# @section blackbox.module.*
 blackbox.module.linux() {
   : <<< blackbox.framework.module.abstract
 }

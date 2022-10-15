@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/linux/check.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/linux/check.action
+# @description Linux module "check" action
+
+# @section blackbox.module.linux.*
 blackbox.module.linux.check() {
   : <<< blackbox.framework.module.abstract.check:action
 }

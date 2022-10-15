@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/linux/setup.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/linux/setup.action
+# @description Linux module "setup" action
+
+# @section blackbox.module.linux.*
 blackbox.module.linux.setup() {
   : <<< blackbox.framework.module.abstract.setup:action
 }

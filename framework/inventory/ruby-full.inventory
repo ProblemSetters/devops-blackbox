@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/ruby-full.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/ruby-full.inventory
+# @description Inventory "ruby-full"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "ruby-full" inventory
+#
+# @arg $1 readonly,type=string,default=ruby-full Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "ruby-full" inventory
+#  blackbox.framework.inventory.provision ruby-full
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.ruby-full() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/ansible/check/evaluate.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/ansible/check/evaluate.step
+# @description Ansible module "check" action "evaluate" step
+
+# @section blackbox.module.ansible.check.*
 blackbox.module.ansible.check.evaluate() {
   : <<< blackbox.framework.module.abstract.check.evaluate:step
 }

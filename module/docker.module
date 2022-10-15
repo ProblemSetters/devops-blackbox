@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/docker.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/docker.module
+# @description Docker module
+
+# @section blackbox.module.*
 blackbox.module.docker() {
   : <<< blackbox.framework.module.abstract
 }

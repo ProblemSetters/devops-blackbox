@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/docker/check.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/docker/check.action
+# @description Docker module "check" action
+
+# @section blackbox.module.docker.*
 blackbox.module.docker.check() {
   : <<< blackbox.framework.module.abstract.check:action
 }

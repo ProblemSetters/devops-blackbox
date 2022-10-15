@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/linux/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/linux/setup/provision.step
+# @description Linux module "setup" action "provision" step
+
+# @section blackbox.module.linux.setup.*
 blackbox.module.linux.setup.provision() {
   : <<< blackbox.framework.module.abstract.setup.provision:step
 

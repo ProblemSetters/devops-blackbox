@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/puppet/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/puppet/setup/provision.step
+# @description Puppet module "setup" action "provision" step
+
+# @section blackbox.module.puppet.setup.*
 blackbox.module.puppet.setup.provision() {
   : <<< blackbox.framework.module.abstract.setup.provision:step
 

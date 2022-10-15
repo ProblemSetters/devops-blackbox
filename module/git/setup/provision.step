@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/git/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/git/setup/provision.step
+# @description Git module "setup" action "provision" step
+
+# @section blackbox.module.git.setup.*
 blackbox.module.git.setup.provision() {
   : <<< blackbox.framework.module.abstract.setup.provision:step
 

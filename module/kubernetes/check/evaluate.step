@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/kubernetes/check/evaluate.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/kubernetes/check/evaluate.step
+# @description Kubernetes module "check" action "evaluate" step
+
+# @section blackbox.module.kubernetes.check.*
 blackbox.module.kubernetes.check.evaluate() {
   : <<< blackbox.framework.module.abstract.check.evaluate:step
 }

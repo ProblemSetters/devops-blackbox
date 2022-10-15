@@ -1,5 +1,23 @@
 #!/usr/bin/env bash
+# @file framework/module/abstract/check/evaluate/assert.evaluate
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/module/abstract/check/evaluate/assert.evaluate
+# @description Step "evaluate" asserter
+
+# @section blackbox.framework.module.abstract.check.evaluate.*
 blackbox.framework.module.abstract.check.evaluate.assert() {
+  # @section blackbox.framework.module.abstract.check.evaluate.assert.*
+
+  # Asserts "false"
+  #
+  # @arg $1 type=string Assert expression
+  # @arg $2 type=enum<1..100|-> Score value: absolute (if integer) or relative (if "-")
+  # @arg $3 type=string Assert message
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Asserts the false expression "(false -eq true)" with missing "10" score and a specific message that has an argument
+  #   blackbox.framework.module.abstract.check.evaluate.assert.false "(false -eq true)" 10 "Assert message with argument '%s'" "argument"
   function blackbox.framework.module.abstract.check.evaluate.assert.false() {
     typeset assert=$1
     typeset score=$2
@@ -39,6 +57,15 @@ blackbox.framework.module.abstract.check.evaluate.assert() {
     false
   }
 
+  # Normalizes assert expression for output
+  #
+  # @arg $1 type=string Assert expression
+  #
+  # @stdout Normalized assert
+  #
+  # @example
+  #   # Normalize assert expression
+  #   blackbox.framework.module.abstract.check.evaluate.assert.normalize "(true -eq true)"
   function blackbox.framework.module.abstract.check.evaluate.assert.normalize() {
     typeset assert=$1
 
@@ -49,6 +76,17 @@ blackbox.framework.module.abstract.check.evaluate.assert() {
     awk '{ printf "%s%s", EOL, $0; EOL=" "}' <(sed 's/#.*$//; /^$/d; s/^[[:space:]]\+//g' <<<"$assert")
   }
 
+  # Asserts "true"
+  #
+  # @arg $1 type=string Assert expression
+  # @arg $2 type=enum<1..100|-> Score value: absolute (if integer) or relative (if "-")
+  # @arg $3 type=string Assert message
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Asserts the true expression "(true -eq true)" with "10" score and a specific message that has an argument
+  #   blackbox.framework.module.abstract.check.evaluate.assert.true "(true -eq true)" 10 "Assert message with argument '%s'" "argument"
   function blackbox.framework.module.abstract.check.evaluate.assert.true() {
     typeset assert=$1
     typeset score=$2

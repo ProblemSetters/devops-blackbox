@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/puppet.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/puppet.module
+# @description Puppet module
+
+# @section blackbox.module.*
 blackbox.module.puppet() {
   : <<< blackbox.framework.module.abstract
 }

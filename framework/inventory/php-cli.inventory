@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/php-cli.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/php-cli.inventory
+# @description Inventory "php-cli"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "php-cli" inventory
+#
+# @arg $1 readonly,type=string,default=php-cli Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "php-cli" inventory
+#  blackbox.framework.inventory.provision php-cli
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.php-cli() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

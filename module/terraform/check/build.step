@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/terraform/check/build.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform/check/build.step
+# @description Terraform module "check" action "build" step
+
+# @section blackbox.module.terraform.check.*
 blackbox.module.terraform.check.build() {
   : <<< blackbox.framework.module.abstract.check.build:step
 }

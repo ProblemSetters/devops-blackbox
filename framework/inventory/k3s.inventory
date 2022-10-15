@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/k3s.inventory
+# @brief https://k3shub.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/k3s.inventory
+# @description Inventory "k3s"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "k3s" inventory
+#
+# @arg $1 readonly,type=string,default=k3s Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "k3s" inventory
+#  blackbox.framework.inventory.provision k3s
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.k3s() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

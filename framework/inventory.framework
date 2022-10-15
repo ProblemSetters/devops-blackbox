@@ -1,6 +1,26 @@
 #!/usr/bin/env bash
+# @file framework/inventory.framework
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory.framework
+# @description Inventory handler
+
+# @section blackbox.framework.*
 blackbox.framework.inventory() {
+  # @section blackbox.framework.inventory.*
   blackbox.framework.inventory.install() {
+    # @section blackbox.framework.inventory.install.*
+
+    # Creates a directory at the specified path with optional permissions
+    #
+    # @arg $1 type=path Path
+    # @arg $2 type=uid,default=1000 Owner UID
+    # @arg $3 type=gid,default=1000 Owner GID
+    # @arg $4 type=chmod,default=0775 Mode
+    #
+    # @example
+    #  # Create a directory at the specified path
+    #  blackbox.framework.inventory.install.directory /path/to/the/directory
+    #  # Create a directory at the specified path with permissions: uid/gid and chmod
+    #  blackbox.framework.inventory.install.directory /path/to/the/directory 0 0 0777
     function blackbox.framework.inventory.install.directory() {
       typeset destination=$1
       typeset owner=${2:-$(cut -d ":" -f 1 <<<"$BLACKBOX_USER")}
@@ -14,6 +34,20 @@ blackbox.framework.inventory() {
       install -o "$owner" -g "$group" -m "$mode" -d "$destination"
     }
 
+    # Creates a file at the specified path with optional permissions
+    #
+    # @stdin File contents
+    #
+    # @arg $1 type=path Path
+    # @arg $2 type=uid,default=1000 Owner UID
+    # @arg $3 type=gid,default=1000 Owner GID
+    # @arg $4 type=chmod,default=0664 Mode
+    #
+    # @example
+    #  # Create a file at the specified path
+    #  blackbox.framework.inventory.install.file /path/to/the/destination/file </path/to/the/source/file
+    #  # Create a file at the specified path with permissions: uid/gid and chmod
+    #  blackbox.framework.inventory.install.file /path/to/the/destination/file 0 0 0777 </path/to/the/source/file
     function blackbox.framework.inventory.install.file() {
       # shellcheck disable=SC2155
       declare source=$(</dev/stdin)
@@ -38,6 +72,21 @@ blackbox.framework.inventory() {
   }; blackbox.framework.inventory.install
 
   blackbox.framework.inventory.heap() {
+    # @section blackbox.framework.heap.*
+
+    # Allocates a "heap" directory dedicated to a particular question to store the question's temporary resources
+    #
+    # @noargs
+    #
+    # @example
+    #  # Allocate a "heap" directory
+    #  blackbox.framework.inventory.heap.allocate && {
+    #    # do something
+    #    # then release "heap" directory
+    #    blackbox.framework.inventory.heap.release
+    #  }
+    #
+    # @see blackbox.framework.inventory.heap.release
     function blackbox.framework.inventory.heap.allocate() {
       {
         blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
@@ -49,6 +98,19 @@ blackbox.framework.inventory() {
       }
     }
 
+    # Releases a "heap" directory dedicated to a particular question to store the question's temporary resources
+    #
+    # @noargs
+    #
+    # @example
+    #  # Release a "heap" directory
+    #  blackbox.framework.inventory.heap.allocate && {
+    #    # do something
+    #    # then release "heap" directory
+    #    blackbox.framework.inventory.heap.release
+    #  }
+    #
+    # @see blackbox.framework.inventory.heap.allocate
     function blackbox.framework.inventory.heap.release() {
       {
         blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
@@ -59,6 +121,19 @@ blackbox.framework.inventory() {
     }
   }; blackbox.framework.inventory.heap
 
+  # @section blackbox.framework.inventory.*
+
+  # Provisions an inventory
+  #
+  # @arg $1 type=string Inventory name
+  # @arg $2 type=...string Optional deps
+  #
+  # @exitcode 0 If the inventory is provisioned
+  # @exitcode 1 If the inventory is not provisioned
+  #
+  # @example
+  #  # Provision the inventory named "git"
+  #  blackbox.framework.inventory.provision git
   function blackbox.framework.inventory.provision() {
     typeset name=$1
     typeset -a with_deps=("${@:2}")

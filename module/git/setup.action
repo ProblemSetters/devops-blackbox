@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/git/setup.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/git/setup.action
+# @description Git module "setup" action
+
+# @section blackbox.module.git.*
 blackbox.module.git.setup() {
   : <<< blackbox.framework.module.abstract.setup:action
 }

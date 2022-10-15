@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/terraform/check/evaluate.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform/check/evaluate.step
+# @description Terraform module "check" action "evaluate" step
+
+# @section blackbox.module.terraform.check.*
 blackbox.module.terraform.check.evaluate() {
   : <<< blackbox.framework.module.abstract.check.evaluate:step
 }

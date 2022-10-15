@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/perl.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/perl.inventory
+# @description Inventory "perl"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "perl" inventory
+#
+# @arg $1 readonly,type=string,default=perl Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "perl" inventory
+#  blackbox.framework.inventory.provision perl
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.perl() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

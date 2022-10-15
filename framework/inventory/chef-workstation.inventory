@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/chef-workstation.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/chef-workstation.inventory
+# @description Inventory "chef-workstation"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "chef-workstation" inventory
+#
+# @arg $1 readonly,type=string,default=chef-workstation Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "chef-workstation" inventory
+#  blackbox.framework.inventory.provision chef-workstation
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.chef-workstation() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

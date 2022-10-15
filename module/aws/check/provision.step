@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/aws/check/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/aws/check/provision.step
+# @description AWS module "check" action "provision" step
+
+# @section blackbox.module.aws.check.*
 blackbox.module.aws.check.provision() {
   # shellcheck disable=SC2034
   typeset -a args=("$@")

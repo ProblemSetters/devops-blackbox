@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/terraform.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform.module
+# @description Terraform module
+
+# @section blackbox.module.*
 blackbox.module.terraform() {
   : <<< blackbox.framework.module.abstract
 }

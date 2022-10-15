@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/puppet/check/evaluate.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/puppet/check/evaluate.step
+# @description Puppet module "check" action "evaluate" step
+
+# @section blackbox.module.puppet.check.*
 blackbox.module.puppet.check.evaluate() {
   : <<< blackbox.framework.module.abstract.check.evaluate:step
 }

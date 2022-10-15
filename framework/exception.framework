@@ -1,5 +1,22 @@
 #!/usr/bin/env bash
+# @file framework/exception.framework
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/exception.framework
+# @description Exception handler
+
+# @section blackbox.framework.*
 blackbox.framework.exception() {
+  # @section blackbox.framework.exception.*
+
+  # Raises a formatted exception in "printf" format
+  #
+  # @arg $1 type=string Exception message
+  # @arg $2 type=...mixed Exception args
+  #
+  # @stdout Formatted exception
+  #
+  # @example
+  #   # Raise a formatted exception
+  #   blackbox.framework.exception.raise "exception code '%s' message" "code-123"
   function blackbox.framework.exception.raise() {
     typeset message=$1
     typeset -a args=("${@:2}")
@@ -18,6 +35,6 @@ blackbox.framework.exception() {
       awk '{ printf "\033[0;33mat %s (%s:%d)\033[0m\n", $2, $3, $1 }' <(local depth=0; while $(echo caller "$depth"); do ((depth++)); done)
     ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
-    kill $$
+    #kill $$
   }
 }

@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/aws/setup.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/aws/setup.action
+# @description AWS module "setup" action
+
+# @section blackbox.module.aws.*
 blackbox.module.aws.setup() {
   : <<< blackbox.framework.module.abstract.setup:action
 }

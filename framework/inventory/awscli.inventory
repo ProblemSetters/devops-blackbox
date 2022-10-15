@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/awscli.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/awscli.inventory
+# @description Inventory "awscli"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "awscli" inventory
+#
+# @arg $1 readonly,type=string,default=awscli Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "awscli" inventory
+#  blackbox.framework.inventory.provision awscli
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.awscli() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

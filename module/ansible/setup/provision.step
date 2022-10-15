@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/ansible/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/ansible/setup/provision.step
+# @description Ansible module "setup" action "provision" step
+
+# @section blackbox.module.ansible.setup.*
 blackbox.module.ansible.setup.provision() {
   : <<< blackbox.framework.module.abstract.setup.provision:step
 

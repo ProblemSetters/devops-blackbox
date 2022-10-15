@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/shell.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/shell.module
+# @description Shell module
+
+# @section blackbox.module.*
 blackbox.module.shell() {
   : <<< blackbox.framework.module.abstract
 }
