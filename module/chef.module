@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/chef.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/chef.module
+# @description Chef module
+
+# @section blackbox.module.*
 blackbox.module.chef() {
   : <<< blackbox.framework.module.abstract
 }

@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/git/check/build.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/git/check/build.step
+# @description Git module "check" action "build" step
+
+# @section blackbox.module.git.check.*
 blackbox.module.git.check.build() {
   : <<< blackbox.framework.module.abstract.check.build:step
 

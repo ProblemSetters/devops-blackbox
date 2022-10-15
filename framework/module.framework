@@ -1,5 +1,23 @@
 #!/usr/bin/env bash
+# @file framework/module.framework
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/module.framework
+# @description Module handler
+
+# @section blackbox.framework.*
 blackbox.framework.module() {
+  # @section blackbox.framework.module.*
+
+  # Loads a specific module
+  #
+  # @arg $1 type=enum<ansible|aws|chef|docker|git|kubernetes|linux|puppet|shell|terraform> Module name
+  # @arg $2 type=...mixed Module args
+  #
+  # @exitcode 0 If the module is loaded
+  # @exitcode 1 If the module is not loaded
+  #
+  # @example
+  #  # Load the "git" module with additional module args
+  #  blackbox.framework.module.load docker setup "1234567-docker-question-id"
   function blackbox.framework.module.load() {
     typeset module_name=$1
     typeset -a module_args=("${@:2}")

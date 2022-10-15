@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/puppet-agent.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/puppet-agent.inventory
+# @description Inventory "puppet-agent"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "puppet-agent" inventory
+#
+# @arg $1 readonly,type=string,default=puppet-agent Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "puppet-agent" inventory
+#  blackbox.framework.inventory.provision puppet-agent
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.puppet-agent() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/python3.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/python3.inventory
+# @description Inventory "python3"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "python3" inventory
+#
+# @arg $1 readonly,type=string,default=python3 Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "python3" inventory
+#  blackbox.framework.inventory.provision python3
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.python3() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

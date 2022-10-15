@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/ansible.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/ansible.inventory
+# @description Inventory "ansible"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "ansible" inventory
+#
+# @arg $1 readonly,type=string,default=ansible Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "ansible" inventory
+#  blackbox.framework.inventory.provision ansible
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.ansible() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

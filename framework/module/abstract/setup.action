@@ -1,4 +1,23 @@
 #!/usr/bin/env bash
+# @file framework/module/abstract/setup.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/module/abstract/setup.action
+# @description Abstract module "setup" action
+
+# @section blackbox.framework.module.abstract.*
+
+# Implements a common logical part of "setup" action that each module inherits
+#
+# @arg $1 type=string Question ID
+# @arg $2 type=...mixed Step args
+#
+# @example
+#   #!/usr/bin/env bash
+#   # Example of a module "setup" action inheriting an abstraction
+#   blackbox.module.my-module.setup() {
+#     # do something (if needed), then specify where the abstraction should be applied
+#     : <<< blackbox.framework.module.abstract.setup:action
+#     # do something (if needed)
+#   }
 blackbox.framework.module.abstract.setup() {
   # shellcheck disable=SC2034
   typeset question_id=$1

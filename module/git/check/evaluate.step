@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/git/check/evaluate.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/git/check/evaluate.step
+# @description Git module "check" action "evaluate" step
+
+# @section blackbox.module.git.check.*
 blackbox.module.git.check.evaluate() {
   : <<< blackbox.framework.module.abstract.check.evaluate:step
 }

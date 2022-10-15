@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/jq.inventory
+# @brief https://jqhub.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/jq.inventory
+# @description Inventory "jq"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "jq" inventory
+#
+# @arg $1 readonly,type=string,default=jq Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "jq" inventory
+#  blackbox.framework.inventory.provision jq
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.jq() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

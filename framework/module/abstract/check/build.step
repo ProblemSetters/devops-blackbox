@@ -1,4 +1,22 @@
 #!/usr/bin/env bash
+# @file framework/module/abstract/check/build.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/module/abstract/check/build.step
+# @description Abstract module "check" action "build" step
+
+# @section blackbox.framework.module.abstract.check.*
+
+# Implements a common logical part of "check" action "build" step that each module inherits
+#
+# @arg $1 type=...mixed Step args
+#
+# @example
+#   #!/usr/bin/env bash
+#   # Example of a module "check" action "build" step inheriting an abstraction
+#   blackbox.module.my-module.check.build() {
+#     # do something (if needed), then specify where the abstraction should be applied
+#     : <<< blackbox.framework.module.abstract.check.build:step
+#     # do something (if needed)
+#   }
 blackbox.framework.module.abstract.check.build() {
   # shellcheck disable=SC2034
   typeset -a args=("$@")

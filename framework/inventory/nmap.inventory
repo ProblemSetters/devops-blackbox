@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/nmap.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/nmap.inventory
+# @description Inventory "nmap"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "nmap" inventory
+#
+# @arg $1 readonly,type=string,default=nmap Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "nmap" inventory
+#  blackbox.framework.inventory.provision nmap
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.nmap() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

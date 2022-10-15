@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/cron.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/cron.inventory
+# @description Inventory "cron"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "cron" inventory
+#
+# @arg $1 readonly,type=string,default=cron Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "cron" inventory
+#  blackbox.framework.inventory.provision cron
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.cron() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

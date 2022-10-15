@@ -1,5 +1,28 @@
 #!/usr/bin/env bash
+# @file framework/module/abstract/check/evaluate/expect/file.expect
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/module/abstract/check/evaluate/expect/file.expect
+# @description File expressions expectant
+
+# @section blackbox.framework.module.abstract.check.evaluate.expect.*
 blackbox.framework.module.abstract.check.evaluate.expect.file() {
+  # @section blackbox.framework.module.abstract.check.evaluate.expect.file.*
+
+  # Expects an existing file
+  #
+  # @stdin Assert expression
+  #
+  # @arg $1 type=enum<1..100|-> Score value: absolute (if integer) or relative (if "-")
+  # @arg $3 type=string Assert success message
+  # @arg $3 type=string Assert failure message
+  # @arg $4 type=...mixed Assert message args
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Expression that has the existing file
+  #   cat <<ASSERT | blackbox.framework.module.abstract.check.evaluate.expect.file.exists - "Success %s" "Fail %s" "message"
+  #     /etc/passwd
+  #   ASSERT
   function blackbox.framework.module.abstract.check.evaluate.expect.file.exists() {
     # shellcheck disable=SC2155
     declare assert=$(</dev/stdin)

@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/docker-ce.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/docker-ce.inventory
+# @description Inventory "docker-ce"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "docker-ce" inventory
+#
+# @arg $1 readonly,type=string,default=docker-ce Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "docker-ce" inventory
+#  blackbox.framework.inventory.provision docker-ce
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.docker-ce() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

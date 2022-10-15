@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/kubernetes/setup.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/kubernetes/setup.action
+# @description Kubernetes module "setup" action
+
+# @section blackbox.module.kubernetes.*
 blackbox.module.kubernetes.setup() {
   : <<< blackbox.framework.module.abstract.setup:action
 }

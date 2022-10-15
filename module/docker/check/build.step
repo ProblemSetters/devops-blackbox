@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/docker/check/build.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/docker/check/build.step
+# @description Docker module "check" action "build" step
+
+# @section blackbox.module.docker.check.*
 blackbox.module.docker.check.build() {
   : <<< blackbox.framework.module.abstract.check.build:step
 }

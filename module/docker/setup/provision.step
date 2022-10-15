@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/docker/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/docker/setup/provision.step
+# @description Docker module "setup" action "provision" step
+
+# @section blackbox.module.docker.setup.*
 blackbox.module.docker.setup.provision() {
   : <<< blackbox.framework.module.abstract.setup.provision:step
 

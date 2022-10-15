@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/docker-compose.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/docker-compose.inventory
+# @description Inventory "docker-compose"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "docker-compose" inventory
+#
+# @arg $1 readonly,type=string,default=docker-compose Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "docker-compose" inventory
+#  blackbox.framework.inventory.provision docker-compose
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.docker-compose() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

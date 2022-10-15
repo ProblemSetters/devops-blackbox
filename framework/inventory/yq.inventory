@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/yq.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/yq.inventory
+# @description Inventory "yq"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "yq" inventory
+#
+# @arg $1 readonly,type=string,default=yq Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "yq" inventory
+#  blackbox.framework.inventory.provision yq
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.yq() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

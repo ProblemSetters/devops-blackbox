@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/shell/check/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/shell/check/provision.step
+# @description Shell module "check" action "provision" step
+
+# @section blackbox.module.shell.check.*
 blackbox.module.shell.check.provision() {
   : <<< blackbox.framework.module.abstract.check.provision:step
 }

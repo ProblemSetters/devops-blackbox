@@ -1,4 +1,23 @@
 #!/usr/bin/env bash
+# @file framework/module/abstract.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/module/abstract.module
+# @description Abstract module
+
+# @section blackbox.framework.module.*
+
+# Implements a common logical part that each module inherits
+#
+# @arg $1 type=enum<setup|check> Action name
+# @arg $2 type=...mixed Action args
+#
+# @example
+#   #!/usr/bin/env bash
+#   # Example of a module inheriting an abstraction
+#   blackbox.module.my-module() {
+#     # do something (if needed), then specify where the abstraction should be applied
+#     : <<< blackbox.framework.module.abstract
+#     # do something (if needed)
+#   }
 blackbox.framework.module.abstract() {
   typeset action_name=$1
   typeset -a action_args=("${@:2}")

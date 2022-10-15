@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file framework/module/abstract/check/evaluate/expect.evaluate
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/module/abstract/check/evaluate/expect.evaluate
+# @description Step "evaluate" expectant
+
+# @section blackbox.framework.module.abstract.check.evaluate.*
 blackbox.framework.module.abstract.check.evaluate.expect() {
   {
     blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""

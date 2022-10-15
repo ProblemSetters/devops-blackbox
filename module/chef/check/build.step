@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/chef/check/build.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/chef/check/build.step
+# @description Chef module "check" action "build" step
+
+# @section blackbox.module.chef.setup.*
 blackbox.module.chef.check.build() {
   : <<< blackbox.framework.module.abstract.check.build:step
 }

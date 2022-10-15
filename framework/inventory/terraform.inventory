@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/terraform.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/terraform.inventory
+# @description Inventory "terraform"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "terraform" inventory
+#
+# @arg $1 readonly,type=string,default=terraform Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "terraform" inventory
+#  blackbox.framework.inventory.provision terraform
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.terraform() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

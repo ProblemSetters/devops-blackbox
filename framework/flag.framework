@@ -1,5 +1,24 @@
 #!/usr/bin/env bash
+# @file framework/flag.framework
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/flag.framework
+# @description Flag handler
+
+# @section blackbox.framework.*
 blackbox.framework.flag() {
+  # @section blackbox.framework.flag.*
+
+  # Checks if the flag of the specified name is enabled
+  #
+  # @arg $1 type=string Flag name
+  #
+  # @exitcode 0 If the flag is enabled
+  # @exitcode 1 If the flag is disabled
+  #
+  # @example
+  #  # Check if the flag of the specified name is enabled
+  #  if ( blackbox.framework.flag.enabled STEP_PROVISION ); then
+  #    # do something
+  #  fi
   function blackbox.framework.flag.enabled() {
     typeset name=$1
 

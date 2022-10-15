@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/puppet/setup.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/puppet/setup.action
+# @description Puppet module "setup" action
+
+# @section blackbox.module.puppet.*
 blackbox.module.puppet.setup() {
   : <<< blackbox.framework.module.abstract.setup:action
 }

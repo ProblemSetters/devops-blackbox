@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/ansible/setup.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/ansible/setup.action
+# @description Ansible module "setup" action
+
+# @section blackbox.module.ansible.*
 blackbox.module.ansible.setup() {
   : <<< blackbox.framework.module.abstract.setup:action
 }

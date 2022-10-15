@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/terraform/check/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform/check/provision.step
+# @description Terraform module "check" action "provision" step
+
+# @section blackbox.module.terraform.check.*
 blackbox.module.terraform.check.provision() {
   : <<< blackbox.framework.module.abstract.check.provision:step
 }

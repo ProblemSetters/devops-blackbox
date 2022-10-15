@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/aws.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/aws.module
+# @description AWS module
+
+# @section blackbox.module.*
 blackbox.module.aws() {
   : <<< blackbox.framework.module.abstract
 }

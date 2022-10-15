@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
+# @file module/docker/check/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/docker/check/provision.step
+# @description Docker module "check" action "provision" step
+
+# @section blackbox.module.docker.check.*
 blackbox.module.docker.check.provision() {
   : <<< blackbox.framework.module.abstract.check.provision:step
 
   docker exec -i "$BLACKBOX_SPAWN" service docker start
 }
-

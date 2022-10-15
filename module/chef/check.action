@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/chef/check.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/chef/check.action
+# @description Chef module "check" action
+
+# @section blackbox.module.chef.*
 blackbox.module.chef.check() {
   : <<< blackbox.framework.module.abstract.check:action
 }

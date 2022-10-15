@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
+# @file framework/inventory/openssh-client.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/openssh-client.inventory
+# @description Inventory "openssh-cli"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "openssh-client" inventory
+#
+# @arg $1 readonly,type=string,default=openssh-client Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "openssh-client" inventory
+#  blackbox.framework.inventory.provision openssh-client
+#
+# @see blackbox.framework.inventory.provision
 blackbox.framework.inventory.openssh-client() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")

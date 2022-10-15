@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# @file module/docker/check/evaluate.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/docker/check/evaluate.step
+# @description Docker module "check" action "evaluate" step
+
+# @section blackbox.module.docker.check.*
 blackbox.module.docker.check.evaluate() {
   : <<< blackbox.framework.module.abstract.check.evaluate:step
 }

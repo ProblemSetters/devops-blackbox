@@ -1,4 +1,40 @@
 #!/usr/bin/env bash
+# @file blackbox
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/blackbox
+# @description Blackbox evaluation framework
+
+# @description Main executable
+#
+# @arg $1 type=enum<ansible|aws|chef|docker|git|kubernetes|linux|puppet|shell|terraform> Module name
+# @arg $2 type=enum<setup|check> Action name
+# @arg $3 type=string Question ID
+#
+# @set BLACKBOX_FLAG__DEBUG_MODE type=enum<yes|no> Debug flag
+# @set BLACKBOX_FLAG__STEP_PROVISION type=enum<yes|no> Provision step flag, indicates whether the "provision" step is included or excluded (for development process only)
+# @set BLACKBOX_FLAG__STEP_BUILD type=enum<yes|no> Build step flag, indicates whether the "build" step is included or excluded (for development process only)
+# @set BLACKBOX_FLAG__STEP_EVALUATE type=enum<yes|no> Evaluate step flag, indicates whether the "evaluate" step is included or excluded (for development process only)
+# @set BLACKBOX_PROVISION_WITH_OPTS type=function,default=auto Provision hook definition, a function that implements an additional set of instructions that must be executed during the "provision" step
+# @set BLACKBOX_BUILD_WITH_OPTS type=function,default=auto Build hook definition, a function that implements an additional set of instructions that must be executed during the "build" step
+#
+# @set BLACKBOX_DIR readonly,type=string,default=auto Path to the Blackbox installation directory (sets automatically, do not override)
+# @set BLACKBOX_SPAWN readonly,type=string,default=auto Name of the docker container in which the question is being evaluated (sets automatically, do not override)
+# @set BLACKBOX_USER readonly,type=uid,default=auto ID of the user in the docker container in which the question is being evaluated (sets automatically, do not override)
+# @set BLACKBOX_USER_NAME readonly,type=string,default=auto Name of the user in the docker container in which the question is being evaluated (sets automatically, do not override)
+# @set BLACKBOX_USER_HOME readonly,type=path,default=auto Path to the home directory of the user in the docker container in which the question is being evaluated (sets automatically, do not override)
+# @set BLACKBOX_USER_QUESTION_DIR readonly,type=path,default=auto Path to the question directory in the docker container in which the question is being evaluated (sets automatically, do not override)
+# @set BLACKBOX_VERSION readonly,type=string,default=auto [DEPRECATED] Version of the Blackbox to use (sets automatically, do not override)
+# @set BLACKBOX_HEAP_DIR readonly,type=path,default=auto Path to the question "heap" directory, a place where question assets might be generated (sets automatically, do not override)
+# @set BLACKBOX_STORAGE_DIR readonly,type=path,default=auto Path to the question "artifacts" directory, a place where question artifacts will be generated (sets automatically, do not override)
+# @set BLACKBOX_BUILD_LOG readonly,type=path,default=auto Path to the build log (sets automatically, do not override)
+# @set BLACKBOX_BUILD_STREAM_DISPLAY_LINES readonly,type=integer,default=auto Number of output lines before trim and ellipsis
+#
+# @example
+#   # Setup the "git" module question with the id "1234567-git-question-id"
+#   /path/to/blackbox git setup "1234567-git-question-id"
+#   # Evaluate the "git" module question with the id "1234567-git-question-id"
+#   /path/to/blackbox git check "1234567-git-question-id"
+#
+# @see blackbox.__init
 blackbox() {
   export BLACKBOX_DIR=/blackbox
   # shellcheck disable=SC2155
@@ -41,7 +77,20 @@ blackbox() {
   # shellcheck disable=SC2034
   typeset -gx BLACKBOX_QUESTION_ID=$3
 
+  # @section blackbox.*
   blackbox.framework() {
+    # @section blackbox.framework.*
+
+    # Includes a path as namespace, handles if file has "OOP encapsulation" instruction
+    #
+    # @arg $1 type=string Namespace to load
+    # @arg $2 type=...mixed Namespace args
+    #
+    # @example
+    #  # Include a path as namespace, handles if file has "OOP encapsulation" instruction
+    #  blackbox.framework.import blackbox.framework.exception
+    #  # Include a path as namespace, handles if file has "OOP encapsulation" instruction with args
+    #  blackbox.framework.import "blackbox.module.git.setup.provision:step" "arg1" "arg2"
     function blackbox.framework.import() {
       typeset namespace=$1
       typeset -a args=("${@:2}")
@@ -68,12 +117,12 @@ blackbox() {
         blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
 
         if ( ! declare -f blackbox.framework.exception.raise &>/dev/null ); then
-          printf "error: *** definition '%s' does not exists\n" "$destination_definition_path"
+          printf "error: *** definition '%s' does not exist\n" "$destination_definition_path"
 
           kill $$
         fi
 
-        blackbox.framework.exception.raise "definition '%s' does not exists" "$destination_definition_path"
+        blackbox.framework.exception.raise "definition '%s' does not exist" "$destination_definition_path"
       fi
 
       # shellcheck disable=SC1090
@@ -110,12 +159,12 @@ blackbox() {
         blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
 
         if ( ! declare -f blackbox.framework.exception.raise &>/dev/null ); then
-          printf "error: *** definition '%s' does not exists\n" "$source_definition_path"
+          printf "error: *** definition '%s' does not exist\n" "$source_definition_path"
 
           kill $$
         fi
 
-        blackbox.framework.exception.raise "definition '%s' does not exists" "$source_definition_path"
+        blackbox.framework.exception.raise "definition '%s' does not exist" "$source_definition_path"
       fi
 
       # shellcheck disable=SC1090
@@ -147,6 +196,21 @@ blackbox() {
       eval "$(printf '%s() { %s }; %s' "$destination_namespace_name" "${source_definition/${source_definition_destination_placeholder}/${destination_definition}}" "$destination_namespace_name")" "${args[@]}"
     }
 
+    # Outputs the formatted trace
+    #
+    # @stdin Trace header
+    #
+    # @arg $1 type=string Entrypoint
+    # @arg $2 type=...mixed Trace args
+    # @arg $3 type=...mixed Trace opts
+    #
+    # @stdout Formatted trace with optional header
+    #
+    # @example
+    #   # Output the formatted trace with header
+    #   blackbox.framework.trace "${FUNCNAME[@]}" "$*" <<<"initialize"
+    #   # Output the formatted trace without header
+    #   blackbox.framework.trace "${FUNCNAME[@]}" "$*" <<<""
     function blackbox.framework.trace() {
       # shellcheck disable=SC2155
       declare header=$(</dev/stdin)
@@ -185,6 +249,16 @@ blackbox() {
     }
   }; blackbox.framework
 
+  # @section blackbox.*
+
+  # Constructor
+  #
+  # If the Blackbox installation does not exist, this function downloads the framework and installs it
+  #
+  # @arg $1 type=enum<ansible|aws|chef|docker|git|kubernetes|linux|puppet|shell|terraform> Module name
+  # @arg $2 type=...mixed Module args
+  #
+  # @see blackbox
   function blackbox.__init() {
     typeset module_name=$1
     typeset -a module_args=("${@:2}")
