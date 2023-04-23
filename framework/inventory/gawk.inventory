@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
-# @file framework/inventory/jq.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/jq.inventory
-# @description Inventory "jq"
+# @file framework/inventory/gawk.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/gawk.inventory
+# @description Inventory "gawk"
 
 # @section blackbox.framework.inventory.*
 
-# Provisions the "jq" inventory
+# Provisions the "gawk" inventory
 #
-# @arg $1 readonly,type=string,default=jq Inventory name
+# @arg $1 readonly,type=string,default=gawk Inventory name
 # @arg $2 type=...string Inventory additional packages
 #
 # @example
-#  # Provision the "jq" inventory
-#  blackbox.framework.inventory.provision jq
+#  # Provision the "gawk" inventory
+#  blackbox.framework.inventory.provision gawk
 #
 # @see blackbox.framework.inventory.provision
-blackbox.framework.inventory.jq() {
+blackbox.framework.inventory.gawk() {
   typeset package_name=$1
   typeset -a with_packages=("${@:2}")
 
