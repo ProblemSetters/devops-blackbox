@@ -1,8 +1,8 @@
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 
 COPY rootfs/ /
 
-ENV BLACKBOX=problemsetters/blackbox:abstract
+ENV BLACKBOX=problemsetters/blackbox_2204:abstract
 
 RUN apt-get \
       update \
@@ -12,10 +12,11 @@ RUN apt-get \
       install \
         -y \
         --no-install-recommends \
+        dirmngr \
         gettext-base \
+        git \
         gpg-agent \
         software-properties-common \
-        python \
         sudo \
         unzip \
         vim \

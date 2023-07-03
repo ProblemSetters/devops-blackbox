@@ -11,10 +11,10 @@ ifneq ($(value SHELL),$(shell echo $$BASH))
   $(error current shell executable is not supported. GNU Bash 4.3 or above is required)
 endif
 
-BLACKBOX:=problemsetters/localstack:latest
+BLACKBOX:=problemsetters/localstack_2204:latest
 
 build:
-	DOCKER_BUILDKIT=1 docker build --progress="plain" --tag="$(BLACKBOX)" .
+	docker build --network=host --progress="plain" --tag="$(BLACKBOX)" .
 
 run:
 	docker run -it --rm $(BLACKBOX)

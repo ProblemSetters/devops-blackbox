@@ -35,8 +35,8 @@ blackbox.framework.inventory.docker-compose() {
     apt-get update
   fi
 
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gcc python python-dev python-pip && {
-    local requirements="setuptools wheel pyrsistent==0.16.1 docker-compose"
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-pip && {
+    local requirements="docker-compose"
 
     for requirement in ${requirements[*]}; do
       pip install "$requirement"

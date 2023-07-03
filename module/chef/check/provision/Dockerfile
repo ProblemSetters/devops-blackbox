@@ -1,4 +1,4 @@
-FROM problemsetters/blackbox:abstract
+FROM problemsetters/blackbox_2204:abstract
 
 SHELL ["/bin/bash", "-c"]
 
@@ -7,7 +7,7 @@ RUN source \
         \
         &>/dev/null; \
     blackbox.framework.inventory.provision \
-      chef-workstation \
+      chef \
     && \
     rm \
       -rf \

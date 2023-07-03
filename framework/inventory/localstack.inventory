@@ -23,7 +23,7 @@ blackbox.framework.inventory.localstack() {
     blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
   }
 
-  if [[ -z "$(docker ps -aq --filter="ancestor=problemsetters/${package_name}")" ]] ; then
-    docker run -di -p 4566:4566 "problemsetters/${package_name}"
+  if [[ -z "$(docker ps -aq --filter="ancestor=problemsetters/${package_name}_2204")" ]] ; then
+    docker run -di -p 4566:4566 --cgroupns=host "problemsetters/${package_name}_2204"
   fi
 }

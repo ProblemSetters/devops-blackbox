@@ -35,8 +35,19 @@ blackbox.framework.inventory.yq() {
     apt-get update
   fi
 
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common && {
-    add-apt-repository -y ppa:rmescandon/yq
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package_name" "${with_packages[@]}"
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common wget && {
+    wget -c -S -O /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/3.3.2/yq_linux_amd64" && {
+      chmod +x /usr/local/bin/yq
+    }
+
+    if (( ${#with_packages[@]} )); then
+      dpkg-query -W "${with_packages[@]}" 2>&1
+
+      if ( dpkg-query -L "${with_packages[@]}" &>/dev/null ); then
+        return
+      fi
+
+      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${with_packages[@]}"
+    fi
   }
 }

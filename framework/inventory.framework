@@ -24,7 +24,7 @@ blackbox.framework.inventory() {
     function blackbox.framework.inventory.install.directory() {
       typeset destination=$1
       typeset owner=${2:-$(cut -d ":" -f 1 <<<"$BLACKBOX_USER")}
-      typeset group=${3:-$(cut -d ":" -f 2 <<<"$BLACKBOX_USER"))}
+      typeset group=${3:-$(cut -d ":" -f 2 <<<"$BLACKBOX_USER")}
       typeset mode=${4:-0775}
 
       {

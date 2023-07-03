@@ -1,4 +1,4 @@
-FROM problemsetters/blackbox:abstract
+FROM problemsetters/blackbox_2204:abstract
 
 ARG BLACKBOX_USER_NAME=ubuntu
 
