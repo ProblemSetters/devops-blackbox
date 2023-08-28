@@ -12,6 +12,7 @@ RUN apt-get \
       install \
         -y \
         --no-install-recommends \
+        curl \
         dirmngr \
         gettext-base \
         git \
@@ -89,14 +90,10 @@ ONBUILD RUN printenv \
                   -c \
                     '(cat "$0") | envsubst "$(printenv | sed -e "/^BLACKBOX/!d; s/^/\${/; s/=.*/}/" | sed -e ":a;N;\$!ba;s/\n/ /g")" >"$0"' "{}" \; \
             && \
-            wget \
-              -S \
-              -O \
-                /tmp/blackbox \
-              --no-cache \
-              "https://github.com/ProblemSetters/devops-blackbox/archive/${BLACKBOX_VERSION}.zip" \
-                \
-                2>&1; \
+            curl \
+              "https://codeload.github.com/ProblemSetters/devops-blackbox/zip/refs/heads/${BLACKBOX_VERSION}" \
+              --output \
+                /tmp/blackbox; \
             unzip \
               /tmp/blackbox \
               -d \
