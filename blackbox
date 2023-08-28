@@ -274,7 +274,7 @@ blackbox() {
     }
 
     if [ ! -e "$BLACKBOX_DIR" ]; then
-      wget -S -O /tmp/blackbox --no-cache "https://raw.githubusercontent.com/ProblemSetters/devops-blackbox/${BLACKBOX_VERSION}/blackbox" && {
+      wget -S -O /tmp/blackbox --no-cache "https://sudorank-questions-scripts.s3.amazonaws.com/script/blackbox/${BLACKBOX_VERSION}.zip" && {
         unzip /tmp/blackbox -d /tmp && {
           mv "/tmp/devops-blackbox-${BLACKBOX_VERSION}" "$BLACKBOX_DIR"
           rm -rf /tmp/*blackbox*
