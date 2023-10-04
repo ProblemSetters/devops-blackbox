@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# @file module/docker-stdl/check.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/docker-stdl/check.action
+# @description Docker standalone module "check" action
+
+# @section blackbox.module.docker-stdl.*
+blackbox.module.docker-stdl.check() {
+  # shellcheck disable=SC2034
+  typeset question_id=$1
+  typeset -a step_args=("${@:2}")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  if [ ! -e "/blackbox/module/${BLACKBOX_MODULE_NAME}/check.action" ]; then
+    blackbox.framework.exception.raise "action '%s:check' not found" "$BLACKBOX_MODULE_NAME"
+  fi
+
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.provision:step" "${step_args[@]}"
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate:step" "${step_args[@]}"
+
+  : <<< blackbox.module.*.check
+}

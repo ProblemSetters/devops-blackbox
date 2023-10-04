@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/docker-stdl/setup.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/docker-stdl/setup.action
+# @description Docker standalone module "setup" action
+
+# @section blackbox.module.docker-stdl.*
+blackbox.module.docker-stdl.setup() {
+  : <<< blackbox.framework.module.abstract.setup:action
+}

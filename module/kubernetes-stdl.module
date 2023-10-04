@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/kubernetes-stdl.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/kubernetes-stdl.module
+# @description Kubernetes standalone module
+
+# @section blackbox.module.*
+blackbox.module.kubernetes-stdl() {
+  : <<< blackbox.framework.module.abstract
+}

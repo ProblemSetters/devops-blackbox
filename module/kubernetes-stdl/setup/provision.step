@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# @file module/kubernetes-stdl/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/kubernetes-stdl/setup/provision.step
+# @description Kubernetes standalone module "setup" action "provision" step
+
+# @section blackbox.module.kubernetes-stdl.setup.*
+blackbox.module.kubernetes-stdl.setup.provision() {
+  : <<< blackbox.framework.module.abstract.setup.provision:step
+
+  blackbox.framework.inventory.provision k3s && {
+    service k3s start && {
+      sleep 30 # TODO: implement launcher
+    }
+  }
+
+  rm -f /usr/local/bin/solve
+}
