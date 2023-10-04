@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/kubernetes-stdl/setup.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/kubernetes-stdl/setup.action
+# @description Kubernetes standalone module "setup" action
+
+# @section blackbox.module.kubernetes-stdl.*
+blackbox.module.kubernetes-stdl.setup() {
+  : <<< blackbox.framework.module.abstract.setup:action
+}

@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# @file module/kubernetes-stdl/check/evaluate/score.evaluate
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/kubernetes-stdl/check/evaluate/score.evaluate
+# @description Step "evaluate" score calculator
+
+# @section blackbox.module.kubernetes-stdl.check.evaluate.*
+blackbox.module.kubernetes-stdl.check.evaluate.score() {
+  export BLACKBOX_CHECK_EVALUATE_SCORE_CALCULATE_CACHE="/tmp/calculate.cache-${RANDOM}"
+  # @section blackbox.module.kubernetes-stdl.check.evaluate.score.*
+
+  # Calculates a score of question
+  #
+  # @arg $1 type=enum<1..100|-> Score value: absolute (if integer) or relative (if "-")
+  #
+  # @stdout Calculated score
+  #
+  # @example
+  #   # Calculates a score: 10 if success or 0 if failure
+  #   blackbox.module.kubernetes-stdl.check.evaluate.score.calculate 10
+  #   # Calculates a score: automatic average  if success or 0 if failure
+  #   blackbox.module.kubernetes-stdl.check.evaluate.score.calculate -
+  function blackbox.module.kubernetes-stdl.check.evaluate.score.calculate() {
+    typeset assert_score=$1
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    if [[ ! "$assert_score" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+      if [[ "$assert_score" == "-" ]]; then
+        assert_score=0
+      else
+        # shellcheck disable=SC2155
+        local expect_total=$(awk "/^cat <<ASSERT/ { asserts_count++ } END { print asserts_count }" <(sed "$(printf '/^\. \/blackbox\/blackbox %s check "%s"$/,/^exit 0$/!d' "$BLACKBOX_MODULE_NAME" "$BLACKBOX_QUESTION_ID")" "$BLACKBOX_SCENARIO_PATH"))
+
+        assert_score=$(awk -v expect_total="$expect_total" '{ current_score += $1 } END { expect_current=NR; print int((100 - current_score) / (expect_total - expect_current) + 0.5) }' "$BLACKBOX_CHECK_EVALUATE_SCORE_CALCULATE_CACHE")
+      fi
+    fi
+
+    tee -a "$BLACKBOX_CHECK_EVALUATE_SCORE_CALCULATE_CACHE" <<<"$assert_score"
+  }
+
+  # Constructor
+  #
+  # @noargs
+  #
+  # @set BLACKBOX_CHECK_EVALUATE_SCORE_CALCULATE_CACHE readonly,type=string,default=auto Path to the question evaluation cache (sets automatically, do not override)
+  #
+  # @see blackbox.module.kubernetes-stdl.check.evaluate.score
+  blackbox.module.kubernetes-stdl.check.evaluate.score.__init() {
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    blackbox.framework.inventory.install.file "$BLACKBOX_CHECK_EVALUATE_SCORE_CALCULATE_CACHE" </dev/null
+  } && blackbox.module.kubernetes-stdl.check.evaluate.score.__init "$@"
+}

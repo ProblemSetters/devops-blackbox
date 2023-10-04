@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# @file module/docker-stdl/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/docker-stdl/setup/provision.step
+# @description Docker standalone module "setup" action "provision" step
+
+# @section blackbox.module.docker-stdl.setup.*
+blackbox.module.docker-stdl.setup.provision() {
+  : <<< blackbox.framework.module.abstract.setup.provision:step
+
+  rm -f /usr/local/bin/solve
+}
