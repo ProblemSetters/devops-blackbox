@@ -91,6 +91,10 @@ ONBUILD RUN printenv \
                     '(cat "$0") | envsubst "$(printenv | sed -e "/^BLACKBOX/!d; s/^/\${/; s/=.*/}/" | sed -e ":a;N;\$!ba;s/\n/ /g")" >"$0"' "{}" \; \
             && \
             curl \
+              -H \
+                "Cache-Control: no-cache, no-store" \
+              -H \
+                "Pragma: no-cache" \
               "https://codeload.github.com/ProblemSetters/devops-blackbox/zip/refs/heads/${BLACKBOX_VERSION}" \
               --output \
                 /tmp/blackbox; \
