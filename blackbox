@@ -274,7 +274,7 @@ blackbox() {
     }
 
     if [ ! -e "$BLACKBOX_DIR" ]; then
-      curl "https://codeload.github.com/ProblemSetters/devops-blackbox/zip/refs/heads/${BLACKBOX_VERSION}" --output /tmp/blackbox && {
+      curl -H "Cache-Control: no-cache, no-store" -H "Pragma: no-cache" "https://codeload.github.com/ProblemSetters/devops-blackbox/zip/refs/heads/${BLACKBOX_VERSION}" --output /tmp/blackbox && {
         unzip /tmp/blackbox -d /tmp && {
           mv "/tmp/devops-blackbox-${BLACKBOX_VERSION}" "$BLACKBOX_DIR"
           rm -rf /tmp/*blackbox*
