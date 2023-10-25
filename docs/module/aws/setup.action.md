@@ -7,4 +7,3 @@ https://github.com/ProblemSetters/devops-blackbox/blob/master/module/aws/setup.a
 AWS module "setup" action
 
 
-

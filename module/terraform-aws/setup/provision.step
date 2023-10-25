@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# @file module/terraform-aws/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform-aws/setup/provision.step
+# @description Terraform module "setup" action "provision" step
+
+# @section blackbox.module.terraform-aws.setup.*
+blackbox.module.terraform-aws.setup.provision() {
+  : <<< blackbox.framework.module.abstract.setup.provision:step
+
+  blackbox.framework.inventory.provision terraform
+
+  blackbox.framework.inventory.provision terraform-local
+
+  blackbox.framework.inventory.install.file main.tf </blackbox/module/terraform-aws/setup/provision/rootfs/home/%/%/main.tf
+  blackbox.framework.inventory.install.file script.sh </blackbox/module/terraform-aws/setup/provision/rootfs/home/%/%/script.sh
+
+  blackbox.framework.inventory.provision localstack
+
+  blackbox.framework.inventory.provision awscli && {
+    tee -a /etc/hosts < <(printf "127.0.0.1\teu-central-1.hackerrankaws.local\n")
+    tee -a /etc/environment < <(printf "AWS_ENDPOINT_URL=%s\n" "eu-central-1.hackerrankaws.local")
+  }
+}

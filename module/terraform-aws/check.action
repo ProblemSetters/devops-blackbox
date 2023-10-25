@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/terraform-aws/check.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform-aws/check.action
+# @description Terraform module "check" action
+
+# @section blackbox.module.terraform-aws.*
+blackbox.module.terraform-aws.check() {
+  : <<< blackbox.framework.module.abstract.check:action
+}

@@ -9,7 +9,7 @@ Step "evaluate" score calculator
 ## Index
 
 * [blackbox.framework.module.abstract.check.evaluate.score.calculate](#blackboxframeworkmoduleabstractcheckevaluatescorecalculate)
-* [blackbox.framework.module.abstract.check.evaluate.score.__init](#blackboxframeworkmoduleabstractcheckevaluatescore__init)
+* [blackbox.framework.module.abstract.check.evaluate.score.__init](#blackboxframeworkmoduleabstractcheckevaluatescoreinit)
 
 ## blackbox.framework.module.abstract.check.evaluate.score.*
 

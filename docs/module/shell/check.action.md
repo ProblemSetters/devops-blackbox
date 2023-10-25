@@ -7,4 +7,3 @@ https://github.com/ProblemSetters/devops-blackbox/blob/master/module/shell/check
 Shell module "check" action
 
 
-
