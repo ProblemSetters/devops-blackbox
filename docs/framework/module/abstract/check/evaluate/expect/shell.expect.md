@@ -51,7 +51,6 @@ ASSERT
 #### Arguments
 
 * **$1** (type=enum<1..100|->): Score value: absolute (if integer) or relative (if "-")
-* **$3** (type=string): Assert success message
 * **$3** (type=string): Assert failure message
 * **$4** (type=...mixed): Assert message args
 
@@ -77,7 +76,6 @@ ASSERT
 #### Arguments
 
 * **$1** (type=enum<1..100|->): Score value: absolute (if integer) or relative (if "-")
-* **$3** (type=string): Assert success message
 * **$3** (type=string): Assert failure message
 * **$4** (type=...mixed): Assert message args
 
@@ -103,7 +101,6 @@ ASSERT
 #### Arguments
 
 * **$1** (type=enum<1..100|->): Score value: absolute (if integer) or relative (if "-")
-* **$3** (type=string): Assert success message
 * **$3** (type=string): Assert failure message
 * **$4** (type=...mixed): Assert message args
 
@@ -129,7 +126,6 @@ ASSERT
 #### Arguments
 
 * **$1** (type=enum<1..100|->): Score value: absolute (if integer) or relative (if "-")
-* **$3** (type=string): Assert success message
 * **$3** (type=string): Assert failure message
 * **$4** (type=...mixed): Assert message args
 

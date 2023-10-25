@@ -11,7 +11,7 @@ Blackbox evaluation framework
 * [blackbox](#blackbox)
 * [blackbox.framework.import](#blackboxframeworkimport)
 * [blackbox.framework.trace](#blackboxframeworktrace)
-* [blackbox.__init](#blackbox__init)
+* [blackbox.__init](#blackboxinit)
 
 ### blackbox
 
@@ -54,7 +54,7 @@ Main executable
 
 #### See also
 
-* [blackbox.__init](#blackbox__init)
+* [blackbox.__init](#blackboxinit)
 
 ## blackbox.framework.*
 
