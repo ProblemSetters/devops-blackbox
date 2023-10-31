@@ -24,20 +24,15 @@ blackbox.module.terraform-aws.check.provision() {
   fi
 
   docker ps -aq | xargs -r docker rm -f >/dev/null
-
   docker system prune -af --volumes
 
-  if ( grep -q '^init$' <(ps -p 1 -o comm=) ); then
-    docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --privileged --cgroupns=host --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" "problemsetters/blackbox_2204:${BLACKBOX_MODULE_NAME}"
-  else
-    docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --privileged --cgroupns=host --volume="${BLACKBOX_DIR}:${BLACKBOX_DIR}:ro" --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" "problemsetters/blackbox_2204:${BLACKBOX_MODULE_NAME}"
-  fi
+  blackbox.framework.inventory.provision localstack
 
-  docker exec -i "$BLACKBOX_SPAWN" service docker start
-  docker exec -i "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; blackbox.framework.inventory.provision localstack"
-  docker exec -i "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; blackbox.framework.inventory.provision awscli"
-  docker exec -i "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; tee -a /etc/hosts < <(printf \"127.0.0.1\teu-central-1.hackerrankaws.local\n\")"
-  docker exec -i "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; tee -a /etc/environment < <(printf \"AWS_ENDPOINT_URL=%s\n\" \"eu-central-1.hackerrankaws.local\")"
+  if ( grep -q '^init$' <(ps -p 1 -o comm=) ); then
+    docker run -di --hostname="$BLACKBOX_SPAWN" --network="host" --name="$BLACKBOX_SPAWN" --privileged --cgroupns=host --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" "problemsetters/blackbox_2204:${BLACKBOX_MODULE_NAME}"
+  else
+    docker run -di --hostname="$BLACKBOX_SPAWN" --network="host" --name="$BLACKBOX_SPAWN" --privileged --cgroupns=host --volume="${BLACKBOX_DIR}:${BLACKBOX_DIR}:ro" --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" "problemsetters/blackbox_2204:${BLACKBOX_MODULE_NAME}"
+  fi
 
   if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
     (
