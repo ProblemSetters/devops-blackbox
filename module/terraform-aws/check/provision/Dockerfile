@@ -11,7 +11,7 @@ RUN source \
     blackbox.framework.inventory.provision \
       terraform-local; \
     blackbox.framework.inventory.provision \
-      docker-ce \
+      awscli \
     && \
     rm \
       -rf \
