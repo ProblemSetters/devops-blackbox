@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# @file module/terraform-aws/check/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform-aws/check/provision.step
+# @description Terraform module "check" action "provision" step
+
+# @section blackbox.module.terraform-aws.check.*
+blackbox.module.terraform-aws.check.provision() {
+  : <<< blackbox.framework.module.abstract.check.provision:step
+
+  docker exec -i "$BLACKBOX_SPAWN" service docker start
+  docker exec -i "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; blackbox.framework.inventory.provision localstack"
+  docker exec -i "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; blackbox.framework.inventory.provision awscli"
+  docker exec -i "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; tee -a /etc/hosts < <(printf \"127.0.0.1\teu-central-1.hackerrankaws.local\n\")"
+  docker exec -i "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; tee -a /etc/environment < <(printf \"AWS_ENDPOINT_URL=%s\n\" \"eu-central-1.hackerrankaws.local\")"
+}

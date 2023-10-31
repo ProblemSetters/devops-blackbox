@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# @file framework/inventory/terraform-local.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/terraform-local.inventory
+# @description Inventory "terraform-local"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "terraform-local" inventory
+#
+# @arg $1 readonly,type=string,default=terraform-local Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "terraform-local" inventory
+#  blackbox.framework.inventory.provision terraform-local
+#
+# @see blackbox.framework.inventory.provision
+blackbox.framework.inventory.terraform-local() {
+  typeset package_name=$1
+  typeset -a with_packages=("${@:2}")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  sed "s/\x1b\[[0-9;]*m//g" <(dpkg-query -W "$package_name" "${with_packages[@]}" 2>&1)
+
+  if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
+    false
+
+    return
+  fi
+
+  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
+    apt-get update
+  fi
+
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-pip && {
+    pip install terraform-local
+
+    mv /usr/bin/terraform /usr/bin/tf && {
+      ln -s /usr/local/bin/tflocal /usr/bin/terraform && {
+        tee -a /etc/environment < <(printf "TF_CMD=%s\n" "/usr/bin/tf")
+      }
+    }
+
+    if (( ${#with_packages[@]} )); then
+      dpkg-query -W "${with_packages[@]}" 2>&1
+
+      if ( dpkg-query -L "${with_packages[@]}" &>/dev/null ); then
+        return
+      fi
+
+      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${with_packages[@]}"
+    fi
+  }
+}

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/terraform-aws/setup.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform-aws/setup.action
+# @description Terraform module "setup" action
+
+# @section blackbox.module.terraform-aws.*
+blackbox.module.terraform-aws.setup() {
+  : <<< blackbox.framework.module.abstract.setup:action
+}

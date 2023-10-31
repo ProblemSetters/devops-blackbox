@@ -7,4 +7,3 @@ https://github.com/ProblemSetters/devops-blackbox/blob/master/module/git/check/e
 Git module "check" action "evaluate" step
 
 
-
