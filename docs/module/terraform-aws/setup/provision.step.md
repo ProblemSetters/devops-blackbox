@@ -4,6 +4,6 @@ https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform-a
 
 ## Overview
 
-Terraform module "setup" action "provision" step
+Terraform+AWS module "setup" action "provision" step
 
 

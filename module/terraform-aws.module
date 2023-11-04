@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # @file module/terraform-aws.module
 # @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform-aws.module
-# @description Terraform module
+# @description Terraform+AWS module
 
 # @section blackbox.module.*
 blackbox.module.terraform-aws() {

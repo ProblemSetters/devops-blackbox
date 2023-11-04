@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # @file module/terraform-aws/check/build.step
 # @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform-aws/check/build.step
-# @description Terraform module "check" action "build" step
+# @description Terraform+AWS module "check" action "build" step
 
 # @section blackbox.module.terraform-aws.check.*
 blackbox.module.terraform-aws.check.build() {
