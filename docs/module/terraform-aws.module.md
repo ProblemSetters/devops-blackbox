@@ -4,6 +4,6 @@ https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform-a
 
 ## Overview
 
-Terraform module
+Terraform+AWS module
 
 

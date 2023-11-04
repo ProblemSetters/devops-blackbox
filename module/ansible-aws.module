@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/ansible-aws.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/ansible-aws.module
+# @description Ansible+AWS module
+
+# @section blackbox.module.*
+blackbox.module.ansible-aws() {
+  : <<< blackbox.framework.module.abstract
+}

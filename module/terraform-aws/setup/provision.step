@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # @file module/terraform-aws/setup/provision.step
 # @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform-aws/setup/provision.step
-# @description Terraform module "setup" action "provision" step
+# @description Terraform+AWS module "setup" action "provision" step
 
 # @section blackbox.module.terraform-aws.setup.*
 blackbox.module.terraform-aws.setup.provision() {

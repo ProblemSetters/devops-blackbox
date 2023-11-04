@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # @file module/terraform-aws/check/evaluate.step
 # @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform-aws/check/evaluate.step
-# @description Terraform module "check" action "evaluate" step
+# @description Terraform+AWS module "check" action "evaluate" step
 
 # @section blackbox.module.terraform-aws.check.*
 blackbox.module.terraform-aws.check.evaluate() {

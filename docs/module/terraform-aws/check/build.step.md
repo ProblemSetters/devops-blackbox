@@ -4,6 +4,6 @@ https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform-a
 
 ## Overview
 
-Terraform module "check" action "build" step
+Terraform+AWS module "check" action "build" step
 
 

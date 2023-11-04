@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# @file module/ansible-aws/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/ansible-aws/setup/provision.step
+# @description Ansible+AWS "setup" action "provision" step
+
+# @section blackbox.module.ansible-aws.setup.*
+blackbox.module.ansible-aws.setup.provision() {
+  : <<< blackbox.framework.module.abstract.setup.provision:step
+
+  blackbox.framework.inventory.install.file /usr/local/bin/solve 0 0 0755 </blackbox/module/ansible-aws/setup/provision/rootfs/usr/local/bin/solve
+
+  blackbox.framework.inventory.provision ansible && {
+    blackbox.framework.inventory.install.file playbook.yml </blackbox/module/ansible-aws/setup/provision/rootfs/home/%/%/playbook.yml
+  }
+
+  blackbox.framework.inventory.provision boto3 && {
+    tee -a /etc/environment < <(printf "AWS_URL=%s\n" "http://eu-central-1.hackerrankaws.local:4566")
+  }
+
+  blackbox.framework.inventory.provision localstack
+
+  blackbox.framework.inventory.provision awscli && {
+    tee -a /etc/hosts < <(printf "127.0.0.1\teu-central-1.hackerrankaws.local\n")
+    tee -a /etc/environment < <(printf "AWS_ENDPOINT_URL=%s\n" "eu-central-1.hackerrankaws.local")
+  }
+}

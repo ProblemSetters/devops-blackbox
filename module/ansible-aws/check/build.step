@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# @file module/ansible-aws/check/build.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/ansible-aws/check/build.step
+# @description Ansible+AWS module "check" action "build" step
+
+# @section blackbox.module.ansible-aws.check.*
+blackbox.module.ansible-aws.check.build() {
+  : <<< blackbox.framework.module.abstract.check.build:step
+
+  # shellcheck disable=SC2034
+  declare build_cmd=(
+    "ansible-playbook %s"
+    "playbook.yml"
+  )
+}

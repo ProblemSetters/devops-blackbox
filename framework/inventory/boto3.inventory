@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# @file framework/inventory/boto3.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/boto3.inventory
+# @description Inventory "boto3"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "boto3" inventory
+#
+# @arg $1 readonly,type=string,default=boto3 Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "boto3" inventory
+#  blackbox.framework.inventory.provision boto3
+#
+# @see blackbox.framework.inventory.provision
+blackbox.framework.inventory.boto3() {
+  typeset package_name=$1
+  typeset -a with_packages=("${@:2}")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  sed "s/\x1b\[[0-9;]*m//g" <(dpkg-query -W "$package_name" "${with_packages[@]}" 2>&1)
+
+  if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
+    false
+
+    return
+  fi
+
+  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
+    apt-get update
+  fi
+
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-pip && {
+    local requirements="boto3"
+
+    for requirement in ${requirements[*]}; do
+      pip install "$requirement"
+    done
+
+    if (( ${#with_packages[@]} )); then
+      dpkg-query -W "${with_packages[@]}" 2>&1
+
+      if ( dpkg-query -L "${with_packages[@]}" &>/dev/null ); then
+        return
+      fi
+
+      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${with_packages[@]}"
+    fi
+  }
+}
