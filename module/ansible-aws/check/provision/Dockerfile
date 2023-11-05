@@ -13,6 +13,16 @@ RUN source \
     tee \
       -a \
         /etc/environment < <(printf "AWS_URL=%s\n" "http://eu-central-1.hackerrankaws.local:4566"); \
+    ansible-galaxy \
+      collection \
+        install \
+          community.aws \
+        --force-with-deps \
+        --collections-path \
+          /usr/share/ansible; \
+    tee \
+      -a \
+        /etc/environment < <(printf "ANSIBLE_COLLECTIONS_PATH=%s\n" "/usr/share/ansible/ansible_collections"); \
     blackbox.framework.inventory.provision \
       awscli \
     && \
