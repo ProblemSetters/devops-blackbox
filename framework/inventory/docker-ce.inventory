@@ -38,9 +38,11 @@ blackbox.framework.inventory.docker-ce() {
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget && {
     wget -qO- https://download.docker.com/linux/ubuntu/gpg | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=true apt-key add -
     add-apt-repository -y "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package_name" "${with_packages[@]}" && {
+
+    local version=5:26.0.0-1~ubuntu.22.04~jammy
+
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends docker-ce="$version" docker-ce-cli="$version" "${with_packages[@]}" && {
       # Docker ulimit issue quickfix: https://github.com/docker/cli/issues/4807
-      # TODO: review when Docker fixed it
       sed -i '/ulimit -Hn/ s/$/ || true/' /etc/init.d/docker
       install -m 0644 -D /dev/stdin /etc/docker/daemon.json <<<'{ "storage-driver": "vfs" }'
     }
