@@ -1,0 +1,203 @@
+#!/usr/bin/env bash
+# @file module/linux-stdl/check/evaluate/expect/shell.expect
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/linux-stdl/check/evaluate/expect/shell.expect
+# @description Shell expressions expectant
+
+# @section blackbox.module.linux-stdl.check.evaluate.expect.*
+blackbox.module.linux-stdl.check.evaluate.expect.shell() {
+  # @section blackbox.module.linux-stdl.check.evaluate.expect.shell.*
+
+  # Expects a debug output, no score calculation
+  #
+  # @stdin Assert expression
+  #
+  # @noargs
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Debug output
+  #   cat <<ASSERT | blackbox.expect.shell.debug
+  #     printf "debug message"
+  #   ASSERT
+  function blackbox.module.linux-stdl.check.evaluate.expect.shell.debug() {
+    # shellcheck disable=SC2155
+    declare assert=$(</dev/stdin)
+
+    printf "\n"
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    (
+      printf "\033[0;33m** DEBUG\033[0m\n"
+      printf "\033[0;37m%s\033[0m\n" "$assert"
+      printf "\033[0;37m--\033[0m\n"
+      printf "\033[0;37m%s\033[0m\n" "$(cat -n <("$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}"))"
+      printf "\033[0;37m--\033[0m\n"
+    ) | if (tput setaf &>/dev/null); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+
+    kill $$
+  }
+
+  # Expects a shell expression that fails
+  #
+  # @stdin Assert expression
+  #
+  # @arg $1 type=enum<1..100|-> Score value: absolute (if integer) or relative (if "-")
+  # @arg $3 type=string Assert success message
+  # @arg $3 type=string Assert failure message
+  # @arg $4 type=...mixed Assert message args
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Expression that should fail
+  #   cat <<ASSERT | blackbox.module.linux-stdl.check.evaluate.expect.shell.failure - "Success %s" "Fail %s" "message"
+  #     true -eq false
+  #   ASSERT
+  function blackbox.module.linux-stdl.check.evaluate.expect.shell.failure() {
+    # shellcheck disable=SC2155
+    declare assert=$(</dev/stdin)
+
+    typeset score=$1
+    typeset message_true=$2
+    typeset message_false=$3
+    typeset message_args=("${@:4}")
+
+    printf "\n"
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    if ( ! ("$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}")); then
+      # shellcheck disable=SC2059
+      blackbox.module.linux-stdl.check.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
+    else
+      # shellcheck disable=SC2059
+      blackbox.module.linux-stdl.check.evaluate.assert.false "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
+    fi
+  }
+
+  # Expects a shell expression that outputs to the stderr
+  #
+  # @stdin Assert expression
+  #
+  # @arg $1 type=enum<1..100|-> Score value: absolute (if integer) or relative (if "-")
+  # @arg $3 type=string Assert success message
+  # @arg $3 type=string Assert failure message
+  # @arg $4 type=...mixed Assert message args
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Expression that should have a stderr
+  #   cat <<ASSERT | blackbox.module.linux-stdl.check.evaluate.expect.shell.stderr - "Success %s" "Fail %s" "message"
+  #     command-that-does-not-exist
+  #   ASSERT
+  function blackbox.module.linux-stdl.check.evaluate.expect.shell.stderr() {
+    # shellcheck disable=SC2155
+    declare assert=$(</dev/stdin)
+
+    typeset score=$1
+    typeset message_true=$2
+    typeset message_false=$3
+    typeset message_args=("${@:4}")
+
+    printf "\n"
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    if (grep -q . <("$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 1>/dev/null <<<"source /blackbox/blackbox &>/dev/null" <<<"$assert")); then
+      # shellcheck disable=SC2059
+      blackbox.module.linux-stdl.check.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
+    else
+      # shellcheck disable=SC2059
+      blackbox.module.linux-stdl.check.evaluate.assert.false "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
+    fi
+  }
+
+  # Expects a shell expression that outputs to the stdout
+  #
+  # @stdin Assert expression
+  #
+  # @arg $1 type=enum<1..100|-> Score value: absolute (if integer) or relative (if "-")
+  # @arg $3 type=string Assert success message
+  # @arg $3 type=string Assert failure message
+  # @arg $4 type=...mixed Assert message args
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Expression that should have a stdout
+  #   cat <<ASSERT | blackbox.module.linux-stdl.check.evaluate.expect.shell.stdout - "Success %s" "Fail %s" "message"
+  #     whoami
+  #   ASSERT
+  function blackbox.module.linux-stdl.check.evaluate.expect.shell.stdout() {
+    # shellcheck disable=SC2155
+    declare assert=$(</dev/stdin)
+
+    typeset score=$1
+    typeset message_true=$2
+    typeset message_false=$3
+    typeset message_args=("${@:4}")
+
+    printf "\n"
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    if (grep -q . <("$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}")); then
+      # shellcheck disable=SC2059
+      blackbox.module.linux-stdl.check.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
+    else
+      # shellcheck disable=SC2059
+      blackbox.module.linux-stdl.check.evaluate.assert.false "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
+    fi
+  }
+
+  # Expects a shell expression that succeeds
+  #
+  # @stdin Assert expression
+  #
+  # @arg $1 type=enum<1..100|-> Score value: absolute (if integer) or relative (if "-")
+  # @arg $3 type=string Assert success message
+  # @arg $3 type=string Assert failure message
+  # @arg $4 type=...mixed Assert message args
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Expression that should succeed
+  #   cat <<ASSERT | blackbox.module.linux-stdl.check.evaluate.expect.shell.success - "Success %s" "Fail %s" "message"
+  #     true -eq true
+  #   ASSERT
+  function blackbox.module.linux-stdl.check.evaluate.expect.shell.success() {
+    # shellcheck disable=SC2155
+    declare assert=$(</dev/stdin)
+
+    typeset score=$1
+    typeset message_true=$2
+    typeset message_false=$3
+    typeset message_args=("${@:4}")
+
+    printf "\n"
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    if ("$BASH" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}"); then
+      # shellcheck disable=SC2059
+      blackbox.module.linux-stdl.check.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
+    else
+      # shellcheck disable=SC2059
+      blackbox.module.linux-stdl.check.evaluate.assert.false "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
+    fi
+  }
+}
