@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/docker-stdl.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/linux-stdl.module
+# @description Linux standalone module
+
+# @section blackbox.module.*
+blackbox.module.linux-stdl() {
+  : <<< blackbox.framework.module.abstract
+}
