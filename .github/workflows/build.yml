@@ -1,0 +1,46 @@
+name: Build and Push Docker Image to ECR Public
+
+on:
+  push:
+    branches:
+      - "2204"
+  pull_request:  # Optionally trigger on pull requests
+    branches:
+      - "2204"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the repository code
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # Step 2: Set up AWS credentials for ECR
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET }}
+        aws-region: "us-east-1"
+
+    # Step 3: Log in to Amazon ECR Public
+    - name: Log in to Amazon ECR Public
+      run: |
+        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/b0k9n8x8
+
+    # Step 4: Build the Docker image
+    - name: Build Docker Image
+      run: |
+        docker build -f framework/module/abstract/check/provision/Dockerfile -t public.ecr.aws/b0k9n8x8/problemsetters/blackbox_2204:abstract .
+
+    # Step 5: Tag the Docker image with ECR Public URI
+    # - name: Tag Docker Image
+    #   run: |
+    #     docker tag ${{ secrets.ECR_REPOSITORY }}:latest ${{ secrets.ECR_PUBLIC_URI }}:latest
+
+    # Step 6: Push Docker image to ECR Public
+    - name: Push Docker Image to ECR Public
+      run: |
+        docker push public.ecr.aws/b0k9n8x8/problemsetters/blackbox_2204:abstract
