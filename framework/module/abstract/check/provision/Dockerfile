@@ -12,6 +12,7 @@ RUN apt-get \
       install \
         -y \
         --no-install-recommends \
+        bc \
         curl \
         dirmngr \
         gettext-base \
