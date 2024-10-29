@@ -1,0 +1,50 @@
+name: Blackbox build
+on:
+  push:
+    branches:
+      - "2204"
+jobs:
+  modules-update:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build Blackbox
+        run: |
+          make \
+            --file=Makefile.workflow \
+            github:build:blackbox
+      - name: Build Blackbox modules
+        run: |
+          make \
+            --file=Makefile.workflow \
+            github:build:blackbox:modules
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET }}
+          aws-region: us-east-1
+      - name: Log in to Amazon ECR Public
+        run: |
+          docker \
+            login \
+              --username \
+                AWS \
+              --password-stdin \
+                public.ecr.aws/b0k9n8x8 < <( \
+                  aws \
+                    ecr-public \
+                      get-login-password \
+                        --region us-east-1 \
+                )
+      - name: Push Blackbox
+        run: |
+          make \
+            --file=Makefile.workflow \
+            github:push:blackbox
+      - name: Push Blackbox modules
+        run: |
+          make \
+            --file=Makefile.workflow \
+            github:push:blackbox:modules

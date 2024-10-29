@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 
 COPY rootfs/ /
 
-ENV BLACKBOX=problemsetters/blackbox_2204:abstract
+ENV BLACKBOX=public.ecr.aws/b0k9n8x8/problemsetters/blackbox_2204:abstract
 
 RUN apt-get \
       update \

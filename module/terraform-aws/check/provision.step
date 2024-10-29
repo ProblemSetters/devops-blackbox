@@ -29,9 +29,9 @@ blackbox.module.terraform-aws.check.provision() {
   blackbox.framework.inventory.provision localstack
 
   if ( grep -q '^init$' <(ps -p 1 -o comm=) ); then
-    docker run -di --hostname="$BLACKBOX_SPAWN" --network="host" --name="$BLACKBOX_SPAWN" --privileged --cgroupns=host --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" "problemsetters/blackbox_2204:${BLACKBOX_MODULE_NAME}"
+    docker run -di --hostname="$BLACKBOX_SPAWN" --network="host" --name="$BLACKBOX_SPAWN" --privileged --cgroupns=host --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" "public.ecr.aws/b0k9n8x8/problemsetters/blackbox_2204:${BLACKBOX_MODULE_NAME}"
   else
-    docker run -di --hostname="$BLACKBOX_SPAWN" --network="host" --name="$BLACKBOX_SPAWN" --privileged --cgroupns=host --volume="${BLACKBOX_DIR}:${BLACKBOX_DIR}:ro" --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" "problemsetters/blackbox_2204:${BLACKBOX_MODULE_NAME}"
+    docker run -di --hostname="$BLACKBOX_SPAWN" --network="host" --name="$BLACKBOX_SPAWN" --privileged --cgroupns=host --volume="${BLACKBOX_DIR}:${BLACKBOX_DIR}:ro" --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" "public.ecr.aws/b0k9n8x8/problemsetters/blackbox_2204:${BLACKBOX_MODULE_NAME}"
   fi
 
   if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
