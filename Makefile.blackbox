@@ -47,7 +47,7 @@ debug:
 all: uninstall install setup solve check
 
 install:
-	cat <(echo FROM problemsetters/blackbox:abstract) <(echo RUN groupadd docker) | DOCKER_BUILDKIT=1 docker build --build-arg="BLACKBOX_USER=$(BLACKBOX_USER)" --build-arg="BLACKBOX_USER_NAME=$(BLACKBOX_USER_NAME)" --build-arg="BLACKBOX_USER_HOME=$(BLACKBOX_USER_HOME)" --build-arg="BLACKBOX_VERSION=$(BLACKBOX_VERSION)" --progress="plain" --tag="blackbox:$(BLACKBOX_HOST)" -
+	cat <(echo FROM public.ecr.aws/b0k9n8x8/problemsetters/blackbox:abstract) <(echo RUN groupadd docker) | DOCKER_BUILDKIT=1 docker build --build-arg="BLACKBOX_USER=$(BLACKBOX_USER)" --build-arg="BLACKBOX_USER_NAME=$(BLACKBOX_USER_NAME)" --build-arg="BLACKBOX_USER_HOME=$(BLACKBOX_USER_HOME)" --build-arg="BLACKBOX_VERSION=$(BLACKBOX_VERSION)" --progress="plain" --tag="blackbox:$(BLACKBOX_HOST)" -
 	docker run -di --group-add docker --hostname="blackbox" --name="$(BLACKBOX_HOST)" --privileged $(if $(filter debug,$(MAKECMDGOALS)),--volume="$(BLACKBOX_DIR):/blackbox:ro") --volume="$(call blackbox/pwd)/setup.sh:$(BLACKBOX_USER_HOME)/setup.sh:ro" --volume="$(call blackbox/pwd)/check.sh:$(BLACKBOX_USER_HOME)/check.sh:ro" --volume="$(call blackbox/pwd)/solve.sh:$(BLACKBOX_USER_HOME)/solve.sh:ro" blackbox:$(BLACKBOX_HOST) >/dev/null
 
 setup:

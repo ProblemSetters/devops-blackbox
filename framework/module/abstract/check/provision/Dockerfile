@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 
 COPY rootfs/ /
 
-ENV BLACKBOX=problemsetters/blackbox:abstract
+ENV BLACKBOX=public.ecr.aws/b0k9n8x8/problemsetters/blackbox:abstract
 
 RUN apt-get \
       update \
