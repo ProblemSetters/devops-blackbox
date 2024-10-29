@@ -1,4 +1,4 @@
-FROM problemsetters/blackbox:abstract
+FROM public.ecr.aws/b0k9n8x8/problemsetters/blackbox:abstract
 
 ARG BLACKBOX_USER_NAME=ubuntu
 
