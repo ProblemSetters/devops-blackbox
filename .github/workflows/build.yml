@@ -19,11 +19,6 @@ jobs:
           make \
             --file=Makefile.workflow \
             github:build:blackbox:modules
-      - name: Build Blackbox inventories
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:build:blackbox:inventories
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -53,8 +48,3 @@ jobs:
           make \
             --file=Makefile.workflow \
             github:push:blackbox:modules
-      - name: Push Blackbox inventories
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:push:blackbox:inventories

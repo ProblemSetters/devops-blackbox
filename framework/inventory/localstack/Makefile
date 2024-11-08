@@ -11,7 +11,7 @@ ifneq ($(value SHELL),$(shell echo $$BASH))
   $(error current shell executable is not supported. GNU Bash 4.3 or above is required)
 endif
 
-BLACKBOX:=public.ecr.aws/b0k9n8x8/problemsetters/localstack_2204:latest
+BLACKBOX:=problemsetters/localstack_2204:latest
 
 build:
 	docker build --network=host --progress="plain" --tag="$(BLACKBOX)" .
@@ -25,9 +25,13 @@ scan:
 analyze:
 	docker run -it --rm --volume="/var/run/docker.sock:/var/run/docker.sock" wagoodman/dive $(BLACKBOX)
 
-push:
+push: .confirm
+	docker login
 	docker push $(BLACKBOX)
 
 prune:
 	docker ps -aq | xargs -r docker stop >/dev/null
 	docker system prune -a --volumes
+
+.confirm:
+	@printf "Are you sure you want to continue? [y/N] "; read confirmation && [ "$${confirmation:-N}" == "y" ]

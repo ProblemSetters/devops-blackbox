@@ -12,7 +12,6 @@ ifneq ($(value SHELL),$(shell echo $$BASH))
 endif
 
 BLACKBOX_MODULES:=$(abspath $(dir $(wildcard module/*/check/provision/Makefile)))
-BLACKBOX_INVENTORIES=$(abspath $(dir $(wildcard framework/inventory/localstack/Makefile)))
 
 all:
 	$(error Nothing to do)
@@ -28,17 +27,11 @@ github\:build\:blackbox:
 github\:build\:blackbox\:modules:
 	$(foreach module,$(BLACKBOX_MODULES),$(MAKE) --directory=$(module) build;)
 
-github\:build\:blackbox\:inventories:
-	$(foreach inventory,$(BLACKBOX_INVENTORIES),$(MAKE) --directory=$(inventory) build;)
-
 github\:push\:blackbox:
 	$(MAKE) --directory=framework/module/abstract/check/provision push
 
 github\:push\:blackbox\:modules:
 	$(foreach module,$(BLACKBOX_MODULES),$(MAKE) --directory=$(module) push;)
-
-github\:push\:blackbox\:inventories:
-	$(foreach inventory,$(BLACKBOX_INVENTORIES),$(MAKE) --directory=$(inventory) push;)
 
 prune:
 	docker system prune --all
