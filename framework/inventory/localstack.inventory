@@ -23,7 +23,8 @@ blackbox.framework.inventory.localstack() {
     blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
   }
 
-  if [[ -z "$(docker ps -aq --filter="ancestor=problemsetters/${package_name}")" ]] ; then
-    docker run -di -p 4566:4566 "problemsetters/${package_name}"
+  if [[ -z "$(docker ps -aq --filter="ancestor=public.ecr.aws/b0k9n8x8/problemsetters/${package_name}")" ]] ; then
+    docker run -di -p 4566:4566 "public.ecr.aws/b0k9n8x8/problemsetters/${package_name}"
+    sleep 30 # TODO: implement launcher
   fi
 }
