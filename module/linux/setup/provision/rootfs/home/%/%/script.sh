@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-echo "Good luck! :)"
+# Good luck! :)
 
 exit 0
