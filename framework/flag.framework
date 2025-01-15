@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/flag.framework
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/flag.framework
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/flag.framework
 # @description Flag handler
 
 # @section blackbox.framework.*

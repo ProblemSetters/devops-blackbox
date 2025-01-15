@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# @file module/redis-stdl/check/evaluate/expect/artifact.expect
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/redis-stdl/check/evaluate/expect/artifact.expect
+# @description Artifact collection expectant
+
+# @section blackbox.module.redis-stdl.check.evaluate.expect.*
+blackbox.module.redis-stdl.check.evaluate.expect.artifact() {
+  # @section blackbox.module.redis-stdl.check.evaluate.expect.artifact.*
+
+  # Expects a list of artifacts to collect
+  #
+  # @stdin Assert expression
+  #
+  # @noargs
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Collect a list of artifacts
+  #   cat <<ASSERT | blackbox.module.redis-stdl.check.evaluate.expect.artifact.collection
+  #     printenv
+  #     /etc/passwd
+  #     whoami
+  #     any-other-command-output-or-file
+  #   ASSERT
+  function blackbox.module.redis-stdl.check.evaluate.expect.artifact.collection() {
+    # shellcheck disable=SC2155
+    declare assert=$(</dev/stdin)
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    readarray -t collection <<<"${assert[*]}"
+
+    for artifact in "${!collection[@]}"; do
+      local artifact_cache="${BLACKBOX_STORAGE_DIR}/${collection[$artifact]//[^A-Za-z0-9]/_}.artifact"
+      # shellcheck disable=SC2155
+      local artifact_stream=$(cat -n <(tee "$artifact_cache" < <("$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${collection[$artifact]}")))
+
+      sed -i "s/\x1b\[[0-9;]*m//g" "$artifact_cache"
+
+      (
+        printf "\033[0;35m** ARTIFACT:\033[0m %s \033[0;37m> %s (%d bytes)\033[0m\n" "${collection[$artifact]//[^A-Za-z0-9]/_}.artifact" "$artifact_cache" "$(stat -c "%s" "$artifact_cache")"
+        printf "\033[0;37m%s\033[0m\n" "${collection[$artifact]}"
+        printf "\033[0;37m--\033[0m\n"
+
+        if [ "$(wc -l <<<"$artifact_stream")" -gt "$BLACKBOX_BUILD_STREAM_DISPLAY_LINES" ]; then
+          printf "\033[0;38m%s\n" "$(head -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$artifact_stream")"
+          printf "\033[0;37m        ...\033[0m\n"
+          printf "\033[0;38m%s\033[0m\n" "$(tail -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$artifact_stream")"
+        else
+          printf "\033[0;38m%s\033[0m\n" "$artifact_stream"
+        fi
+
+        printf "\033[0;37m--\033[0m\n"
+
+        if [ "$artifact" -lt "$((${#collection[@]} - 1))" ]; then
+          printf "\n"
+        fi
+      ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+    done
+  }
+}

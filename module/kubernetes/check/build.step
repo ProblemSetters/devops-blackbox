@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/kubernetes/check/build.step
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/kubernetes/check/build.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/kubernetes/check/build.step
 # @description Kubernetes module "check" action "build" step
 
 # @section blackbox.module.kubernetes.check.*

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/ruby-full.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/ruby-full.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/ruby-full.inventory
 # @description Inventory "ruby-full"
 
 # @section blackbox.framework.inventory.*

@@ -1,6 +1,6 @@
 # module/chef/check/provision.step
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/module/chef/check/provision.step
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/chef/check/provision.step
 
 ## Overview
 

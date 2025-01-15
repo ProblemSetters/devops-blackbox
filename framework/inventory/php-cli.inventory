@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/php-cli.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/php-cli.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/php-cli.inventory
 # @description Inventory "php-cli"
 
 # @section blackbox.framework.inventory.*

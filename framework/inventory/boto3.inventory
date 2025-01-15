@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/boto3.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/boto3.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/boto3.inventory
 # @description Inventory "boto3"
 
 # @section blackbox.framework.inventory.*

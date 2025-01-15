@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/ansible.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/ansible.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/ansible.inventory
 # @description Inventory "ansible"
 
 # @section blackbox.framework.inventory.*

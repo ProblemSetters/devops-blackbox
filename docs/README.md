@@ -1,6 +1,6 @@
 # blackbox
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/blackbox
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/blackbox
 
 ## Overview
 

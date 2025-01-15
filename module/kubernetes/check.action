@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/kubernetes/check.action
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/kubernetes/check.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/kubernetes/check.action
 # @description Kubernetes module "check" action
 
 # @section blackbox.module.kubernetes.*

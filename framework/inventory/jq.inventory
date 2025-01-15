@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/jq.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/jq.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/jq.inventory
 # @description Inventory "jq"
 
 # @section blackbox.framework.inventory.*

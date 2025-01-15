@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/docker-ce.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/docker-ce.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/docker-ce.inventory
 # @description Inventory "docker-ce"
 
 # @section blackbox.framework.inventory.*

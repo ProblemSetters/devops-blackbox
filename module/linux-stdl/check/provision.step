@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/linux-stdl/check/provision.step
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/linux-stdl/check/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/linux-stdl/check/provision.step
 # @description Linux standalone module "check" action "provision" step
 
 # @section blackbox.module.linux-stdl.check.*

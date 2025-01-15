@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/terraform.module
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/terraform.module
 # @description Terraform module
 
 # @section blackbox.module.*

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/terraform.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/terraform.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/terraform.inventory
 # @description Inventory "terraform"
 
 # @section blackbox.framework.inventory.*

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/yq.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/yq.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/yq.inventory
 # @description Inventory "yq"
 
 # @section blackbox.framework.inventory.*

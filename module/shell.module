@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/shell.module
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/shell.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/shell.module
 # @description Shell module
 
 # @section blackbox.module.*

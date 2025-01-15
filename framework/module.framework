@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/module.framework
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/module.framework
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/module.framework
 # @description Module handler
 
 # @section blackbox.framework.*

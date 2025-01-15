@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/module/abstract/setup/provision.step
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/module/abstract/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/module/abstract/setup/provision.step
 # @description Abstract module "setup" action "provision" step
 
 # @section blackbox.framework.module.abstract.setup.*

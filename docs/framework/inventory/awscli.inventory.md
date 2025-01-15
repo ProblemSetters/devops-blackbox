@@ -1,6 +1,6 @@
 # framework/inventory/awscli.inventory
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/awscli.inventory
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/awscli.inventory
 
 ## Overview
 

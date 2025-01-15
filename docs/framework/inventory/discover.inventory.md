@@ -1,6 +1,6 @@
 # framework/inventory/discover.inventory
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/discover.inventory
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/discover.inventory
 
 ## Overview
 

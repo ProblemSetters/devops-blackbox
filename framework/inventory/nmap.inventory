@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/nmap.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/nmap.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/nmap.inventory
 # @description Inventory "nmap"
 
 # @section blackbox.framework.inventory.*

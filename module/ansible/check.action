@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/ansible/check.action
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/ansible/check.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/ansible/check.action
 # @description Ansible module "check" action
 
 # @section blackbox.module.ansible.*

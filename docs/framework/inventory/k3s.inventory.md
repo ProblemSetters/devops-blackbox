@@ -1,6 +1,6 @@
 # framework/inventory/k3s.inventory
 
-https://k3shub.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/k3s.inventory
+https://k3shub.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/k3s.inventory
 
 ## Overview
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/discover.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/discover.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/discover.inventory
 # @description Inventory "discover"
 
 # @section blackbox.framework.inventory.*

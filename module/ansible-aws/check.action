@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/ansible-aws/check.action
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/ansible-aws/check.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/ansible-aws/check.action
 # @description Ansible+AWS "check" action
 
 # @section blackbox.module.ansible-aws.*

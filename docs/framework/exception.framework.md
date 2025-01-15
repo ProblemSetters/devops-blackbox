@@ -1,6 +1,6 @@
 # framework/exception.framework
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/exception.framework
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/exception.framework
 
 ## Overview
 

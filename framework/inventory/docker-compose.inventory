@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/docker-compose.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/docker-compose.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/docker-compose.inventory
 # @description Inventory "docker-compose"
 
 # @section blackbox.framework.inventory.*

@@ -1,6 +1,6 @@
 # framework/inventory/nmap.inventory
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/nmap.inventory
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/nmap.inventory
 
 ## Overview
 

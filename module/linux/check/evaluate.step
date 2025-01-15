@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/linux/check/evaluate.step
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/linux/check/evaluate.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/linux/check/evaluate.step
 # @description Linux module "check" action "evaluate" step
 
 # @section blackbox.module.linux.check.*

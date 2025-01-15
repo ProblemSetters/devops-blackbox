@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/chef.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/chef.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/chef.inventory
 # @description Inventory "chef"
 
 # @section blackbox.framework.inventory.*

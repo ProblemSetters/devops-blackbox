@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/gawk.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/gawk.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/gawk.inventory
 # @description Inventory "gawk"
 
 # @section blackbox.framework.inventory.*

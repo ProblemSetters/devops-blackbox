@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# @file module/redis-stdl/check/evaluate/expect/file.expect
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/redis-stdl/check/evaluate/expect/file.expect
+# @description File expressions expectant
+
+# @section blackbox.module.redis-stdl.check.evaluate.expect.*
+blackbox.module.redis-stdl.check.evaluate.expect.file() {
+  # @section blackbox.module.redis-stdl.check.evaluate.expect.file.*
+
+  # Expects an existing file
+  #
+  # @stdin Assert expression
+  #
+  # @arg $1 type=enum<1..100|-> Score value: absolute (if integer) or relative (if "-")
+  # @arg $3 type=string Assert success message
+  # @arg $3 type=string Assert failure message
+  # @arg $4 type=...mixed Assert message args
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Expression that has the existing file
+  #   cat <<ASSERT | blackbox.module.redis-stdl.check.evaluate.expect.file.exists - "Success %s" "Fail %s" "message"
+  #     /etc/passwd
+  #   ASSERT
+  function blackbox.module.redis-stdl.check.evaluate.expect.file.exists() {
+    # shellcheck disable=SC2155
+    declare assert=$(</dev/stdin)
+
+    typeset score=$1
+    typeset message_true=$2
+    typeset message_false=$3
+    typeset message_args=("${@:4}")
+
+    printf "\n"
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    assert=$(printf "test -f %s" "$assert")
+
+    if ( "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}" ); then
+      # shellcheck disable=SC2059
+      blackbox.module.redis-stdl.check.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
+    else
+      # shellcheck disable=SC2059
+      blackbox.module.redis-stdl.check.evaluate.assert.false "$assert" "$score" "$(printf "$message_false" "${message_args[@]:-%s}")"
+    fi
+  }
+}

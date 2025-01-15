@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/linux-stdl/check.action
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/linux-stdl/check.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/linux-stdl/check.action
 # @description Linux standalone module "check" action
 
 # @section blackbox.module.linux-stdl.*

@@ -1,6 +1,6 @@
 # framework/inventory.framework
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory.framework
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory.framework
 
 ## Overview
 

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/redis-stdl.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/redis-stdl.module
+# @description Redis standalone module
+
+# @section blackbox.module.*
+blackbox.module.redis-stdl() {
+  : <<< blackbox.framework.module.abstract
+}

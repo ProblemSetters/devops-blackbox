@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/puppet-agent.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/puppet-agent.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/puppet-agent.inventory
 # @description Inventory "puppet-agent"
 
 # @section blackbox.framework.inventory.*

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory.framework
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory.framework
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory.framework
 # @description Inventory handler
 
 # @section blackbox.framework.*

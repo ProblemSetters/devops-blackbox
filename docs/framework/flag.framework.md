@@ -1,6 +1,6 @@
 # framework/flag.framework
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/flag.framework
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/flag.framework
 
 ## Overview
 
