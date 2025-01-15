@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/git.module
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/git.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/git.module
 # @description Git module
 
 # @section blackbox.module.*

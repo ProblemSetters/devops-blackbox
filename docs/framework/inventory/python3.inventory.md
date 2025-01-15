@@ -1,6 +1,6 @@
 # framework/inventory/python3.inventory
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/python3.inventory
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/python3.inventory
 
 ## Overview
 

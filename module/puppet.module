@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/puppet.module
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/puppet.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/puppet.module
 # @description Puppet module
 
 # @section blackbox.module.*

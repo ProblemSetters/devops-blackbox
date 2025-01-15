@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/kubernetes-stdl/check.action
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/kubernetes-stdl/check.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/kubernetes-stdl/check.action
 # @description Kubernetes standalone module "check" action
 
 # @section blackbox.module.kubernetes-stdl.*

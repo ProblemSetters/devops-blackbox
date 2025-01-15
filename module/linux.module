@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/linux.module
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/linux.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/linux.module
 # @description Linux module
 
 # @section blackbox.module.*

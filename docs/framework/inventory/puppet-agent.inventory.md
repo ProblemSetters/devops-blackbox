@@ -1,6 +1,6 @@
 # framework/inventory/puppet-agent.inventory
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/puppet-agent.inventory
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/puppet-agent.inventory
 
 ## Overview
 

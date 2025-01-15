@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/chef/setup/provision.step
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/chef/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/chef/setup/provision.step
 # @description Chef module "setup" action "provision" step
 
 # @section blackbox.module.chef.setup.*

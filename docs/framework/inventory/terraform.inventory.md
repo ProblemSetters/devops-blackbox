@@ -1,6 +1,6 @@
 # framework/inventory/terraform.inventory
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/terraform.inventory
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/terraform.inventory
 
 ## Overview
 

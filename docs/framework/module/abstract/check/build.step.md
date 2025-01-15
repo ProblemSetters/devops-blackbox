@@ -1,6 +1,6 @@
 # framework/module/abstract/check/build.step
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/module/abstract/check/build.step
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/module/abstract/check/build.step
 
 ## Overview
 

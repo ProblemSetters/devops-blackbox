@@ -1,6 +1,6 @@
 # framework/inventory/docker-compose.inventory
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/docker-compose.inventory
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/docker-compose.inventory
 
 ## Overview
 

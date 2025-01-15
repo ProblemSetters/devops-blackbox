@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/k3s.inventory
-# @brief https://k3shub.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/k3s.inventory
+# @brief https://k3shub.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/k3s.inventory
 # @description Inventory "k3s"
 
 # @section blackbox.framework.inventory.*

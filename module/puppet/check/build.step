@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/puppet/check/build.step
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/puppet/check/build.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/puppet/check/build.step
 # @description Puppet module "check" action "build" step
 
 # @section blackbox.module.puppet.check.*

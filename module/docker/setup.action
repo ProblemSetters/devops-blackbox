@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/docker/setup.action
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/docker/setup.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/docker/setup.action
 # @description Docker module "setup" action
 
 # @section blackbox.module.docker.*

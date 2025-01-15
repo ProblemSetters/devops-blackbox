@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file blackbox
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/blackbox
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/blackbox
 # @description Blackbox evaluation framework
 
 # @description Main executable

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/shell/check.action
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/shell/check.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/shell/check.action
 # @description Shell module "check" action
 
 # @section blackbox.module.shell.*

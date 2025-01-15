@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/aws/setup/provision.step
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/aws/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/aws/setup/provision.step
 # @description AWS module "setup" action "provision" step
 
 # @section blackbox.module.aws.setup.*

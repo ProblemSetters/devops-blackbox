@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/module/abstract/check/evaluate/score.evaluate
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/module/abstract/check/evaluate/score.evaluate
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/module/abstract/check/evaluate/score.evaluate
 # @description Step "evaluate" score calculator
 
 # @section blackbox.framework.module.abstract.check.evaluate.*

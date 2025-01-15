@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/ansible-aws/setup/provision.step
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/ansible-aws/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/ansible-aws/setup/provision.step
 # @description Ansible+AWS "setup" action "provision" step
 
 # @section blackbox.module.ansible-aws.setup.*

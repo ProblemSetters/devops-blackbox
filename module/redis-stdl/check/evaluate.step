@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# @file module/redis-stdl/check/evaluate.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/redis-stdl/check/evaluate.step
+# @description Redis standalone module "check" action "evaluate" step
+
+# @section blackbox.module.redis-stdl.check.*
+blackbox.module.redis-stdl.check.evaluate() {
+  # shellcheck disable=SC2034
+  typeset -a args=("$@")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"evaluate"
+  }
+
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.assert"
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect"
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.score"
+
+  local -a from_namespace=(
+    "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.artifact.collection"
+    "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.file.exists"
+    "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.shell.debug"
+    "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.shell.failure"
+    "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.shell.stderr"
+    "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.shell.stdout"
+    "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.shell.success"
+  )
+
+  if ( blackbox.framework.flag.enabled STEP_EVALUATE ); then
+    for namespace in "${from_namespace[@]}"; do
+      # shellcheck disable=SC2155
+      local definition=$(declare -f "$namespace")
+
+      eval "$(printf "function %s %s" "${namespace/module.${BLACKBOX_MODULE_NAME}.check.evaluate./}" "${definition#*"()"}")"
+    done
+  else
+    (
+      printf "\033[0;36m** BLACKBOX_FLAG__STEP_EVALUATE:\033[0m %s\n" "$BLACKBOX_FLAG__STEP_EVALUATE"
+      printf "\033[0;37m--\033[0m\n"
+      cat -n <(printf "BLACKBOX_FLAG__STEP_EVALUATE=%s\n" "$BLACKBOX_FLAG__STEP_EVALUATE")
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+
+    for namespace in "${from_namespace[@]}"; do
+      eval "$(printf "function %s (){ :; }" "${namespace/module.${BLACKBOX_MODULE_NAME}.check.evaluate./}")"
+    done
+  fi
+}

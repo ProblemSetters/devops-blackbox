@@ -1,6 +1,6 @@
 # framework/inventory/php-cli.inventory
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/php-cli.inventory
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/php-cli.inventory
 
 ## Overview
 

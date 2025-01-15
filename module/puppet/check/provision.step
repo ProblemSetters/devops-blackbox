@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/puppet/check/provision.step
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/puppet/check/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/puppet/check/provision.step
 # @description Puppet module "check" action "provision" step
 
 # @section blackbox.module.puppet.check.*

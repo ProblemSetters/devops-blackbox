@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# @file module/redis-stdl/setup.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/redis-stdl/setup.action
+# @description Redis standalone module "setup" action
+
+# @section blackbox.module.redis-stdl.*
+blackbox.module.redis-stdl.setup() {
+  # shellcheck disable=SC2034
+  typeset question_id=$1
+  typeset -a step_args=("${@:2}")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  if [ ! -e "/blackbox/module/${BLACKBOX_MODULE_NAME}/setup.action" ]; then
+    blackbox.framework.exception.raise "action '%s:setup' not found" "$BLACKBOX_MODULE_NAME"
+  fi
+
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.setup.provision:step" "${step_args[@]}"
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.setup.provision:step" "${step_args[@]}"
+
+  : <<< blackbox.module.*.setup
+}

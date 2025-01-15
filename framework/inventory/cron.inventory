@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/cron.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/cron.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/cron.inventory
 # @description Inventory "cron"
 
 # @section blackbox.framework.inventory.*

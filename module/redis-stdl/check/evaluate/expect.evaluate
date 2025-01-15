@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# @file module/redis-stdl/check/evaluate/expect.evaluate
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/redis-stdl/check/evaluate/expect.evaluate
+# @description Step "evaluate" expectant
+
+# @section blackbox.module.redis-stdl.check.evaluate.*
+blackbox.module.redis-stdl.check.evaluate.expect() {
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.artifact"
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.file"
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.shell"
+}

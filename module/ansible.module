@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/ansible.module
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/ansible.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/ansible.module
 # @description Ansible module
 
 # @section blackbox.module.*

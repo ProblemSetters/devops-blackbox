@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/terraform/setup/provision.step
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/terraform/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/terraform/setup/provision.step
 # @description Terraform module "setup" action "provision" step
 
 # @section blackbox.module.terraform.setup.*

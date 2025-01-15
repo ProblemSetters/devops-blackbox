@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# @file framework/inventory/redis.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/redis.inventory
+# @description Inventory "redis"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "redis" inventory
+#
+# @arg $1 readonly,type=string,default=redis Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "redis" inventory
+#  blackbox.framework.inventory.provision redis
+#
+# @see blackbox.framework.inventory.provision
+blackbox.framework.inventory.redis() {
+  typeset package_name=$1
+  typeset -a with_packages=("${@:2}")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  sed "s/\x1b\[[0-9;]*m//g" <(dpkg-query -W "$package_name" "${with_packages[@]}" 2>&1)
+
+  if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
+    false
+
+    return
+  fi
+
+  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
+    apt-get update
+  fi
+
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget && {
+    wget -qO- https://packages.redis.io/gpg | gpg --dearmor | tee /etc/apt/keyrings/redis.gpg >/dev/null
+    tee <<<"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/redis.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" /etc/apt/sources.list.d/redis.list
+
+    local version=6:7.4.1-1rl1~jammy1
+
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis="$version" "${with_packages[@]}"
+  }
+}

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/python3.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/python3.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/python3.inventory
 # @description Inventory "python3"
 
 # @section blackbox.framework.inventory.*

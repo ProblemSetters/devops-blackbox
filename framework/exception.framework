@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/exception.framework
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/exception.framework
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/exception.framework
 # @description Exception handler
 
 # @section blackbox.framework.*

@@ -1,6 +1,6 @@
 # framework/inventory/jq.inventory
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/jq.inventory
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/jq.inventory
 
 ## Overview
 

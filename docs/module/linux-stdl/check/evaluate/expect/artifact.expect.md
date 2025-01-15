@@ -1,6 +1,6 @@
 # module/linux-stdl/check/evaluate/expect/artifact.expect
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/module/linux-stdl/check/evaluate/expect/artifact.expect
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/linux-stdl/check/evaluate/expect/artifact.expect
 
 ## Overview
 

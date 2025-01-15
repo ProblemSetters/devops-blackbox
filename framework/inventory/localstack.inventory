@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/localstack.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/localstack.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/localstack.inventory
 # @description Inventory "localstack"
 
 # @section blackbox.framework.inventory.*

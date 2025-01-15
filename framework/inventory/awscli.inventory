@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/awscli.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/awscli.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/awscli.inventory
 # @description Inventory "awscli"
 
 # @section blackbox.framework.inventory.*

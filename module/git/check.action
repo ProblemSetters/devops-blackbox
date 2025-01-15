@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/git/check.action
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/git/check.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/git/check.action
 # @description Git module "check" action
 
 # @section blackbox.module.git.*

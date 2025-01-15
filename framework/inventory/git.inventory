@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/git.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/inventory/git.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/git.inventory
 # @description Inventory "git"
 
 # @section blackbox.framework.inventory.*

@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+# @file module/redis-stdl/check/evaluate/assert.evaluate
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/redis-stdl/check/evaluate/assert.evaluate
+# @description Step "evaluate" asserter
+
+# @section blackbox.module.redis-stdl.check.evaluate.*
+blackbox.module.redis-stdl.check.evaluate.assert() {
+  # @section blackbox.module.redis-stdl.check.evaluate.assert.*
+
+  # Asserts "false"
+  #
+  # @arg $1 type=string Assert expression
+  # @arg $2 type=enum<1..100|-> Score value: absolute (if integer) or relative (if "-")
+  # @arg $3 type=string Assert message
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Asserts the false expression "(false -eq true)" with missing "10" score and a specific message that has an argument
+  #   blackbox.module.redis-stdl.check.evaluate.assert.false "(false -eq true)" 10 "Assert message with argument '%s'" "argument"
+  function blackbox.module.redis-stdl.check.evaluate.assert.false() {
+    typeset assert=$1
+    typeset score=$2
+    typeset message=$3
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    # shellcheck disable=SC2155
+    local normalized_assert=$(blackbox.module.redis-stdl.check.evaluate.assert.normalize "$assert")
+
+    score=$(
+      blackbox.module.redis-stdl.check.evaluate.score.calculate "$score" &>/dev/null
+      cat <<<0
+    )
+    # shellcheck disable=SC2059
+    message=$(printf "${message:-%s}" "${normalized_assert##* }")
+
+    (
+      # shellcheck disable=SC2155
+      local output=$("$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}")
+
+      printf "\033[0;31m** ASSERT:\033[0m %s\n" "$message"
+      printf "\033[0;37m%s\033[0m\n" "$normalized_assert"
+      printf "\033[0;37m--\033[0m\n"
+      printf "\033[0;37m%s\033[0m\n" "$(cat -nv <<<"${output:-"-empty-"}")";
+      printf "\033[0;37m--\033[0m\n"
+      printf "Partial Credit: %s\n" "$score"
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+
+#    if ( blackbox.framework.flag.enabled "DEBUG_MODE" ); then
+#      blackbox.framework.exception.raise "assert '%s' failed with message '%s'" "$normalized_assert" "$message"
+#    fi
+
+    false
+  }
+
+  # Normalizes assert expression for output
+  #
+  # @arg $1 type=string Assert expression
+  #
+  # @stdout Normalized assert
+  #
+  # @example
+  #   # Normalize assert expression
+  #   blackbox.module.redis-stdl.check.evaluate.assert.normalize "(true -eq true)"
+  function blackbox.module.redis-stdl.check.evaluate.assert.normalize() {
+    typeset assert=$1
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    awk '{ printf "%s%s", EOL, $0; EOL=" "}' <(sed 's/#.*$//; /^$/d; s/^[[:space:]]\+//g' <<<"$assert")
+  }
+
+  # Asserts "true"
+  #
+  # @arg $1 type=string Assert expression
+  # @arg $2 type=enum<1..100|-> Score value: absolute (if integer) or relative (if "-")
+  # @arg $3 type=string Assert message
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Asserts the true expression "(true -eq true)" with "10" score and a specific message that has an argument
+  #   blackbox.module.redis-stdl.check.evaluate.assert.true "(true -eq true)" 10 "Assert message with argument '%s'" "argument"
+  function blackbox.module.redis-stdl.check.evaluate.assert.true() {
+    typeset assert=$1
+    typeset score=$2
+    typeset message=$3
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    # shellcheck disable=SC2155
+    local normalized_assert=$(blackbox.module.redis-stdl.check.evaluate.assert.normalize "$assert")
+
+    score=$(blackbox.module.redis-stdl.check.evaluate.score.calculate "$score")
+    # shellcheck disable=SC2059
+    message=$(printf "${message:-%s}" "${normalized_assert##* }")
+
+    (
+      # shellcheck disable=SC2155
+      local output=$("$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}")
+
+      printf "\033[0;32m** ASSERT:\033[0m %s\n" "$message"
+      printf "\033[0;37m%s\033[0m\n" "$normalized_assert"
+      printf "\033[0;37m--\033[0m\n"
+      printf "\033[0;37m%s\033[0m\n" "$(cat -nv <<<"${output:-"-empty-"}")";
+      printf "\033[0;37m--\033[0m\n"
+      printf "Partial Credit: %s\n" "$score"
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+
+    true
+  }
+}

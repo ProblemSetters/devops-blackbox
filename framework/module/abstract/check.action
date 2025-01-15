@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/module/abstract/check.action
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/module/abstract/check.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/module/abstract/check.action
 # @description Abstract module "check" action
 
 # @section blackbox.framework.module.abstract.*

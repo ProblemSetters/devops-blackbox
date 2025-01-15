@@ -1,6 +1,6 @@
 # framework/module/abstract/check.action
 
-https://github.com/ProblemSetters/devops-blackbox/blob/master/framework/module/abstract/check.action
+https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/module/abstract/check.action
 
 ## Overview
 

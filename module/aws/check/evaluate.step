@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/aws/check/evaluate.step
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/master/module/aws/check/evaluate.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/aws/check/evaluate.step
 # @description AWS module "check" action "evaluate" step
 
 # @section blackbox.module.aws.check.*
