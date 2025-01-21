@@ -42,6 +42,6 @@ blackbox.framework.inventory.redis() {
     local version=6:7.4.1-1rl1~jammy1
 
     apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis="$version" "${with_packages[@]}"
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis-server="$version" redis-tools="$version" "${with_packages[@]}"
   }
 }
