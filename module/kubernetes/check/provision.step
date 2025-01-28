@@ -8,6 +8,21 @@ blackbox.module.kubernetes.check.provision() {
   : <<< blackbox.framework.module.abstract.check.provision:step
 
   docker exec -i "$BLACKBOX_SPAWN" service docker start
+
+  (
+    export AWS_DEFAULT_REGION="us-east-1"
+    # shellcheck disable=SC2155
+    export AWS_ACCESS_KEY_ID=$(base64 -d <(base64 -d <<<"UVV0SlFWSTJUemRIU2s1WVdVSk1RVXBGTlRNSwo="))
+    # shellcheck disable=SC2155
+    export AWS_SECRET_ACCESS_KEY=$(base64 -d <(base64 -d <<<"UVVaNFZUVXJWMEZoYml0eWVWUnpVSGhuY1ZWTk56VXlPVlp5Umt0Q1JFTkxRMHBFY3pKSFV3bz0K"))
+
+    # shellcheck disable=SC2155
+    local ECR_PASSWORD=$(/usr/local/aws-cli/v2/current/bin/aws ecr-public get-login-password --region "$AWS_DEFAULT_REGION")
+
+    docker exec -i "$BLACKBOX_SPAWN" docker login --username AWS --password-stdin public.ecr.aws/b0k9n8x8 <<<"$ECR_PASSWORD"
+    docker exec -i "$BLACKBOX_SPAWN" sudo -u "$BLACKBOX_USER_NAME" docker login --username AWS --password-stdin public.ecr.aws/b0k9n8x8 <<<"$ECR_PASSWORD"
+  ) 2>&1 # ¯\_(ツ)_/¯
+
   docker exec -i "$BLACKBOX_SPAWN" service k3s start && {
     sleep 30 # TODO: implement healthcheck
   }
