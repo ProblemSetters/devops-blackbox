@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# @file module/ceph-stdl/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/ceph-stdl/setup/provision.step
+# @description Ceph standalone module "setup" action "provision" step
+
+# @section blackbox.module.ceph-stdl.setup.*
+blackbox.module.ceph-stdl.setup.provision() {
+  # shellcheck disable=SC2034
+  typeset -a args=("$@")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"provision"
+  }
+
+  if ( ! blackbox.framework.flag.enabled STEP_PROVISION ); then
+    (
+      printf "\033[0;36m** BLACKBOX_FLAG__STEP_PROVISION:\033[0m %s\n" "$BLACKBOX_FLAG__STEP_PROVISION"
+      printf "\033[0;37m--\033[0m\n"
+      cat -n <<<"BLACKBOX_FLAG__STEP_PROVISION=no"
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+
+    return
+  fi
+
+  blackbox.framework.inventory.provision microceph && {
+    microceph cluster bootstrap
+    microceph disk add loop,4G,3
+    microceph.ceph osd crush rule rm replicated_rule
+    microceph.ceph osd crush rule create-replicated single default osd
+    microceph status
+    microceph.ceph status
+  }
+
+  rm -f /usr/local/bin/solve
+
+  if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
+    (
+      printf "\n"
+      printf "\033[0;36m** BLACKBOX_PROVISION_WITH_OPTS:\033[0m {...}\n"
+      printf "\033[0;37m--\033[0m\n"
+      cat -n <(eval "$BLACKBOX_PROVISION_WITH_OPTS")
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+  fi
+}

@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# @file framework/inventory/microceph.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/microceph.inventory
+# @description Inventory "microceph"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "microceph" inventory
+#
+# @arg $1 readonly,type=string,default=microceph Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "microceph" inventory
+#  blackbox.framework.inventory.provision microceph
+#
+# @see blackbox.framework.inventory.provision
+blackbox.framework.inventory.microceph() {
+  typeset package_name=$1
+  typeset -a with_packages=("${@:2}")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  sed "s/\x1b\[[0-9;]*m//g" <(dpkg-query -W "$package_name" "${with_packages[@]}" 2>&1)
+
+  if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
+    false
+
+    return
+  fi
+
+  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
+    apt-get update
+  fi
+
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ceph-common "${with_packages[@]}" && {
+    snap install microceph
+    rm -rf /etc/ceph
+    ln -s /var/snap/microceph/current/conf /etc/ceph
+  }
+}
