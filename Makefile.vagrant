@@ -1,0 +1,78 @@
+#!/usr/bin/env make
+override blackbox/:=*
+
+ifeq ($(origin .FEATURES),undefined)
+  $(error `make` executable version "$(MAKE_VERSION)" is not supported. GNU Make 3.82 or above is required)
+endif
+
+override SHELL:=/bin/bash
+
+ifneq ($(value SHELL),$(shell echo $$BASH))
+  $(error current shell executable is not supported. GNU Bash 4.3 or above is required)
+endif
+
+ifeq ($(words $(MAKEFILE_LIST)),1)
+  $(error `Makefile.vagrant` should be included, direct usage is not allowed)
+endif
+
+BLACKBOX_FLAG__DEBUG_MODE:=no
+BLACKBOX_FLAG__STEP_PROVISION:=yes
+BLACKBOX_FLAG__STEP_BUILD:=yes
+BLACKBOX_FLAG__STEP_EVALUATE:=yes
+
+ifneq ($(BLACKBOX_DIR),$(abspath $(dir $(lastword $(MAKEFILE_LIST)))))
+  $(error `BLACKBOX_DIR` configuration is not valid)
+endif
+
+BLACKBOX_HOST:=blackbox-$(shell basename $(PWD) | cut -c 1-36)
+BLACKBOX_HOST_USER_QUESTION_DIR=$(call blackbox/pwd)
+BLACKBOX_USER_NAME:=ubuntu
+BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_HOME)/$(shell basename $(call blackbox/pwd))
+VAGRANT_VAGRANTFILE=$(BLACKBOX_DIR)/Vagrantfile
+
+define blackbox/pwd=
+$(abspath $(dir $(firstword $(MAKEFILE_LIST)))/$(1))
+endef
+
+export BLACKBOX_HOST
+export BLACKBOX_HOST_USER_QUESTION_DIR
+export BLACKBOX_USER_QUESTION_DIR
+export VAGRANT_VAGRANTFILE
+
+debug:
+	$(eval BLACKBOX_FLAG__DEBUG_MODE:=yes)
+	$(foreach variable,BLACKBOX_FLAG__DEBUG_MODE BLACKBOX_FLAG__STEP_PROVISION BLACKBOX_FLAG__STEP_BUILD BLACKBOX_FLAG__STEP_EVALUATE,$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
+	$(info $(shell printf "\033[0;37m%s\033[0m" \\))
+	$(foreach variable,$(filter-out BLACKBOX_FLAG__%,$(filter BLACKBOX_%,$(sort $(.VARIABLES)))),$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
+	$(if $(and $(filter-out $(words $(MAKECMDGOALS)),0),$(filter-out $(words $(MAKECMDGOALS)),1)),$(info $(shell printf "\033[0;37m%s\033[0m" --)))
+	@true
+
+all: uninstall install setup solve check
+
+install:
+	vagrant up
+
+setup:
+	vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION) BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_QUESTION_DIR) BLACKBOX_VERSION=$(BLACKBOX_VERSION) bash $(BLACKBOX_USER_QUESTION_DIR)/setup.sh"
+
+solve:
+	vagrant ssh --command="sudo -u $(BLACKBOX_USER_NAME) -H env bash $(BLACKBOX_USER_QUESTION_DIR)/solve.sh"
+
+check:
+	vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION) BLACKBOX_FLAG__STEP_BUILD=$(BLACKBOX_FLAG__STEP_BUILD) BLACKBOX_FLAG__STEP_EVALUATE=$(BLACKBOX_FLAG__STEP_EVALUATE) BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_QUESTION_DIR) BLACKBOX_VERSION=$(BLACKBOX_VERSION) bash $(BLACKBOX_USER_QUESTION_DIR)/check.sh"
+
+shell:
+	vagrant ssh --command="sudo su - $(BLACKBOX_USER_NAME)"
+
+hr:
+	cat <(xargs -r xdg-open 2>/dev/null < <(grep -o 'https://www.hackerrank.com.*' README.md))
+
+gh:
+	cat <(xargs -r xdg-open 2>/dev/null < <(grep -o 'https://github.com.*' README.md))
+
+uninstall:
+	vagrant destroy -f
+
+ifeq ($(filter debug,$(MAKECMDGOALS)),)
+.SILENT:
+endif

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/ceph-stdl.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/ceph-stdl.module
+# @description Ceph standalone module
+
+# @section blackbox.module.*
+blackbox.module.ceph-stdl() {
+  : <<< blackbox.framework.module.abstract
+}
