@@ -31,12 +31,14 @@ blackbox.framework.inventory.microceph() {
     return
   fi
 
-  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
+  {
     apt-get update
-  fi
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ceph-common "${with_packages[@]}"
+  }
 
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ceph-common "${with_packages[@]}" && {
-    snap install microceph
+  snap install microceph
+
+  {
     rm -rf /etc/ceph
     ln -s /var/snap/microceph/current/conf /etc/ceph
   }
