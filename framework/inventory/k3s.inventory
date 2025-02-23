@@ -31,9 +31,7 @@ blackbox.framework.inventory.k3s() {
     return
   fi
 
-  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
-    apt-get update
-  fi
+  apt-get update
 
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common wget && {
     wget -c -S -P /usr/local/bin/ "https://github.com/k3s-io/k3s/releases/download/v1.27.3%2Bk3s1/k3s" && {

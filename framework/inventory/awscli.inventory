@@ -23,9 +23,7 @@ blackbox.framework.inventory.awscli() {
     blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
   }
 
-  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
-    apt-get update
-  fi
+  apt-get update
 
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget less && {
     wget -S -O /tmp/awscli.zip --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip && {

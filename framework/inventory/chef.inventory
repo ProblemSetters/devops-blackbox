@@ -31,9 +31,7 @@ blackbox.framework.inventory.chef() {
     return
   fi
 
-  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
-    apt-get update
-  fi
+  apt-get update
 
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget && {
     wget --output-document="/tmp/chef.deb" https://packages.chef.io/files/stable/chef/18.2.7/ubuntu/22.04/chef_18.2.7-1_amd64.deb && {

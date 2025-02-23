@@ -31,9 +31,7 @@ blackbox.framework.inventory.yq() {
     return
   fi
 
-  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
-    apt-get update
-  fi
+  apt-get update
 
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common wget && {
     wget -c -S -O /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/3.3.2/yq_linux_amd64" && {

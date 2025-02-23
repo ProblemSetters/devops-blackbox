@@ -31,9 +31,7 @@ blackbox.framework.inventory.puppet-agent() {
     return
   fi
 
-  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
-    apt-get update
-  fi
+  apt-get update
 
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget && {
     wget --output-document="/tmp/puppet.deb" https://apt.puppet.com/puppet8-release-jammy.deb && {
