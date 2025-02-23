@@ -31,9 +31,7 @@ blackbox.framework.inventory.redis() {
     return
   fi
 
-  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
-    apt-get update
-  fi
+  apt-get update
 
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget && {
     wget -qO- https://packages.redis.io/gpg | gpg --dearmor | tee /etc/apt/keyrings/redis.gpg >/dev/null

@@ -31,9 +31,7 @@ blackbox.framework.inventory.chef-workstation() {
     return
   fi
 
-  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -amin -60)" ]; then
-    apt-get update
-  fi
+  apt-get update
 
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget && {
     wget --output-document="/tmp/chef.deb" https://packages.chef.io/files/stable/chef-workstation/22.6.973/ubuntu/18.04/chef-workstation_22.6.973-1_amd64.deb && {
