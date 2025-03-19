@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# @file framework/inventory/kafka.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/kafka.inventory
+# @description Inventory "kafka"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "kafka" inventory
+#
+# @arg $1 readonly,type=string,default=kafka Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "kafka" inventory
+#  blackbox.framework.inventory.provision kafka
+#
+# @see blackbox.framework.inventory.provision
+blackbox.framework.inventory.kafka() {
+  typeset package_name=$1
+  typeset -a with_packages=("${@:2}")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  sed "s/\x1b\[[0-9;]*m//g" <(dpkg-query -W "$package_name" "${with_packages[@]}" 2>&1)
+
+  if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
+    false
+
+    return
+  fi
+
+  apt-get update
+
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common openjdk-17-jdk openjdk-17-jre wget && {
+    wget --output-document=/tmp/kafka.tgz https://dlcdn.apache.org/kafka/3.9.0/kafka_2.12-3.9.0.tgz && {
+      mkdir /usr/local/kafka
+      tar -zxvf /tmp/kafka.tgz --directory=/usr/local/kafka --strip-components=1
+      rm /tmp/kafka.tgz
+    }
+
+    cp /blackbox/framework/inventory/kafka/rootfs/etc/systemd/system/zookeeper.service /etc/systemd/system/
+    cp /blackbox/framework/inventory/kafka/rootfs/etc/systemd/system/kafka.service /etc/systemd/system/
+
+    systemctl daemon-reload
+    systemctl start zookeeper
+    systemctl start kafka
+  }
+}
