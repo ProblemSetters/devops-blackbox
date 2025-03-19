@@ -67,6 +67,15 @@ check\:evaluate:
 shell:
 	vagrant ssh --command="sudo su - $(BLACKBOX_USER_NAME)"
 
+save:
+	vagrant snapshot save current
+
+restore:
+	vagrant snapshot restore current
+
+delete:
+	vagrant snapshot delete current
+
 hr:
 	cat <(xargs -r xdg-open 2>/dev/null < <(grep -o 'https://www.hackerrank.com.*' README.md))
 

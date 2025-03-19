@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# @file framework/inventory/jenkins.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/jenkins.inventory
+# @description Inventory "jenkins"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "jenkins" inventory
+#
+# @arg $1 readonly,type=string,default=jenkins Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "jenkins" inventory
+#  blackbox.framework.inventory.provision jenkins
+#
+# @see blackbox.framework.inventory.provision
+blackbox.framework.inventory.jenkins() {
+  typeset package_name=$1
+  typeset -a with_packages=("${@:2}")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  sed "s/\x1b\[[0-9;]*m//g" <(dpkg-query -W "$package_name" "${with_packages[@]}" 2>&1)
+
+  if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
+    false
+
+    return
+  fi
+
+  apt-get update
+
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common wget && {
+    wget -qO /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+    tee /etc/apt/sources.list.d/jenkins.list <<<"deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+
+    local version=2.492.2
+
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends openjdk-17-jre jenkins="$version" "${with_packages[@]}"
+
+    {
+      sleep 60
+      wget -qO /usr/local/bin/jenkins-cli.jar http://localhost:8080/jnlpJars/jenkins-cli.jar
+      tee -a /etc/environment < <(printf "JENKINS_URL=%s\n" "http://localhost:8080")
+      tee -a /etc/environment < <(printf "JENKINS_USER_ID=%s\n" "admin")
+      tee -a /etc/environment < <(printf "JENKINS_API_TOKEN=%s\n" "$(</var/lib/jenkins/secrets/initialAdminPassword)")
+    }
+  }
+}
