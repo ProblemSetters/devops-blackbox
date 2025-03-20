@@ -40,7 +40,7 @@ blackbox.framework.inventory.jenkins() {
     local version=2.492.2
 
     apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends openjdk-17-jre jenkins="$version" "${with_packages[@]}" && {
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends openjdk-17-jre-headless jenkins="$version" "${with_packages[@]}" && {
       install -m 0644 -D /blackbox/framework/inventory/jenkins/rootfs/etc/systemd/system/jenkins.service.d/override.conf /etc/systemd/system/jenkins.service.d/override.conf
 
       systemctl daemon-reload

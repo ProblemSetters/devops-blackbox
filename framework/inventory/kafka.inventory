@@ -33,7 +33,7 @@ blackbox.framework.inventory.kafka() {
 
   apt-get update
 
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common openjdk-17-jdk openjdk-17-jre wget && {
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common openjdk-17-jdk-headless openjdk-17-jre-headless wget && {
     wget --output-document=/tmp/kafka.tgz https://dlcdn.apache.org/kafka/3.9.0/kafka_2.12-3.9.0.tgz && {
       mkdir /usr/local/kafka
       tar -zxvf /tmp/kafka.tgz --directory=/usr/local/kafka --strip-components=1
