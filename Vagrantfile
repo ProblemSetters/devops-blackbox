@@ -13,5 +13,6 @@ Vagrant.configure("2") do |config|
     apt update && {
       DEBIAN_FRONTEND=noninteractive apt install -y awscli unzip
     }
+    usermod -aG vagrant ubuntu
   SHELL
 end

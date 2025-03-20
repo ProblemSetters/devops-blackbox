@@ -23,7 +23,7 @@ blackbox.module.kafka-stdl.setup.provision() {
     return
   fi
 
-  blackbox.framework.inventory.provision kafka  && {
+  blackbox.framework.inventory.provision kafka && {
     sleep 10 # TODO: implement launcher
   }
 

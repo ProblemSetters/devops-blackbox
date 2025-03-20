@@ -41,6 +41,7 @@ blackbox.framework.inventory.jenkins() {
 
     apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends openjdk-17-jre jenkins="$version" "${with_packages[@]}"
+    systemctl start jenkins
 
     {
       sleep 60
