@@ -42,17 +42,6 @@ blackbox.framework.inventory.jenkins() {
     apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends openjdk-17-jre-headless jenkins="$version" "${with_packages[@]}" && {
       install -m 0644 -D /blackbox/framework/inventory/jenkins/rootfs/etc/systemd/system/jenkins.service.d/override.conf /etc/systemd/system/jenkins.service.d/override.conf
-
-      systemctl daemon-reload
-      systemctl start jenkins
-    }
-
-    {
-      sleep 60
-      wget -qO /usr/local/bin/jenkins-cli.jar http://localhost:8080/jnlpJars/jenkins-cli.jar
-      tee -a /etc/environment < <(printf "JENKINS_URL=%s\n" "http://localhost:8080")
-      tee -a /etc/environment < <(printf "JENKINS_USER_ID=%s\n" "admin")
-      tee -a /etc/environment < <(printf "JENKINS_API_TOKEN=%s\n" "$(</var/lib/jenkins/secrets/initialAdminPassword)")
     }
   }
 }

@@ -24,7 +24,7 @@ blackbox.module.kafka-stdl.setup.provision() {
   fi
 
   blackbox.framework.inventory.provision kafka && {
-    sleep 10 # TODO: implement launcher
+    systemctl start kafka
   }
 
   rm -f /usr/local/bin/solve
