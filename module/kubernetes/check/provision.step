@@ -17,10 +17,19 @@ blackbox.module.kubernetes.check.provision() {
     export AWS_SECRET_ACCESS_KEY=$(base64 -d <(base64 -d <<<"UVVaNFZUVXJWMEZoYml0eWVWUnpVSGhuY1ZWTk56VXlPVlp5Umt0Q1JFTkxRMHBFY3pKSFV3bz0K"))
 
     # shellcheck disable=SC2155
-    local ECR_PASSWORD=$(/usr/local/aws-cli/v2/current/bin/aws ecr-public get-login-password --region "$AWS_DEFAULT_REGION")
+    local ECR_PASSWORD=$(/usr/local/aws-cli/v2/current/bin/aws ecr get-login-password --region "$AWS_DEFAULT_REGION")
 
-    docker exec -i "$BLACKBOX_SPAWN" docker login --username AWS --password-stdin public.ecr.aws/b0k9n8x8 <<<"$ECR_PASSWORD"
-    docker exec -i "$BLACKBOX_SPAWN" sudo -u "$BLACKBOX_USER_NAME" docker login --username AWS --password-stdin public.ecr.aws/b0k9n8x8 <<<"$ECR_PASSWORD"
+    docker exec -i "$BLACKBOX_SPAWN" docker login --username AWS --password-stdin 134148934511.dkr.ecr.us-east-1.amazonaws.com <<<"$ECR_PASSWORD"
+    docker exec -i "$BLACKBOX_SPAWN" sudo -u "$BLACKBOX_USER_NAME" docker login --username AWS --password-stdin 134148934511.dkr.ecr.us-east-1.amazonaws.com <<<"$ECR_PASSWORD"
+
+    {
+      # TODO: for backwards compatibility with public ECR repositories, and should be removed when all questions are moved to private repositories
+      # shellcheck disable=SC2155
+      local ECR_PASSWORD_PUBLIC=$(/usr/local/aws-cli/v2/current/bin/aws ecr-public get-login-password --region "$AWS_DEFAULT_REGION")
+
+      docker login --username AWS --password-stdin public.ecr.aws/b0k9n8x8 <<<"$ECR_PASSWORD_PUBLIC"
+      sudo -u "$BLACKBOX_USER_NAME" docker login --username AWS --password-stdin public.ecr.aws/b0k9n8x8 <<<"$ECR_PASSWORD_PUBLIC"
+    }
   ) 2>&1 # ¯\_(ツ)_/¯
 
   docker exec -i "$BLACKBOX_SPAWN" service k3s start && {

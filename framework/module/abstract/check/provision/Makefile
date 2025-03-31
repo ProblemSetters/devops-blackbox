@@ -11,7 +11,7 @@ ifneq ($(value SHELL),$(shell echo $$BASH))
   $(error current shell executable is not supported. GNU Bash 4.3 or above is required)
 endif
 
-BLACKBOX:=public.ecr.aws/b0k9n8x8/problemsetters/blackbox_2204:$(shell basename $(abspath $(firstword $(MAKEFILE_LIST))/../../../))
+BLACKBOX:=134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2204:$(shell basename $(abspath $(firstword $(MAKEFILE_LIST))/../../../))
 BLACKBOX_USER:=1000:1000
 BLACKBOX_USER_NAME:=ubuntu
 BLACKBOX_USER_HOME:=/home/$(BLACKBOX_USER_NAME)

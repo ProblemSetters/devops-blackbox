@@ -11,7 +11,7 @@ ifneq ($(value SHELL),$(shell echo $$BASH))
   $(error current shell executable is not supported. GNU Bash 4.3 or above is required)
 endif
 
-BLACKBOX:=public.ecr.aws/b0k9n8x8/problemsetters/localstack_2204:latest
+BLACKBOX:=134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/localstack_2204:2.1.0
 
 build:
 	docker build --network=host --progress="plain" --tag="$(BLACKBOX)" .
