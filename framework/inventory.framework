@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2317 ## remove!!
 # @file framework/inventory.framework
 # @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory.framework
 # @description Inventory handler
@@ -72,7 +73,7 @@ blackbox.framework.inventory() {
   }; blackbox.framework.inventory.install
 
   blackbox.framework.inventory.heap() {
-    # @section blackbox.framework.heap.*
+    # @section blackbox.framework.inventory.heap.*
 
     # Allocates a "heap" directory dedicated to a particular question to store the question's temporary resources
     #
@@ -120,6 +121,66 @@ blackbox.framework.inventory() {
       popd
     }
   }; blackbox.framework.inventory.heap
+
+  blackbox.framework.inventory.ecr() {
+    # @section blackbox.framework.inventory.ecr.*
+
+    # Logs in to Amazon ECR
+    #
+    # @noargs
+    #
+    # @example
+    #  # Logs in to Amazon ECR
+    #  blackbox.framework.inventory.ecr.login
+    #
+    # @see blackbox.framework.inventory.ecr.logout
+    function blackbox.framework.inventory.ecr.login() {
+      {
+        blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+      }
+
+      blackbox.framework.inventory.provision awscli
+      (
+        export AWS_DEFAULT_REGION="us-east-1"
+        # shellcheck disable=SC2155
+        export AWS_ACCESS_KEY_ID=$(base64 -d <(base64 -d <<<"UVV0SlFWSTJUemRIU2s1WVdVSk1RVXBGTlRNSwo="))
+        # shellcheck disable=SC2155
+        export AWS_SECRET_ACCESS_KEY=$(base64 -d <(base64 -d <<<"UVVaNFZUVXJWMEZoYml0eWVWUnpVSGhuY1ZWTk56VXlPVlp5Umt0Q1JFTkxRMHBFY3pKSFV3bz0K"))
+
+        # shellcheck disable=SC2155
+        local ECR_PASSWORD=$(/usr/local/aws-cli/v2/current/bin/aws ecr get-login-password --region "$AWS_DEFAULT_REGION")
+
+        docker login --username AWS --password-stdin 134148934511.dkr.ecr.us-east-1.amazonaws.com <<<"$ECR_PASSWORD"
+        sudo -u "$BLACKBOX_USER_NAME" docker login --username AWS --password-stdin 134148934511.dkr.ecr.us-east-1.amazonaws.com <<<"$ECR_PASSWORD"
+
+        {
+          # TODO: for backwards compatibility with public ECR repositories, and should be removed when all questions are moved to private ECR repositories
+          # shellcheck disable=SC2155
+          local ECR_PASSWORD_PUBLIC=$(/usr/local/aws-cli/v2/current/bin/aws ecr-public get-login-password --region "$AWS_DEFAULT_REGION")
+
+          docker login --username AWS --password-stdin public.ecr.aws/b0k9n8x8 <<<"$ECR_PASSWORD_PUBLIC"
+          sudo -u "$BLACKBOX_USER_NAME" docker login --username AWS --password-stdin public.ecr.aws/b0k9n8x8 <<<"$ECR_PASSWORD_PUBLIC"
+        }
+      ) 2>&1 # ¯\_(ツ)_/¯
+    }
+
+    # Logs out of Amazon ECR
+    #
+    # @noargs
+    #
+    # @example
+    #  # Logs out of Amazon ECR
+    #  blackbox.framework.inventory.ecr.logout
+    #
+    # @see blackbox.framework.inventory.ecr.login
+    function blackbox.framework.inventory.ecr.logout() {
+      {
+        blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+      }
+
+      docker logout
+    }
+  }; blackbox.framework.inventory.ecr
 
   # @section blackbox.framework.inventory.*
 

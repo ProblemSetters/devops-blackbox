@@ -26,7 +26,9 @@ blackbox.framework.inventory.awscli() {
   apt-get update
 
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget less && {
-    wget -S -O /tmp/awscli.zip --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip && {
+    wget -S -O /tmp/awscli.zip --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.22.35.zip && {
+      rm -rf /usr/local/aws-cli/
+
       unzip -q /tmp/awscli.zip -d /tmp && {
         /tmp/aws/install
         rm -rf /tmp/aws*
