@@ -1,5 +1,10 @@
 name: Amazon ECR private registry charge
 on:
+  push:
+    branches:
+      - "2204"
+    paths:
+      - ".github/workflows/ecr.yml"
   workflow_dispatch:
 jobs:
   main:
