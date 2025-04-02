@@ -20,6 +20,11 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
         with:
           registry-type: public
+      - name: Login to Amazon ECR private
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registries: "134148934511"
       - name: Build Blackbox
         run: |
           make \
@@ -30,11 +35,6 @@ jobs:
           make \
             --file=Makefile.workflow \
             github:build:blackbox:modules
-      - name: Login to Amazon ECR private
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-        with:
-          registries: "134148934511"
       - name: Push Blackbox
         run: |
           make \
