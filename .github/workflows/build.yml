@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - "2204"
+    paths-ignore:
+      - ".github/workflows/ecr.yml"
+  workflow_dispatch:
 jobs:
   main:
     runs-on: ubuntu-22.04
