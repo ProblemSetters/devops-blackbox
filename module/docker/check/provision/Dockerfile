@@ -1,4 +1,4 @@
-FROM public.ecr.aws/b0k9n8x8/problemsetters/blackbox_2204:abstract
+FROM 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2204:abstract
 
 ARG BLACKBOX_USER_NAME=ubuntu
 

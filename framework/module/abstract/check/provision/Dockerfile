@@ -1,8 +1,8 @@
-FROM public.ecr.aws/docker/library/ubuntu:22.04
+FROM 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/ubuntu:22.04
 
 COPY rootfs/ /
 
-ENV BLACKBOX=public.ecr.aws/b0k9n8x8/problemsetters/blackbox_2204:abstract
+ENV BLACKBOX=134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2204:abstract
 
 RUN apt-get \
       update \

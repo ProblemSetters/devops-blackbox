@@ -9,8 +9,6 @@ blackbox.module.aws.setup.provision() {
 
   blackbox.framework.inventory.provision localstack
 
-  blackbox.framework.inventory.provision awscli && {
-    tee -a /etc/hosts < <(printf "127.0.0.1\teu-central-1.hackerrankaws.local\n")
-    tee -a /etc/environment < <(printf "AWS_ENDPOINT_URL=%s\n" "eu-central-1.hackerrankaws.local")
-  }
+  tee -a /etc/hosts < <(printf "127.0.0.1\teu-central-1.hackerrankaws.local\n")
+  tee -a /etc/environment < <(printf "AWS_ENDPOINT_URL=%s\n" "eu-central-1.hackerrankaws.local")
 }

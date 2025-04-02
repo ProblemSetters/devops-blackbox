@@ -12,6 +12,8 @@ Inventory handler
 * [blackbox.framework.inventory.install.file](#blackboxframeworkinventoryinstallfile)
 * [blackbox.framework.inventory.heap.allocate](#blackboxframeworkinventoryheapallocate)
 * [blackbox.framework.inventory.heap.release](#blackboxframeworkinventoryheaprelease)
+* [blackbox.framework.inventory.ecr.login](#blackboxframeworkinventoryecrlogin)
+* [blackbox.framework.inventory.ecr.logout](#blackboxframeworkinventoryecrlogout)
 * [blackbox.framework.inventory.provision](#blackboxframeworkinventoryprovision)
 
 ## blackbox.framework.inventory.install.*
@@ -56,7 +58,7 @@ blackbox.framework.inventory.install.file /path/to/the/destination/file 0 0 0777
 
 * File contents
 
-## blackbox.framework.heap.*
+## blackbox.framework.inventory.heap.*
 
 ### blackbox.framework.inventory.heap.allocate
 
@@ -95,6 +97,38 @@ _Function has no arguments._
 #### See also
 
 * [blackbox.framework.inventory.heap.allocate](#blackboxframeworkinventoryheapallocate)
+
+## blackbox.framework.inventory.ecr.*
+
+### blackbox.framework.inventory.ecr.login
+
+#### Example
+
+```bash
+# Logs in to Amazon ECR
+blackbox.framework.inventory.ecr.login
+```
+
+_Function has no arguments._
+
+#### See also
+
+* [blackbox.framework.inventory.ecr.logout](#blackboxframeworkinventoryecrlogout)
+
+### blackbox.framework.inventory.ecr.logout
+
+#### Example
+
+```bash
+# Logs out of Amazon ECR
+blackbox.framework.inventory.ecr.logout
+```
+
+_Function has no arguments._
+
+#### See also
+
+* [blackbox.framework.inventory.ecr.login](#blackboxframeworkinventoryecrlogin)
 
 ## blackbox.framework.inventory.*
 

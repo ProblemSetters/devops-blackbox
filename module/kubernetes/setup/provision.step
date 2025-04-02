@@ -10,6 +10,9 @@ blackbox.module.kubernetes.setup.provision() {
   blackbox.framework.inventory.provision k3s && {
     service k3s start && {
       sleep 30 # TODO: implement launcher
+      kubectl create secret generic ecr --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson && {
+        kubectl describe secrets/ecr
+      }
     }
   }
 

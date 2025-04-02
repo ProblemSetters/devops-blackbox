@@ -32,22 +32,26 @@ BLACKBOX_USER_HOME:=/home/$(BLACKBOX_USER_NAME)
 BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_HOME)/$(shell basename $(call blackbox/pwd))
 BLACKBOX_VERSION:=2204
 
+BLACKBOX_AWS_DEFAULT_REGION:="us-east-1"
+BLACKBOX_AWS_ACCESS_KEY_ID:=$(shell base64 -d <(base64 -d <<<"UVV0SlFWSTJUemRIU2s1WVdVSk1RVXBGTlRNSwo="))
+BLACKBOX_AWS_SECRET_ACCESS_KEY:=$(shell base64 -d <(base64 -d <<<"UVVaNFZUVXJWMEZoYml0eWVWUnpVSGhuY1ZWTk56VXlPVlp5Umt0Q1JFTkxRMHBFY3pKSFV3bz0K"))
+
 define blackbox/pwd=
 $(abspath $(dir $(firstword $(MAKEFILE_LIST)))/$(1))
 endef
 
-debug:
+debug: ;@:
 	$(eval BLACKBOX_FLAG__DEBUG_MODE:=yes)
 	$(foreach variable,BLACKBOX_FLAG__DEBUG_MODE BLACKBOX_FLAG__STEP_PROVISION BLACKBOX_FLAG__STEP_BUILD BLACKBOX_FLAG__STEP_EVALUATE,$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
 	$(info $(shell printf "\033[0;37m%s\033[0m" \\))
 	$(foreach variable,$(filter-out BLACKBOX_FLAG__%,$(filter BLACKBOX_%,$(sort $(.VARIABLES)))),$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
 	$(if $(and $(filter-out $(words $(MAKECMDGOALS)),0),$(filter-out $(words $(MAKECMDGOALS)),1)),$(info $(shell printf "\033[0;37m%s\033[0m" --)))
-	@true
 
 all: uninstall install setup solve check
 
 install:
-	cat <(echo FROM public.ecr.aws/b0k9n8x8/problemsetters/blackbox_2204:abstract) <(echo RUN groupadd docker) | docker build --build-arg="BLACKBOX_USER=$(BLACKBOX_USER)" --build-arg="BLACKBOX_USER_NAME=$(BLACKBOX_USER_NAME)" --build-arg="BLACKBOX_USER_HOME=$(BLACKBOX_USER_HOME)" --build-arg="BLACKBOX_VERSION=$(BLACKBOX_VERSION)" --network="host" --progress="plain" --tag="blackbox:$(BLACKBOX_HOST)" -
+	docker login --username AWS --password-stdin 134148934511.dkr.ecr.us-east-1.amazonaws.com < <(docker run -it --env="AWS_DEFAULT_REGION=$(BLACKBOX_AWS_DEFAULT_REGION)" --env="AWS_ACCESS_KEY_ID=$(BLACKBOX_AWS_ACCESS_KEY_ID)" --env="AWS_SECRET_ACCESS_KEY=$(BLACKBOX_AWS_SECRET_ACCESS_KEY)" --rm amazon/aws-cli ecr get-login-password)
+	cat <(echo FROM 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2204:abstract) <(echo RUN groupadd docker) | docker build --build-arg="BLACKBOX_USER=$(BLACKBOX_USER)" --build-arg="BLACKBOX_USER_NAME=$(BLACKBOX_USER_NAME)" --build-arg="BLACKBOX_USER_HOME=$(BLACKBOX_USER_HOME)" --build-arg="BLACKBOX_VERSION=$(BLACKBOX_VERSION)" --network="host" --progress="plain" --tag="blackbox:$(BLACKBOX_HOST)" -
 	docker run -di --group-add docker --hostname="blackbox" --name="$(BLACKBOX_HOST)" --privileged --cgroupns=host $(if $(filter debug,$(MAKECMDGOALS)),--volume="$(BLACKBOX_DIR):/blackbox:ro") --volume="$(call blackbox/pwd)/setup.sh:$(BLACKBOX_USER_HOME)/setup.sh:ro" --volume="$(call blackbox/pwd)/check.sh:$(BLACKBOX_USER_HOME)/check.sh:ro" --volume="$(call blackbox/pwd)/solve.sh:$(BLACKBOX_USER_HOME)/solve.sh:ro" blackbox:$(BLACKBOX_HOST) >/dev/null
 
 setup:
@@ -76,11 +80,11 @@ shell\:spawn:
 	docker exec -it $(BLACKBOX_HOST) $(SHELL) -c "docker exec -it -w $(BLACKBOX_USER_QUESTION_DIR) $(BLACKBOX_SPAWN) $(SHELL)"
 
 uninstall:
-	docker ps -aq -f "name=$(BLACKBOX_HOST)" | xargs -r docker rm -f >/dev/null
+	xargs -r docker rm -f >/dev/null < <(docker ps -aq -f "name=$(BLACKBOX_HOST)")
 	docker rmi blackbox:$(BLACKBOX_HOST) 2>/dev/null || true
 
 prune:
-	docker ps -aq -f "name=blackbox-" | xargs -r docker stop >/dev/null
+	xargs -r docker stop >/dev/null < <(docker ps -aq -f "name=blackbox-")
 	docker system prune -a --volumes
 
 ifeq ($(filter debug,$(MAKECMDGOALS)),)
