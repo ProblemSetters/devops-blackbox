@@ -39,7 +39,7 @@ blackbox.framework.inventory.docker-ce() {
 
     local version=5:26.0.0-1~ubuntu.22.04~jammy
 
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends docker-ce="$version" docker-ce-cli="$version" "${with_packages[@]}" && {
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends docker-ce="$version" docker-ce-cli="$version" docker-buildx-plugin "${with_packages[@]}" && {
       # Docker ulimit issue quickfix: https://github.com/docker/cli/issues/4807
       sed -i '/ulimit -Hn/ s/$/ || true/' /etc/init.d/docker
       install -m 0644 -D /dev/stdin /etc/docker/daemon.json <<<'{ "storage-driver": "vfs" }'
