@@ -72,6 +72,17 @@ jobs:
             github:ecr:repository:charge \
               public.ecr.aws/docker/library/httpd:latest@sha256:391a8eb0c1ed464163da46099606a5ec293705118f3054d6c60f5957e2485bd0 \
               hr/httpd:latest
+      - name: Charge "hr/http-echo"
+        run: |
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:initialize \
+              hr/http-echo
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:charge \
+              hashicorp/http-echo:latest@sha256:fcb75f691c8b0414d670ae570240cbf95502cc18a9ba57e982ecac589760a186 \
+              hr/http-echo:latest
       - name: Charge "hr/localstack"
         run: |
           make \
