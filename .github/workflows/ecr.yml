@@ -28,7 +28,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
         with:
           registries: "134148934511"
-      - name: Charge "hr/801133-ansible"
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/801133-ansible
         run: |
           make \
             --file=Makefile.workflow \
@@ -39,7 +39,7 @@ jobs:
             github:ecr:repository:charge \
               problemsetters/801133-ansible:latest@sha256:83eefb4ed2c7a0dfabe489d23aa3be19b389f3e73524f6cb1c2746cc8bae9658 \
               hr/801133-ansible:latest
-      - name: Charge "hr/busybox"
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/busybox
         run: |
           make \
             --file=Makefile.workflow \
@@ -50,7 +50,7 @@ jobs:
             github:ecr:repository:charge \
               public.ecr.aws/docker/library/busybox:latest@sha256:37f7b378a29ceb4c551b1b5582e27747b855bbfaa73fa11914fe0df028dc581f \
               hr/busybox:latest
-      - name: Charge "hr/gcc"
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/gcc
         run: |
           make \
             --file=Makefile.workflow \
@@ -61,7 +61,7 @@ jobs:
             github:ecr:repository:charge \
               public.ecr.aws/docker/library/gcc:latest@sha256:4e934397c1eaac263babffa0da20138052ec6098dd90830850eb168f38d55e87 \
               hr/gcc:latest
-      - name: Charge "hr/httpd"
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/httpd
         run: |
           make \
             --file=Makefile.workflow \
@@ -72,7 +72,7 @@ jobs:
             github:ecr:repository:charge \
               public.ecr.aws/docker/library/httpd:latest@sha256:391a8eb0c1ed464163da46099606a5ec293705118f3054d6c60f5957e2485bd0 \
               hr/httpd:latest
-      - name: Charge "hr/http-echo"
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/http-echo
         run: |
           make \
             --file=Makefile.workflow \
@@ -83,7 +83,7 @@ jobs:
             github:ecr:repository:charge \
               hashicorp/http-echo:latest@sha256:fcb75f691c8b0414d670ae570240cbf95502cc18a9ba57e982ecac589760a186 \
               hr/http-echo:latest
-      - name: Charge "hr/localstack"
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/localstack
         run: |
           make \
             --file=Makefile.workflow \
@@ -94,7 +94,18 @@ jobs:
             github:ecr:repository:charge \
               public.ecr.aws/localstack/localstack:2.1.0@sha256:74c3cb7cfa3d8a8ea9e786c0974dddf6ea60e7cea91e7a739f93cecafc09a9e2 \
               hr/localstack:2.1.0
-      - name: Charge "hr/mongo"
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/mariadb
+        run: |
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:initialize \
+              hr/mariadb
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:charge \
+              public.ecr.aws/docker/library/mariadb:latest@sha256:81e893032978c4bf8ad43710b7a979774ed90787fa32d199162148ce28fe3b76 \
+              hr/mariadb:latest
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/mongo
         run: |
           make \
             --file=Makefile.workflow \
@@ -105,7 +116,7 @@ jobs:
             github:ecr:repository:charge \
               public.ecr.aws/docker/library/mongo:latest@sha256:1cb283500219e8fc0b61b328ea5a199a395a753d88b17351c58874fb425223cb \
               hr/mongo:latest
-      - name: Charge "hr/mysql"
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/mysql
         run: |
           make \
             --file=Makefile.workflow \
@@ -121,7 +132,7 @@ jobs:
             github:ecr:repository:charge \
               public.ecr.aws/docker/library/mysql:latest@sha256:0596fa224cdf3b3355ce3ddbfd7ce77be27ec9e51841dfc5d2e1c8b81eea69d2 \
               hr/mysql:latest
-      - name: Charge "hr/nginx"
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/nginx
         run: |
           make \
             --file=Makefile.workflow \
@@ -147,7 +158,7 @@ jobs:
             github:ecr:repository:charge \
               public.ecr.aws/docker/library/nginx:latest@sha256:124b44bfc9ccd1f3cedf4b592d4d1e8bddb78b51ec2ed5056c52d3692baebc19 \
               hr/nginx:latest
-      - name: Charge "hr/node"
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/node
         run: |
           make \
             --file=Makefile.workflow \
@@ -158,7 +169,7 @@ jobs:
             github:ecr:repository:charge \
               public.ecr.aws/docker/library/node:12@sha256:01627afeb110b3054ba4a1405541ca095c8bfca1cb6f2be9479c767a2711879e \
               hr/node:12
-      - name: Charge "hr/php"
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/php
         run: |
           make \
             --file=Makefile.workflow \
@@ -179,7 +190,7 @@ jobs:
             github:ecr:repository:charge \
               public.ecr.aws/docker/library/php:fpm@sha256:182b3466ea500120199794457bc7563dfc599f742f6833722dc7d3ca3f69a328 \
               hr/php:fpm
-      - name: Charge "hr/python"
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/python
         run: |
           make \
             --file=Makefile.workflow \
@@ -195,7 +206,7 @@ jobs:
             github:ecr:repository:charge \
               public.ecr.aws/docker/library/python:3.9-slim@sha256:e52ca5f579cc58fed41efcbb55a0ed5dccf6c7a156cba76acfb4ab42fc19dd00 \
               hr/python:3.9-slim
-      - name: Charge "hr/redis"
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/redis
         run: |
           make \
             --file=Makefile.workflow \
@@ -206,7 +217,7 @@ jobs:
             github:ecr:repository:charge \
               public.ecr.aws/docker/library/redis:latest@sha256:bd41d55aae1ecff61b2fafd0d66761223fe94a60373eb6bb781cfbb570a84079 \
               hr/redis:latest
-      - name: Charge "hr/ubuntu"
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/ubuntu
         run: |
           make \
             --file=Makefile.workflow \
@@ -227,7 +238,7 @@ jobs:
             github:ecr:repository:charge \
               public.ecr.aws/docker/library/ubuntu:latest@sha256:72297848456d5d37d1262630108ab308d3e9ec7ed1c3286a32fe09856619a782 \
               hr/ubuntu:latest
-      - name: Charge "hr/ubuntu-sshd"
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/ubuntu-sshd
         run: |
           make \
             --file=Makefile.workflow \
