@@ -4,7 +4,7 @@ on:
     branches:
       - "2204"
     paths:
-      - ".github/workflows/ecr.yml"
+      - ".github/workflows/**"
   workflow_dispatch:
 jobs:
   main:
@@ -249,3 +249,13 @@ jobs:
             github:ecr:repository:charge \
               rastasheep/ubuntu-sshd:18.04@sha256:1df808ccf95c13b8e62548ad434829bc28ee701a65624e5c0440fc24482e4a62 \
               hr/ubuntu-sshd:18.04
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:build \
+              hr/ubuntu-sshd/22.04 \
+              hr/ubuntu-sshd:22.04
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:charge \
+              hr/ubuntu-sshd:22.04 \
+              hr/ubuntu-sshd:22.04

@@ -19,6 +19,12 @@ ifneq ($(filter github:ecr:repository:initialize,$(MAKECMDGOALS)),)
   BLACKBOX_ECR_REPOSITORY_INITIALIZE_REPOSITORY_NAME=$(or $(word 1,$(BLACKBOX_ECR_REPOSITORY_INITIALIZE)),$(error Repository name is required))
 endif
 
+ifneq ($(filter github:ecr:repository:build,$(MAKECMDGOALS)),)
+  BLACKBOX_ECR_REPOSITORY_BUILD=$(filter-out github:ecr:repository:build,$(filter-out debug,$(MAKECMDGOALS)))
+  BLACKBOX_ECR_REPOSITORY_BUILD_SOURCE=$(or $(word 1,$(BLACKBOX_ECR_REPOSITORY_BUILD)),$(error Repository name is required))
+  BLACKBOX_ECR_REPOSITORY_BUILD_DESTINATION=$(or $(word 2,$(BLACKBOX_ECR_REPOSITORY_BUILD)),$(error Repository name is required))
+endif
+
 ifneq ($(filter github:ecr:repository:charge,$(MAKECMDGOALS)),)
   BLACKBOX_ECR_REPOSITORY_CHARGE=$(filter-out github:ecr:repository:charge,$(filter-out debug,$(MAKECMDGOALS)))
   BLACKBOX_ECR_REPOSITORY_CHARGE_SOURCE=$(or $(word 1,$(BLACKBOX_ECR_REPOSITORY_CHARGE)),$(error Repository name is required))
@@ -46,6 +52,9 @@ github\:push\:blackbox\:modules:
 
 github\:ecr\:repository\:initialize:
 	aws ecr describe-repositories --registry-id=$(BLACKBOX_ECR_REPOSITORY_INITIALIZE_REGISTRY_ID) --repository-names $(BLACKBOX_ECR_REPOSITORY_INITIALIZE_REPOSITORY_NAME) || aws ecr create-repository --registry-id=$(BLACKBOX_ECR_REPOSITORY_INITIALIZE_REGISTRY_ID) --repository-name=$(BLACKBOX_ECR_REPOSITORY_INITIALIZE_REPOSITORY_NAME)
+
+github\:ecr\:repository\:build:
+	docker buildx build --tag="$(BLACKBOX_ECR_REPOSITORY_BUILD_DESTINATION)" "$(abspath $(addprefix .github/workflows/,$(BLACKBOX_ECR_REPOSITORY_BUILD_SOURCE)))"
 
 github\:ecr\:repository\:charge:
 	docker manifest inspect $(BLACKBOX_ECR_REPOSITORY_CHARGE_DESTINATION) || true
