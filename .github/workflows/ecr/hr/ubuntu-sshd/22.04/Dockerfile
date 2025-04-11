@@ -25,16 +25,11 @@ RUN apt-get \
       | passwd \
           ops \
     && \
+    su \
+      ops \
+      -c \
+        "ssh-keygen -t rsa -f /home/ops/.ssh/id_rsa -N ''" \
+    && \
     rm \
       -rf \
       /var/lib/apt/lists/*
-
-USER ops
-
-RUN ssh-keygen \
-      -t \
-        rsa \
-      -f \
-        /home/ops/.ssh/id_rsa \
-      -N \
-        ""
