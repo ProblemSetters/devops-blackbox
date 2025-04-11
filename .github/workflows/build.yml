@@ -3,8 +3,10 @@ on:
   push:
     branches:
       - "2204"
-    paths-ignore:
-      - ".github/workflows/**"
+    paths:
+      - "**"
+      - "!.github/workflows/ecr.yml"
+      - "!.github/workflows/ecr/**"
   workflow_dispatch:
 jobs:
   main:
