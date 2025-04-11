@@ -60,7 +60,7 @@ github\:ecr\:repository\:charge:
 	docker manifest inspect $(BLACKBOX_ECR_REPOSITORY_CHARGE_DESTINATION) || true
 	docker buildx imagetools inspect $(BLACKBOX_ECR_REPOSITORY_CHARGE_DESTINATION) || true
 	docker image inspect $(BLACKBOX_ECR_REPOSITORY_CHARGE_SOURCE) || docker pull $(BLACKBOX_ECR_REPOSITORY_CHARGE_SOURCE)
-	docker buildx imagetools inspect $(BLACKBOX_ECR_REPOSITORY_CHARGE_SOURCE)
+	docker buildx imagetools inspect $(BLACKBOX_ECR_REPOSITORY_CHARGE_SOURCE) || docker image inspect $(BLACKBOX_ECR_REPOSITORY_CHARGE_SOURCE)
 	docker tag $(BLACKBOX_ECR_REPOSITORY_CHARGE_SOURCE) $(BLACKBOX_ECR_REPOSITORY_CHARGE_DESTINATION)
 	docker push $(BLACKBOX_ECR_REPOSITORY_CHARGE_DESTINATION)
 
