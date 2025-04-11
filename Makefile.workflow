@@ -54,7 +54,7 @@ github\:ecr\:repository\:initialize:
 	aws ecr describe-repositories --registry-id=$(BLACKBOX_ECR_REPOSITORY_INITIALIZE_REGISTRY_ID) --repository-names $(BLACKBOX_ECR_REPOSITORY_INITIALIZE_REPOSITORY_NAME) || aws ecr create-repository --registry-id=$(BLACKBOX_ECR_REPOSITORY_INITIALIZE_REGISTRY_ID) --repository-name=$(BLACKBOX_ECR_REPOSITORY_INITIALIZE_REPOSITORY_NAME)
 
 github\:ecr\:repository\:build:
-	docker buildx build --tag="$(BLACKBOX_ECR_REPOSITORY_BUILD_DESTINATION)" "$(abspath $(addprefix .github/workflows/,$(BLACKBOX_ECR_REPOSITORY_BUILD_SOURCE)))"
+	docker buildx build --tag="$(BLACKBOX_ECR_REPOSITORY_BUILD_DESTINATION)" "$(abspath $(addprefix .github/workflows/ecr/,$(BLACKBOX_ECR_REPOSITORY_BUILD_SOURCE)))"
 
 github\:ecr\:repository\:charge:
 	docker manifest inspect $(BLACKBOX_ECR_REPOSITORY_CHARGE_DESTINATION) || true
