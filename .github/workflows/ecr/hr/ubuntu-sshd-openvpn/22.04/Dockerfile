@@ -1,0 +1,74 @@
+FROM 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/ubuntu-sshd:22.04
+
+COPY rootfs/ /
+
+ENV ECR=134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/ubuntu-sshd-openvpn:22.04
+
+RUN apt-get \
+      update \
+    && \
+    DEBIAN_FRONTEND=noninteractive \
+    apt-get \
+      install \
+        -y \
+        --no-install-recommends \
+        openvpn \
+        easy-rsa \
+    && \
+    ln \
+      -s \
+        /usr/share/easy-rsa/easyrsa \
+        /usr/local/bin/ \
+    && \
+    make-cadir \
+      /etc/openvpn/ca; \
+    pushd \
+      /etc/openvpn/ca; \
+    easyrsa \
+      --batch \
+      init-pki; \
+    easyrsa \
+      --batch \
+      build-ca \
+        nopass; \
+    easyrsa \
+      --batch \
+      gen-req \
+        server \
+          nopass; \
+    easyrsa \
+      --batch \
+      gen-dh; \
+    easyrsa \
+      --batch \
+      sign-req \
+        server \
+        server; \
+    cp \
+      pki/dh.pem \
+      pki/ca.crt \
+      pki/issued/server.crt \
+      pki/private/server.key \
+      /etc/openvpn/server \
+    && \
+    pushd \
+      /etc/openvpn/ca; \
+    easyrsa \
+      --batch \
+        gen-req \
+          client \
+          nopass; \
+    easyrsa \
+      --batch \
+      sign-req \
+        client \
+        client; \
+    cp \
+      pki/ca.crt \
+      pki/issued/client.crt \
+      pki/private/client.key \
+      /etc/openvpn/client \
+    && \
+    rm \
+      -rf \
+      /var/lib/apt/lists/*
