@@ -250,7 +250,7 @@ jobs:
             --file=Makefile.workflow \
             github:ecr:repository:charge \
               rastasheep/ubuntu-sshd:18.04@sha256:1df808ccf95c13b8e62548ad434829bc28ee701a65624e5c0440fc24482e4a62 \
-              hr/ubuntu-sshd:18.04
+              hr/ubuntu-sshd:18.04 # TODO: retire this image in favor of "134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/ubuntu-sshd:22.04" or later
           make \
             --file=Makefile.workflow \
             github:ecr:repository:build \
@@ -261,3 +261,19 @@ jobs:
             github:ecr:repository:charge \
               hr/ubuntu-sshd:22.04 \
               hr/ubuntu-sshd:22.04
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/ubuntu-sshd-openvpn
+        run: |
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:initialize \
+              hr/ubuntu-sshd-openvpn
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:build \
+              hr/ubuntu-sshd-openvpn/22.04 \
+              hr/ubuntu-sshd-openvpn:22.04
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:charge \
+              hr/ubuntu-sshd-openvpn:22.04 \
+              hr/ubuntu-sshd-openvpn:22.04
