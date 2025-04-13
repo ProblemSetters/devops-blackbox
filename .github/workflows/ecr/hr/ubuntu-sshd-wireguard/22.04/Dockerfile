@@ -67,7 +67,7 @@ RUN apt-get \
     && \
     install \
       -D \
-      --mode="0664" \
+      --mode="0600" \
       /etc/wireguard/wg0/client.conf \
       /tmp/wireguard-client-conf/client.conf; \
     install \
