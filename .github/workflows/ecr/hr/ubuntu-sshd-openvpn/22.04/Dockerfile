@@ -14,18 +14,21 @@ RUN apt-get \
         --no-install-recommends \
         openvpn \
         easy-rsa \
+        zip; \
+    rm \
+      -rf \
+      /var/lib/apt/lists/* \
     && \
     ln \
       -s \
         /usr/share/easy-rsa/easyrsa \
         /usr/local/bin/ \
     && \
+    export \
+      EASYRSA_PKI="/etc/openvpn/ca/pki"; \
     make-cadir \
       /etc/openvpn/ca; \
-    pushd \
-      /etc/openvpn/ca; \
     easyrsa \
-      --batch \
       init-pki; \
     easyrsa \
       --batch \
@@ -44,15 +47,22 @@ RUN apt-get \
       sign-req \
         server \
         server; \
-    cp \
-      pki/dh.pem \
-      pki/ca.crt \
-      pki/issued/server.crt \
-      pki/private/server.key \
-      /etc/openvpn/server \
-    && \
-    pushd \
-      /etc/openvpn/ca; \
+    install \
+      --mode="0600" \
+      /etc/openvpn/ca/pki/dh.pem \
+      /etc/openvpn/server/dh.pem; \
+    install \
+      --mode="0600" \
+      /etc/openvpn/ca/pki/ca.crt \
+      /etc/openvpn/server/ca.crt; \
+    install \
+      --mode="0600" \
+      /etc/openvpn/ca/pki/issued/server.crt \
+      /etc/openvpn/server/server.crt; \
+    install \
+      --mode="0600" \
+      /etc/openvpn/ca/pki/private/server.key \
+      /etc/openvpn/server/server.key; \
     easyrsa \
       --batch \
         gen-req \
@@ -63,12 +73,47 @@ RUN apt-get \
       sign-req \
         client \
         client; \
-    cp \
-      pki/ca.crt \
-      pki/issued/client.crt \
-      pki/private/client.key \
-      /etc/openvpn/client \
+    install \
+      --mode="0600" \
+      /etc/openvpn/ca/pki/ca.crt \
+      /etc/openvpn/client/ca.crt; \
+    install \
+      --mode="0600" \
+      /etc/openvpn/ca/pki/issued/client.crt \
+      /etc/openvpn/client/client.crt; \
+    install \
+      --mode="0600" \
+      /etc/openvpn/ca/pki/private/client.key \
+      /etc/openvpn/client/client.key \
     && \
+    install \
+      -D \
+      --mode="0664" \
+      /etc/openvpn/client.conf \
+      /tmp/openvpn-client-conf/client.conf; \
+    install \
+      --mode="0600" \
+      /etc/openvpn/client/ca.crt \
+      /tmp/openvpn-client-conf/ca.crt; \
+    install \
+      --mode="0600" \
+      /etc/openvpn/client/client.crt \
+      /tmp/openvpn-client-conf/client.crt; \
+    install \
+      --mode="0600" \
+      /etc/openvpn/client/client.key \
+      /tmp/openvpn-client-conf/client.key; \
+    zip \
+      -jr \
+      /tmp/openvpn-client-conf.zip \
+      /tmp/openvpn-client-conf; \
+    install \
+      --owner="ops" \
+      --group="ops" \
+      --mode="0644" \
+      /tmp/openvpn-client-conf.zip \
+      /home/ops/openvpn-client-conf.zip; \
     rm \
       -rf \
-      /var/lib/apt/lists/*
+      /tmp/openvpn-client-conf \
+      /tmp/openvpn-client-conf.zip

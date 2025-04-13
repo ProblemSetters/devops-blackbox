@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder ENV["BLACKBOX_HOST_USER_QUESTION_DIR"], ENV["BLACKBOX_USER_QUESTION_DIR"], mount_options: ["uid=1000", "gid=1000", "ro"]
   config.vm.provision "shell", inline: <<-SHELL
     apt update && {
-      DEBIAN_FRONTEND=noninteractive apt install -y awscli unzip
+      DEBIAN_FRONTEND=noninteractive apt install -y unzip
     }
     usermod -aG vagrant ubuntu
   SHELL

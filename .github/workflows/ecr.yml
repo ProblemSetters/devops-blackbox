@@ -277,3 +277,19 @@ jobs:
             github:ecr:repository:charge \
               hr/ubuntu-sshd-openvpn:22.04 \
               hr/ubuntu-sshd-openvpn:22.04
+      - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/ubuntu-sshd-wireguard
+        run: |
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:initialize \
+              hr/ubuntu-sshd-wireguard
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:build \
+              hr/ubuntu-sshd-wireguard/22.04 \
+              hr/ubuntu-sshd-wireguard:22.04
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:charge \
+              hr/ubuntu-sshd-wireguard:22.04 \
+              hr/ubuntu-sshd-wireguard:22.04
