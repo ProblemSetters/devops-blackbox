@@ -12,11 +12,17 @@ RUN apt-get \
       install \
         -y \
         --no-install-recommends \
+        iproute2 \
         wireguard-tools \
         zip; \
     rm \
       -rf \
       /var/lib/apt/lists/* \
+    && \
+    chmod \
+      0600 \
+      /etc/wireguard/wg0.conf \
+      /etc/wireguard/wg0/client.conf \
     && \
     wg \
       genkey \
@@ -26,14 +32,14 @@ RUN apt-get \
             --mode="0600" \
             /dev/stdin \
             /etc/wireguard/wg0/private.key; \
-  wg \
-    pubkey \
-    </etc/wireguard/wg0/private.key \
-      | \
-        install \
-          --mode="0600" \
-          /dev/stdin \
-          /etc/wireguard/wg0/public.key; \
+    wg \
+      pubkey \
+      </etc/wireguard/wg0/private.key \
+        | \
+          install \
+            --mode="0600" \
+            /dev/stdin \
+            /etc/wireguard/wg0/public.key; \
     wg \
       genkey \
         | \
