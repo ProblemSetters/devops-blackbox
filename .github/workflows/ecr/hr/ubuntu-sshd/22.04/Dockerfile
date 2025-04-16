@@ -12,6 +12,7 @@ RUN apt-get \
       install \
         -y \
         --no-install-recommends \
+        inetutils-ping \
         openssh-server \
         sudo \
     && \
