@@ -230,11 +230,19 @@ blackbox() {
       (
         if [ -n "$header" ]; then
           printf "\n"
-          printf "\033[0;37m// @%s~%s %s%s%s\033[0m\n" "$(date -u --iso-8601=seconds)" "$SECONDS" "${entrypoint[0]}" "${args[*]}" "${opts[*]}"
+
+          if [[ "$BLACKBOX_FLAG__DEBUG_MODE" == "yes" ]]; then
+            printf "\033[0;37m// @%s~%s %s%s%s\033[0m\n" "$(date -u --iso-8601=seconds)" "$SECONDS" "${entrypoint[0]}" "${args[*]}" "${opts[*]}"
+          fi
+
           printf "\033[0;34m[%s]\033[0m\n" "${header^^}"
           printf "\033[0;37m%s\033[0m\n" "$(printenv | sort | awk 'ORS=" "')"
           printf "\033[0;37m--\033[0m\n"
         else
+          if [[ "$BLACKBOX_FLAG__DEBUG_MODE" != "yes" ]]; then
+            return
+          fi
+
           printf "\033[0;37m// @%s~%s %s%s%s {...}\033[0m\n" "$(date -u --iso-8601=seconds)" "$SECONDS" "${entrypoint[0]}" "${args[*]}" "${opts[*]}"
         fi
       ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi | if [[ "$BLACKBOX_FLAG__DEBUG_MODE" == "yes" ]]; then cat >&2; else cat; fi
