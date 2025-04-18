@@ -31,15 +31,17 @@ blackbox.framework.inventory.redis() {
     return
   fi
 
-  apt-get update
+  if [ -z "$(find /var/lib/apt/lists -newermt "5 minutes ago")" ]; then
+    apt update
+  fi
 
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget && {
-    wget -qO- https://packages.redis.io/gpg | gpg --dearmor | tee /etc/apt/keyrings/redis.gpg >/dev/null
+  DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common gpg-agent wget && {
+    wget -S --output-document="/dev/stdout" --no-verbose https://packages.redis.io/gpg | gpg --dearmor | tee /etc/apt/keyrings/redis.gpg >/dev/null
     tee <<<"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/redis.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" /etc/apt/sources.list.d/redis.list
 
     local version=6:7.4.1-1rl1~jammy1
 
-    apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends redis-server="$version" redis-tools="$version" "${with_packages[@]}"
+    apt update
+    DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends redis-server="$version" redis-tools="$version" "${with_packages[@]}"
   }
 }

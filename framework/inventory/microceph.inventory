@@ -32,8 +32,11 @@ blackbox.framework.inventory.microceph() {
   fi
 
   {
-    apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ceph-common "${with_packages[@]}"
+    if [ -z "$(find /var/lib/apt/lists -newermt "5 minutes ago")" ]; then
+      apt update
+    fi
+
+    DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends ceph-common "${with_packages[@]}"
   }
 
   snap install microceph

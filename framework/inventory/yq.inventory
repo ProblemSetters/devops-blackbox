@@ -31,10 +31,12 @@ blackbox.framework.inventory.yq() {
     return
   fi
 
-  apt-get update
+  if [ -z "$(find /var/lib/apt/lists -newermt "5 minutes ago")" ]; then
+    apt update
+  fi
 
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common wget && {
-    wget -c -S -O /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/3.3.2/yq_linux_amd64" && {
+  DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common wget && {
+    wget -S --output-document="/usr/local/bin/yq" --no-verbose "https://github.com/mikefarah/yq/releases/download/3.3.2/yq_linux_amd64" && {
       chmod +x /usr/local/bin/yq
     }
 
@@ -45,7 +47,7 @@ blackbox.framework.inventory.yq() {
         return
       fi
 
-      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${with_packages[@]}"
+      DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends "${with_packages[@]}"
     fi
   }
 }

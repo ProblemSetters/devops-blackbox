@@ -31,9 +31,11 @@ blackbox.framework.inventory.boto3() {
     return
   fi
 
-  apt-get update
+  if [ -z "$(find /var/lib/apt/lists -newermt "5 minutes ago")" ]; then
+    apt update
+  fi
 
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-pip && {
+  DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends python3-pip && {
     local requirements="boto3"
 
     for requirement in ${requirements[*]}; do
@@ -47,7 +49,7 @@ blackbox.framework.inventory.boto3() {
         return
       fi
 
-      DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${with_packages[@]}"
+      DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends "${with_packages[@]}"
     fi
   }
 }

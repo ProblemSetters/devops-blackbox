@@ -31,11 +31,13 @@ blackbox.framework.inventory.terraform() {
     return
   fi
 
-  apt-get update
+  if [ -z "$(find /var/lib/apt/lists -newermt "5 minutes ago")" ]; then
+    apt update
+  fi
 
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget && {
-    wget -qO- https://apt.releases.hashicorp.com/gpg | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=true apt-key add -
+  DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common gpg-agent wget && {
+    wget -S --output-document="/dev/stdout" --no-verbose https://apt.releases.hashicorp.com/gpg | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=true apt-key add -
     add-apt-repository -y "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package_name" "${with_packages[@]}"
+    DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends "$package_name" "${with_packages[@]}"
   }
 }

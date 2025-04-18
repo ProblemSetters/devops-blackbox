@@ -31,16 +31,18 @@ blackbox.framework.inventory.jenkins() {
     return
   fi
 
-  apt-get update
+  if [ -z "$(find /var/lib/apt/lists -newermt "5 minutes ago")" ]; then
+    apt update
+  fi
 
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common wget && {
-    wget -qO /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+  DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common wget && {
+    wget -S --output-document="/usr/share/keyrings/jenkins-keyring.asc" --no-verbose https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
     tee /etc/apt/sources.list.d/jenkins.list <<<"deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
 
     local version=2.492.2
 
-    apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends openjdk-17-jre-headless jenkins="$version" "${with_packages[@]}" && {
+    apt update
+    DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends openjdk-17-jre-headless jenkins="$version" "${with_packages[@]}" && {
       install -m 0644 -D /blackbox/framework/inventory/jenkins/rootfs/etc/systemd/system/jenkins.service.d/override.conf /etc/systemd/system/jenkins.service.d/override.conf
     }
   }
