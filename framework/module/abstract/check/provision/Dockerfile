@@ -4,17 +4,18 @@ COPY rootfs/ /
 
 ENV BLACKBOX=134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2204:abstract
 
-RUN apt-get \
+RUN apt \
       update \
     && \
     DEBIAN_FRONTEND=noninteractive \
-    apt-get \
+    apt \
       install \
         -y \
         --no-install-recommends \
         bc \
         curl \
         dirmngr \
+        gawk \
         gettext-base \
         git \
         gpg-agent \
@@ -91,16 +92,20 @@ ONBUILD RUN printenv \
                   -c \
                     '(cat "$0") | envsubst "$(printenv | sed -e "/^BLACKBOX/!d; s/^/\${/; s/=.*/}/" | sed -e ":a;N;\$!ba;s/\n/ /g")" >"$0"' "{}" \; \
             && \
-            curl \
-              -H \
-                "Cache-Control: no-cache, no-store" \
-              -H \
-                "Pragma: no-cache" \
-              "https://codeload.github.com/ProblemSetters/devops-blackbox/zip/refs/heads/${BLACKBOX_VERSION}" \
-              --output \
-                /tmp/blackbox; \
+            wget \
+              -S \
+              --output-document="/tmp/blackbox.zip" \
+              --no-verbose \
+              "https://codeload.github.com/ProblemSetters/devops-blackbox/zip/refs/heads/${BLACKBOX_VERSION}"; \
             unzip \
-              /tmp/blackbox \
+              /tmp/blackbox.zip \
+              -x \
+                "devops-blackbox-2204/.github/*" \
+                "devops-blackbox-2204/docs/*" \
+                "devops-blackbox-2204/.gitignore" \
+                "devops-blackbox-2204/Makefile.*" \
+                "devops-blackbox-2204/README.md" \
+                "devops-blackbox-2204/Vagrantfile" \
               -d \
                 /tmp; \
             mv \

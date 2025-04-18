@@ -4,11 +4,11 @@ COPY rootfs/ /
 
 ENV ECR=134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/ubuntu-sshd-openvpn:22.04
 
-RUN apt-get \
+RUN apt \
       update \
     && \
     DEBIAN_FRONTEND=noninteractive \
-    apt-get \
+    apt \
       install \
         -y \
         --no-install-recommends \

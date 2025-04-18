@@ -31,17 +31,18 @@ blackbox.framework.inventory.puppet-agent() {
     return
   fi
 
-  apt-get update
+  if [ -z "$(find /var/lib/apt/lists -newermt "5 minutes ago")" ]; then
+    apt update
+  fi
 
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget && {
-    wget --output-document="/tmp/puppet.deb" https://apt.puppet.com/puppet8-release-jammy.deb && {
-      DEBIAN_FRONTEND=noninteractive apt-get install -y /tmp/puppet.deb && {
+  DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common gpg-agent wget && {
+    wget -S --output-document="/tmp/puppet.deb" --no-verbose https://apt.puppet.com/puppet8-release-jammy.deb && {
+      DEBIAN_FRONTEND=noninteractive apt install -y /tmp/puppet.deb && {
         rm -f /tmp/puppet.deb
       }
     }
 
-    apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get install -y "$package_name" "${with_packages[@]}"
+    DEBIAN_FRONTEND=noninteractive apt install -y "$package_name" "${with_packages[@]}"
 
     ln -rs /opt/puppetlabs/puppet/bin/r10k /opt/puppetlabs/bin
 

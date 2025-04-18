@@ -23,13 +23,25 @@ blackbox.framework.inventory.awscli() {
     blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
   }
 
-  apt-get update
+  tee -a /home/ubuntu/.bashrc <<<"complete -C /usr/local/aws-cli/v2/current/bin/aws_completer aws"
 
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common gpg-agent wget less && {
-    wget -S -O /tmp/awscli.zip --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.22.35.zip && {
+  tee -a /etc/environment < <(printf "AWS_DEFAULT_REGION=%s\n" "eu-central-1")
+  tee -a /etc/environment < <(printf "AWS_ACCESS_KEY_ID=A%sIA%s%s%s\n" "$(head -c 1 <(tr -dc SK </dev/urandom))" "$(head -c 1 <(tr -dc IJ </dev/urandom))" "$(head -c 14 <(tr -dc A-Z2-7 </dev/urandom))" "$(head -c 1 <(tr -dc AQ </dev/urandom))")
+  tee -a /etc/environment < <(printf "AWS_SECRET_ACCESS_KEY=%s\n" "$(head -c 40 <(tr -dc A-Za-z0-9+/ </dev/urandom))")
+
+  if [[ -x "/usr/local/aws-cli/v2/current/bin/aws" ]]; then
+    return
+  fi
+
+  if [ -z "$(find /var/lib/apt/lists -newermt "5 minutes ago")" ]; then
+    apt update
+  fi
+
+  DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common gpg-agent wget less && {
+    wget -S --output-document="/tmp/awscli.zip" --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.11.25.zip && {
       rm -rf /usr/local/aws-cli/
 
-      unzip -q /tmp/awscli.zip -d /tmp && {
+      unzip /tmp/awscli.zip -d /tmp && {
         /tmp/aws/install
         rm -rf /tmp/aws*
       }
@@ -38,14 +50,6 @@ blackbox.framework.inventory.awscli() {
       cp /blackbox/framework/inventory/awscli/rootfs/usr/local/bin/aws /usr/local/bin/ && {
         chmod +x /usr/local/bin/aws
       }
-
-      rm /usr/local/bin/aws_completer && {
-        tee -a /home/ubuntu/.bashrc <<<"complete -C /usr/local/aws-cli/v2/current/bin/aws_completer aws"
-      }
-
-      tee -a /etc/environment < <(printf "AWS_DEFAULT_REGION=%s\n" "eu-central-1")
-      tee -a /etc/environment < <(printf "AWS_ACCESS_KEY_ID=A%sIA%s%s%s\n" "$(head -c 1 <(tr -dc SK </dev/urandom))" "$(head -c 1 <(tr -dc IJ </dev/urandom))" "$(head -c 14 <(tr -dc A-Z2-7 </dev/urandom))" "$(head -c 1 <(tr -dc AQ </dev/urandom))")
-      tee -a /etc/environment < <(printf "AWS_SECRET_ACCESS_KEY=%s\n" "$(head -c 40 <(tr -dc A-Za-z0-9+/ </dev/urandom))")
     }
   }
 }

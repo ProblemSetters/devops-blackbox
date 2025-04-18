@@ -31,10 +31,12 @@ blackbox.framework.inventory.ansible() {
     return
   fi
 
-  apt-get update
+  if [ -z "$(find /var/lib/apt/lists -newermt "5 minutes ago")" ]; then
+    apt update
+  fi
 
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends software-properties-common && {
+  DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common && {
     apt-add-repository -y ppa:ansible/ansible
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$package_name" "${with_packages[@]}"
+    DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends "$package_name" "${with_packages[@]}"
   }
 }
