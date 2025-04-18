@@ -96,6 +96,16 @@ jobs:
             github:ecr:repository:charge \
               public.ecr.aws/localstack/localstack:2.1.0@sha256:74c3cb7cfa3d8a8ea9e786c0974dddf6ea60e7cea91e7a739f93cecafc09a9e2 \
               hr/localstack:2.1.0
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:build \
+              hr/localstack/2.1.0-slim \
+              hr/localstack:2.1.0-slim
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:charge \
+              hr/localstack:2.1.0-slim \
+              hr/localstack:2.1.0-slim
       - name: 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/mariadb
         run: |
           make \
