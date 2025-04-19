@@ -21,6 +21,7 @@ blackbox.module.kafka-stdl.check.evaluate.score() {
   #   blackbox.module.kafka-stdl.check.evaluate.score.calculate -
   function blackbox.module.kafka-stdl.check.evaluate.score.calculate() {
     typeset assert_score=$1
+    typeset forced_score=$2
 
     {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
@@ -37,7 +38,10 @@ blackbox.module.kafka-stdl.check.evaluate.score() {
       fi
     fi
 
-    tee -a "$BLACKBOX_CHECK_EVALUATE_SCORE_CALCULATE_CACHE" <<<"$assert_score"
+    # shellcheck disable=SC2317
+    tee -a "$BLACKBOX_CHECK_EVALUATE_SCORE_CALCULATE_CACHE" <<<"$assert_score" >/dev/null
+    # shellcheck disable=SC2317
+    printf -- "Partial Credit: %d\n" "${forced_score:-"$assert_score"}"
   }
 
   # Constructor

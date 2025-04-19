@@ -33,6 +33,13 @@ blackbox.module.linux-stdl.check.evaluate.expect.artifact() {
 
     readarray -t collection <<<"${assert[*]}"
 
+    collection=(
+      "printenv"
+      "cat /tmp/setup.stdlog",
+      "cat /var/log/ts/.log/recording.cast",
+      "${collection[@]}"
+    )
+
     for artifact in "${!collection[@]}"; do
       local artifact_cache="${BLACKBOX_STORAGE_DIR}/${collection[$artifact]//[^A-Za-z0-9]/_}.artifact"
       # shellcheck disable=SC2155

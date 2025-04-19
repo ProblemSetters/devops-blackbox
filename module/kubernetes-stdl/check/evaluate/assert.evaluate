@@ -30,10 +30,7 @@ blackbox.module.kubernetes-stdl.check.evaluate.assert() {
     # shellcheck disable=SC2155
     local normalized_assert=$(blackbox.module.kubernetes-stdl.check.evaluate.assert.normalize "$assert")
 
-    score=$(
-      blackbox.module.kubernetes-stdl.check.evaluate.score.calculate "$score" &>/dev/null
-      cat <<<0
-    )
+    score=$(blackbox.module.kubernetes-stdl.check.evaluate.score.calculate "$score" 0)
     # shellcheck disable=SC2059
     message=$(printf "${message:-%s}" "${normalized_assert##* }")
 
@@ -46,7 +43,7 @@ blackbox.module.kubernetes-stdl.check.evaluate.assert() {
       printf "\033[0;37m--\033[0m\n"
       printf "\033[0;37m%s\033[0m\n" "$(cat -nv <<<"${output:-"-empty-"}")";
       printf "\033[0;37m--\033[0m\n"
-      printf "Partial Credit: %s\n" "$score"
+      printf "%s\n" "$score"
       printf "\033[0;37m--\033[0m\n"
     ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
@@ -112,7 +109,7 @@ blackbox.module.kubernetes-stdl.check.evaluate.assert() {
       printf "\033[0;37m--\033[0m\n"
       printf "\033[0;37m%s\033[0m\n" "$(cat -nv <<<"${output:-"-empty-"}")";
       printf "\033[0;37m--\033[0m\n"
-      printf "Partial Credit: %s\n" "$score"
+      printf "%s\n" "$score"
       printf "\033[0;37m--\033[0m\n"
     ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
