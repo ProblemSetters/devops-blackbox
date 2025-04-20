@@ -35,8 +35,8 @@ blackbox.module.docker-stdl.check.evaluate.expect.artifact() {
 
     collection=(
       "printenv"
-      "cat /tmp/setup.stdlog",
-      "cat /var/log/ts/.log/recording.cast",
+      "cat /tmp/setup.stdlog"
+      "cat /var/log/ts/.log/recording.cast"
       "${collection[@]}"
     )
 
