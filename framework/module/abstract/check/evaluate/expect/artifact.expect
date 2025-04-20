@@ -36,7 +36,6 @@ blackbox.framework.module.abstract.check.evaluate.expect.artifact() {
     local -a collection_host=(
       "printenv"
       "cat /tmp/setup.stdlog"
-      "cat /var/log/ts/.log/recording.cast"
     )
 
     for artifact in "${!collection_host[@]}"; do
