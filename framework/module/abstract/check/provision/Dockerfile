@@ -19,6 +19,7 @@ RUN apt \
         gettext-base \
         git \
         gpg-agent \
+        less \
         software-properties-common \
         sudo \
         unzip \
