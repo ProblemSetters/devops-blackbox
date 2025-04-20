@@ -66,7 +66,7 @@ blackbox() {
   export BLACKBOX_HEAP_DIR="/tmp/${3}"
   export BLACKBOX_STORAGE_DIR="/var/save/${3}"
   export BLACKBOX_BUILD_LOG="${BLACKBOX_STORAGE_DIR}/build.log"
-  export BLACKBOX_BUILD_STREAM_DISPLAY_LINES=23456
+  export BLACKBOX_BUILD_STREAM_DISPLAY_LINES=12345
 
   # shellcheck disable=SC2034
   typeset -gx BLACKBOX_SCENARIO_PATH=$(realpath "$0")
@@ -76,6 +76,9 @@ blackbox() {
   typeset -gx BLACKBOX_MODULE_ACTION_NAME=$2
   # shellcheck disable=SC2034
   typeset -gx BLACKBOX_QUESTION_ID=$3
+
+  # shellcheck disable=SC2034
+  typeset -gx SECONDS=0
 
   # @section blackbox.*
   blackbox.framework() {
@@ -230,22 +233,14 @@ blackbox() {
       (
         if [ -n "$header" ]; then
           printf "\n"
-
-          if [[ "$BLACKBOX_FLAG__DEBUG_MODE" == "yes" ]]; then
-            printf "\033[0;37m// @%s~%s %s%s%s\033[0m\n" "$(date -u --iso-8601=seconds)" "$SECONDS" "${entrypoint[0]}" "${args[*]}" "${opts[*]}"
-          fi
-
+          printf "\033[0;37m// %s@%s: %s%s%s\033[0m\n" "$(date -u --iso-8601=seconds)" "$(date --date="@${SECONDS}" "+%M:%S")" "${entrypoint[0]}" "${args[*]}" "${opts[*]}"
           printf "\033[0;34m[%s]\033[0m\n" "${header^^}"
           printf "\033[0;37m%s\033[0m\n" "$(printenv | sort | awk 'ORS=" "')"
           printf "\033[0;37m--\033[0m\n"
         else
-          if [[ "$BLACKBOX_FLAG__DEBUG_MODE" != "yes" ]]; then
-            return
-          fi
-
-          printf "\033[0;37m// @%s~%s %s%s%s {...}\033[0m\n" "$(date -u --iso-8601=seconds)" "$SECONDS" "${entrypoint[0]}" "${args[*]}" "${opts[*]}"
+          printf "\033[0;37m// %s@%s: %s%s%s {...}\033[0m\n" "$(date -u --iso-8601=seconds)" "$(date --date="@${SECONDS}" "+%M:%S")" "${entrypoint[0]}" "${args[*]}" "${opts[*]}"
         fi
-      ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi | if [[ "$BLACKBOX_FLAG__DEBUG_MODE" == "yes" ]]; then cat >&2; else cat; fi
+      ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
     }
   }; blackbox.framework
 
@@ -262,8 +257,6 @@ blackbox() {
   function blackbox.__init() {
     typeset module_name=$1
     typeset -a module_args=("${@:2}")
-
-    typeset -gx SECONDS=0
 
     {
       shopt -os allexport
