@@ -42,6 +42,7 @@ blackbox.framework.inventory.puppet-agent() {
       }
     }
 
+    apt update
     DEBIAN_FRONTEND=noninteractive apt install -y "$package_name" "${with_packages[@]}"
 
     ln -rs /opt/puppetlabs/puppet/bin/r10k /opt/puppetlabs/bin
