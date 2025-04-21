@@ -35,8 +35,11 @@ blackbox.framework.inventory.ansible() {
     apt update
   fi
 
-  DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common && {
-    apt-add-repository -y ppa:ansible/ansible
-    DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends "$package_name" "${with_packages[@]}"
+  DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common gpg-agent wget && {
+    wget -S --output-document="/tmp/ansible.deb" --no-verbose https://launchpad.net/~ansible/+archive/ubuntu/ansible/+files/ansible_10.7.0-1ppa~jammy_all.deb && {
+      DEBIAN_FRONTEND=noninteractive apt install -y /tmp/ansible.deb "${with_packages[@]}" && {
+        rm -f /tmp/ansible.deb
+      }
+    }
   }
 }

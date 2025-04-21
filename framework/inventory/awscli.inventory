@@ -32,7 +32,7 @@ blackbox.framework.inventory.awscli() {
       wget -S --output-document="/tmp/awscli.zip" --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.11.25.zip && {
         rm -rf /usr/local/aws-cli/
 
-        unzip /tmp/awscli.zip -d /tmp && {
+        unzip -q /tmp/awscli.zip -d /tmp && {
           /tmp/aws/install
           rm -rf /tmp/aws*
         }
