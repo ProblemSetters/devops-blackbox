@@ -31,7 +31,7 @@ blackbox.framework.inventory.kafka() {
     return
   fi
 
-  if [ -z "$(find /var/lib/apt/lists -newermt "5 minutes ago")" ]; then
+  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -newermt "5 minutes ago")" ]; then
     apt update
   fi
 
