@@ -31,5 +31,9 @@ blackbox.framework.module() {
     fi
 
     blackbox.framework.import "blackbox.module.${module_name}:module" "${module_args[@]}"
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" <<<""
+    }
   }
 }
