@@ -18,7 +18,7 @@ BLACKBOX_USER_HOME:=/home/$(BLACKBOX_USER_NAME)
 BLACKBOX_VERSION:=2204
 
 build:
-	docker build --network=host $(foreach arg, $(filter BLACKBOX%,$(sort $(.VARIABLES))),--build-arg="$(arg)=$($(arg))") --progress="plain" --tag="$(BLACKBOX)" .
+	docker buildx build --network=host $(foreach arg, $(filter BLACKBOX%,$(sort $(.VARIABLES))),--build-arg="$(arg)=$($(arg))") --progress="plain" --tag="$(BLACKBOX)" .
 
 run:
 	docker run -it --rm $(BLACKBOX)

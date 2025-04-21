@@ -11,7 +11,15 @@ ifneq ($(value SHELL),$(shell echo $$BASH))
   $(error current shell executable is not supported. GNU Bash 4.3 or above is required)
 endif
 
-BLACKBOX_MODULES:=$(abspath $(dir $(wildcard module/*/check/provision/Makefile)))
+ifneq ($(filter github:build:blackbox:module,$(MAKECMDGOALS)),)
+  BLACKBOX_BUILD_BLACKBOX_MODULE=$(filter-out github:build:blackbox:module,$(filter-out debug,$(MAKECMDGOALS)))
+  BLACKBOX_BUILD_BLACKBOX_MODULE_NAME=$(or $(word 1,$(BLACKBOX_BUILD_BLACKBOX_MODULE)),$(error Module name is required))
+endif
+
+ifneq ($(filter github:push:blackbox:module,$(MAKECMDGOALS)),)
+  BLACKBOX_PUSH_BLACKBOX_MODULE=$(filter-out github:push:blackbox:module,$(filter-out debug,$(MAKECMDGOALS)))
+  BLACKBOX_PUSH_BLACKBOX_MODULE_NAME=$(or $(word 1,$(BLACKBOX_PUSH_BLACKBOX_MODULE)),$(error Module name is required))
+endif
 
 ifneq ($(filter github:ecr:repository:initialize,$(MAKECMDGOALS)),)
   BLACKBOX_ECR_REPOSITORY_INITIALIZE=$(filter-out github:ecr:repository:initialize,$(filter-out debug,$(MAKECMDGOALS)))
@@ -41,14 +49,14 @@ debug: ;@:
 github\:build\:blackbox:
 	$(MAKE) --directory=framework/module/abstract/check/provision build
 
-github\:build\:blackbox\:modules:
-	$(foreach module,$(BLACKBOX_MODULES),$(MAKE) --directory=$(module) build;)
+github\:build\:blackbox\:module:
+	$(MAKE) --directory=$(abspath $(addprefix module/,$(addprefix $(BLACKBOX_BUILD_BLACKBOX_MODULE_NAME),/check/provision))) build
 
 github\:push\:blackbox:
 	$(MAKE) --directory=framework/module/abstract/check/provision push
 
-github\:push\:blackbox\:modules:
-	$(foreach module,$(BLACKBOX_MODULES),$(MAKE) --directory=$(module) push;)
+github\:push\:blackbox\:module:
+	$(MAKE) --directory=$(abspath $(addprefix module/,$(addprefix $(BLACKBOX_PUSH_BLACKBOX_MODULE_NAME),/check/provision))) push
 
 github\:ecr\:repository\:initialize:
 	aws ecr describe-repositories --registry-id=$(BLACKBOX_ECR_REPOSITORY_INITIALIZE_REGISTRY_ID) --repository-names $(BLACKBOX_ECR_REPOSITORY_INITIALIZE_REPOSITORY_NAME) || aws ecr create-repository --registry-id=$(BLACKBOX_ECR_REPOSITORY_INITIALIZE_REGISTRY_ID) --repository-name=$(BLACKBOX_ECR_REPOSITORY_INITIALIZE_REPOSITORY_NAME)

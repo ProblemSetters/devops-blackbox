@@ -66,7 +66,7 @@ blackbox() {
   export BLACKBOX_HEAP_DIR="/tmp/${3}"
   export BLACKBOX_STORAGE_DIR="/var/save/${3}"
   export BLACKBOX_BUILD_LOG="${BLACKBOX_STORAGE_DIR}/build.log"
-  export BLACKBOX_BUILD_STREAM_DISPLAY_LINES=12345
+  export BLACKBOX_BUILD_STREAM_DISPLAY_LINES=255
 
   # shellcheck disable=SC2034
   typeset -gx BLACKBOX_SCENARIO_PATH=$(realpath "$0")
