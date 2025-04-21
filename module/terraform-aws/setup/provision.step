@@ -14,7 +14,9 @@ blackbox.module.terraform-aws.setup.provision() {
   blackbox.framework.inventory.install.file main.tf </blackbox/module/terraform-aws/setup/provision/rootfs/home/%/%/main.tf
   blackbox.framework.inventory.install.file script.sh </blackbox/module/terraform-aws/setup/provision/rootfs/home/%/%/script.sh
 
-  blackbox.framework.inventory.provision localstack
+  blackbox.framework.inventory.provision localstack && {
+    sleep 30
+  }
 
   tee -a /etc/hosts < <(printf "127.0.0.1\teu-central-1.hackerrankaws.local\n")
   tee -a /etc/environment < <(printf "AWS_ENDPOINT_URL=%s\n" "eu-central-1.hackerrankaws.local")

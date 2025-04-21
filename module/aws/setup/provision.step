@@ -7,7 +7,9 @@
 blackbox.module.aws.setup.provision() {
   : <<< blackbox.framework.module.abstract.setup.provision:step
 
-  blackbox.framework.inventory.provision localstack
+  blackbox.framework.inventory.provision localstack && {
+    sleep 30
+  }
 
   tee -a /etc/hosts < <(printf "127.0.0.1\teu-central-1.hackerrankaws.local\n")
   tee -a /etc/environment < <(printf "AWS_ENDPOINT_URL=%s\n" "eu-central-1.hackerrankaws.local")

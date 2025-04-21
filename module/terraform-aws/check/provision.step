@@ -26,7 +26,9 @@ blackbox.module.terraform-aws.check.provision() {
   docker ps -aq | xargs -r docker rm -f >/dev/null
   docker system prune -af --volumes
 
-  blackbox.framework.inventory.provision localstack
+  blackbox.framework.inventory.provision localstack && {
+    sleep 30
+  }
 
   if ( grep -q '^init$' <(ps -p 1 -o comm=) ); then
     docker run -di --hostname="$BLACKBOX_SPAWN" --network="host" --name="$BLACKBOX_SPAWN" --privileged --cgroupns=host --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" "134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2204:${BLACKBOX_MODULE_NAME}"
