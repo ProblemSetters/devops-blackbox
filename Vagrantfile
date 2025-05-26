@@ -1,5 +1,5 @@
 Vagrant.configure("2") do |config|
-  config.vm.box = "ubuntu/jammy64"
+  config.vm.box = "ubuntu/noble64"
   config.vm.hostname = "taskserver"
   config.vm.provider "virtualbox" do |vb|
     vb.name = ENV["BLACKBOX_HOST"]
