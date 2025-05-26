@@ -1,6 +1,6 @@
 # framework/inventory/jenkins.inventory
 
-https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/jenkins.inventory
+https://github.com/ProblemSetters/devops-blackbox/blob/2404/framework/inventory/jenkins.inventory
 
 ## Overview
 

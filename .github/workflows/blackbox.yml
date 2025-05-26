@@ -2,7 +2,7 @@ name: Blackbox
 on:
   push:
     branches:
-      - "2204"
+      - "2404"
     paths-ignore:
       - ".github/workflows/ecr/**"
       - ".github/workflows/ecr.yml"
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 jobs:
   main:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

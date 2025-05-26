@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/linux-stdl.module
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/linux-stdl.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/linux-stdl.module
 # @description Linux standalone module
 
 # @section blackbox.module.*

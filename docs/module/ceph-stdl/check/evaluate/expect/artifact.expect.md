@@ -1,6 +1,6 @@
 # module/ceph-stdl/check/evaluate/expect/artifact.expect
 
-https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/ceph-stdl/check/evaluate/expect/artifact.expect
+https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/ceph-stdl/check/evaluate/expect/artifact.expect
 
 ## Overview
 

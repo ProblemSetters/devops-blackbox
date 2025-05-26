@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/docker-ce.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/docker-ce.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/framework/inventory/docker-ce.inventory
 # @description Inventory "docker-ce"
 
 # @section blackbox.framework.inventory.*
@@ -39,7 +39,7 @@ blackbox.framework.inventory.docker-ce() {
     wget -S --output-document="/dev/stdout" --no-verbose https://download.docker.com/linux/ubuntu/gpg | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=true apt-key add -
     add-apt-repository -y "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 
-    local version=5:28.1.1-1~ubuntu.22.04~jammy
+    local version=5:28.1.1-1~ubuntu.24.04~noble
 
     DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends docker-ce="$version" docker-ce-cli="$version" docker-buildx-plugin "${with_packages[@]}" && {
       # Docker ulimit issue quickfix: https://github.com/docker/cli/issues/4807

@@ -1,6 +1,6 @@
 # framework/inventory/kafka.inventory
 
-https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/kafka.inventory
+https://github.com/ProblemSetters/devops-blackbox/blob/2404/framework/inventory/kafka.inventory
 
 ## Overview
 

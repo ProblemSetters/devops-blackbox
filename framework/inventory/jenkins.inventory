@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/jenkins.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/jenkins.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/framework/inventory/jenkins.inventory
 # @description Inventory "jenkins"
 
 # @section blackbox.framework.inventory.*
