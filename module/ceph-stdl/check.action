@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/ceph-stdl/check.action
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/ceph-stdl/check.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/ceph-stdl/check.action
 # @description Ceph standalone module "check" action
 
 # @section blackbox.module.ceph-stdl.*

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/redis-stdl/check/evaluate.step
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/redis-stdl/check/evaluate.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/redis-stdl/check/evaluate.step
 # @description Redis standalone module "check" action "evaluate" step
 
 # @section blackbox.module.redis-stdl.check.*

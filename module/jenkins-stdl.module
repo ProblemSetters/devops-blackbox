@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/jenkins-stdl.module
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/jenkins-stdl.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/jenkins-stdl.module
 # @description Jenkins standalone module
 
 # @section blackbox.module.*

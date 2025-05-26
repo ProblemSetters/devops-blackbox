@@ -1,6 +1,6 @@
 # module/kafka-stdl/check/evaluate/score.evaluate
 
-https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/kafka-stdl/check/evaluate/score.evaluate
+https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/kafka-stdl/check/evaluate/score.evaluate
 
 ## Overview
 

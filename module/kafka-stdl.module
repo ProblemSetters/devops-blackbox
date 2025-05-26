@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/kafka-stdl.module
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/kafka-stdl.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/kafka-stdl.module
 # @description Kafka standalone module
 
 # @section blackbox.module.*

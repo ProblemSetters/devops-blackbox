@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/microceph.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/microceph.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/framework/inventory/microceph.inventory
 # @description Inventory "microceph"
 
 # @section blackbox.framework.inventory.*

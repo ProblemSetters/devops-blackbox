@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/redis.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/redis.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/framework/inventory/redis.inventory
 # @description Inventory "redis"
 
 # @section blackbox.framework.inventory.*
@@ -39,7 +39,7 @@ blackbox.framework.inventory.redis() {
     wget -S --output-document="/dev/stdout" --no-verbose https://packages.redis.io/gpg | gpg --dearmor | tee /etc/apt/keyrings/redis.gpg >/dev/null
     tee <<<"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/redis.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" /etc/apt/sources.list.d/redis.list
 
-    local version=6:7.4.1-1rl1~jammy1
+    local version=6:7.4.1-1rl1~noble1
 
     apt update
     DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends redis-server="$version" redis-tools="$version" "${with_packages[@]}"

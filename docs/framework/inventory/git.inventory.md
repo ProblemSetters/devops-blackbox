@@ -1,6 +1,6 @@
 # framework/inventory/git.inventory
 
-https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/git.inventory
+https://github.com/ProblemSetters/devops-blackbox/blob/2404/framework/inventory/git.inventory
 
 ## Overview
 

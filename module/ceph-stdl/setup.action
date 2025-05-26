@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/ceph-stdl/setup.action
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/ceph-stdl/setup.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/ceph-stdl/setup.action
 # @description Ceph standalone module "setup" action
 
 # @section blackbox.module.ceph-stdl.*
