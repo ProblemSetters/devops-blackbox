@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file blackbox
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/blackbox
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/blackbox
 # @description Blackbox evaluation framework
 
 # @description Main executable
@@ -48,7 +48,7 @@ blackbox() {
   # shellcheck disable=SC2155
   export BLACKBOX_USER_QUESTION_DIR=$(awk -v master="${BLACKBOX_USER_HOME}/${3}" -v user="$BLACKBOX_USER_QUESTION_DIR" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
   # shellcheck disable=SC2155
-  export BLACKBOX_VERSION=$(awk -v master="2204" -v user="$BLACKBOX_VERSION" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
+  export BLACKBOX_VERSION=$(awk -v master="2404" -v user="$BLACKBOX_VERSION" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
 
   export BLACKBOX_FLAG__DEBUG_MODE=${BLACKBOX_FLAG__DEBUG_MODE:-no}
   # shellcheck disable=SC2155
@@ -269,8 +269,8 @@ blackbox() {
     }
 
     if [ ! -e "$BLACKBOX_DIR" ]; then
-      wget -S --output-document="/tmp/blackbox.zip" --no-verbose "https://codeload.github.com/ProblemSetters/devops-blackbox/zip/refs/heads/${BLACKBOX_VERSION}" && {
-        unzip /tmp/blackbox.zip -x "devops-blackbox-2204/.github/*" "devops-blackbox-2204/docs/*" "devops-blackbox-2204/.gitignore" "devops-blackbox-2204/Makefile.*" "devops-blackbox-2204/README.md" "devops-blackbox-2204/Vagrantfile" -d /tmp && {
+      wget -S --output-document="/tmp/blackbox.zip" "https://codeload.github.com/ProblemSetters/devops-blackbox/zip/refs/heads/${BLACKBOX_VERSION}" && {
+        unzip /tmp/blackbox.zip -x "devops-blackbox-2404/.github/*" "devops-blackbox-2404/docs/*" "devops-blackbox-2404/.gitignore" "devops-blackbox-2404/Makefile.*" "devops-blackbox-2404/README.md" "devops-blackbox-2404/Vagrantfile" -d /tmp && {
           mv "/tmp/devops-blackbox-${BLACKBOX_VERSION}" "$BLACKBOX_DIR"
           rm -rf /tmp/*blackbox*
         }

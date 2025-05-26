@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/ansible.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/ansible.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/framework/inventory/ansible.inventory
 # @description Inventory "ansible"
 
 # @section blackbox.framework.inventory.*
@@ -36,7 +36,7 @@ blackbox.framework.inventory.ansible() {
   fi
 
   DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common gpg-agent wget && {
-    wget -S --output-document="/tmp/ansible.deb" --no-verbose https://launchpad.net/~ansible/+archive/ubuntu/ansible/+files/ansible_10.7.0-1ppa~jammy_all.deb && {
+    wget -S --output-document="/tmp/ansible.deb" --no-verbose https://launchpad.net/~ansible/+archive/ubuntu/ansible/+files/ansible_11.6.0-1ppa~noble_all.deb && {
       DEBIAN_FRONTEND=noninteractive apt install -y /tmp/ansible.deb "${with_packages[@]}" && {
         rm -f /tmp/ansible.deb
       }

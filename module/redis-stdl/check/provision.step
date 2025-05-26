@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/redis-stdl/check/provision.step
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/redis-stdl/check/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/redis-stdl/check/provision.step
 # @description Redis standalone module "check" action "provision" step
 
 # @section blackbox.module.redis-stdl.check.*

@@ -2,7 +2,7 @@ name: Amazon ECR private registry
 on:
   push:
     branches:
-      - "2204"
+      - "2404"
     paths:
       - ".github/workflows/ecr.yml"
       - ".github/workflows/ecr/**"
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 jobs:
   main:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -235,6 +235,11 @@ jobs:
             --file=Makefile.workflow \
             github:ecr:repository:initialize \
               hr/ubuntu
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:charge \
+              public.ecr.aws/docker/library/ubuntu:24.04@sha256:6015f66923d7afbc53558d7ccffd325d43b4e249f41a6e93eef074c9505d2233 \
+              hr/ubuntu:24.04
           make \
             --file=Makefile.workflow \
             github:ecr:repository:charge \

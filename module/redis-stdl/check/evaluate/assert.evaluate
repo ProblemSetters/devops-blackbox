@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/redis-stdl/check/evaluate/assert.evaluate
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/redis-stdl/check/evaluate/assert.evaluate
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/redis-stdl/check/evaluate/assert.evaluate
 # @description Step "evaluate" asserter
 
 # @section blackbox.module.redis-stdl.check.evaluate.*

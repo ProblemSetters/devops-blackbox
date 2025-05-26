@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/chef.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/chef.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/framework/inventory/chef.inventory
 # @description Inventory "chef"
 
 # @section blackbox.framework.inventory.*
@@ -36,7 +36,7 @@ blackbox.framework.inventory.chef() {
   fi
 
   DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common gpg-agent wget && {
-    wget -S --output-document="/tmp/chef.deb" --no-verbose https://packages.chef.io/files/stable/chef/18.2.7/ubuntu/22.04/chef_18.2.7-1_amd64.deb && {
+    wget -S --output-document="/tmp/chef.deb" --no-verbose https://packages.chef.io/files/stable/chef/18.2.7/ubuntu/24.04/chef_18.2.7-1_amd64.deb && {
       DEBIAN_FRONTEND=noninteractive apt install -y /tmp/chef.deb "${with_packages[@]}" && {
         rm -f /tmp/chef.deb
       }

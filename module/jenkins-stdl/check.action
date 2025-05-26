@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/jenkins-stdl/check.action
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/jenkins-stdl/check.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/jenkins-stdl/check.action
 # @description Jenkins standalone module "check" action
 
 # @section blackbox.module.jenkins-stdl.*

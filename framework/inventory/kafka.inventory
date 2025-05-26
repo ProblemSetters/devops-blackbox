@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file framework/inventory/kafka.inventory
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory/kafka.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/framework/inventory/kafka.inventory
 # @description Inventory "kafka"
 
 # @section blackbox.framework.inventory.*

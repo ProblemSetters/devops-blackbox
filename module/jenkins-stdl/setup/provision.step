@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # @file module/jenkins-stdl/setup/provision.step
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/module/jenkins-stdl/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/jenkins-stdl/setup/provision.step
 # @description Jenkins standalone module "setup" action "provision" step
 
 # @section blackbox.module.jenkins-stdl.setup.*

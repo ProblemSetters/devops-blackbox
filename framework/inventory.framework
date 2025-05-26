@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2317 ## remove!!
 # @file framework/inventory.framework
-# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2204/framework/inventory.framework
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/framework/inventory.framework
 # @description Inventory handler
 
 # @section blackbox.framework.*

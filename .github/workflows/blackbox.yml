@@ -2,7 +2,7 @@ name: Blackbox
 on:
   push:
     branches:
-      - "2204"
+      - "2404"
     paths-ignore:
       - ".github/workflows/ecr/**"
       - ".github/workflows/ecr.yml"
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 jobs:
   main:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -41,72 +41,72 @@ jobs:
             --file=Makefile.workflow \
             github:build:blackbox:module \
               ansible
-      - name: Build Blackbox "ansible-aws" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:build:blackbox:module \
-              ansible-aws
-      - name: Build Blackbox "aws" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:build:blackbox:module \
-              aws
-      - name: Build Blackbox "chef" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:build:blackbox:module \
-              chef
-      - name: Build Blackbox "docker" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:build:blackbox:module \
-              docker
-      - name: Build Blackbox "git" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:build:blackbox:module \
-              git
-      - name: Build Blackbox "kubernetes" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:build:blackbox:module \
-              kubernetes
-      - name: Build Blackbox "linux" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:build:blackbox:module \
-              linux
-      - name: Build Blackbox "puppet" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:build:blackbox:module \
-              puppet
-      - name: Build Blackbox "shell" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:build:blackbox:module \
-              shell
-      - name: Build Blackbox "terraform" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:build:blackbox:module \
-              terraform
-      - name: Build Blackbox "terraform-aws" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:build:blackbox:module \
-              terraform-aws
+      # - name: Build Blackbox "ansible-aws" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:build:blackbox:module \
+      #         ansible-aws
+      # - name: Build Blackbox "aws" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:build:blackbox:module \
+      #         aws
+      # - name: Build Blackbox "chef" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:build:blackbox:module \
+      #         chef
+      # - name: Build Blackbox "docker" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:build:blackbox:module \
+      #         docker
+      # - name: Build Blackbox "git" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:build:blackbox:module \
+      #         git
+      # - name: Build Blackbox "kubernetes" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:build:blackbox:module \
+      #         kubernetes
+      # - name: Build Blackbox "linux" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:build:blackbox:module \
+      #         linux
+      # - name: Build Blackbox "puppet" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:build:blackbox:module \
+      #         puppet
+      # - name: Build Blackbox "shell" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:build:blackbox:module \
+      #         shell
+      # - name: Build Blackbox "terraform" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:build:blackbox:module \
+      #         terraform
+      # - name: Build Blackbox "terraform-aws" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:build:blackbox:module \
+      #         terraform-aws
       - name: Push Blackbox
         run: |
           make \
@@ -118,69 +118,69 @@ jobs:
             --file=Makefile.workflow \
             github:push:blackbox:module \
               ansible
-      - name: Push Blackbox "ansible-aws" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:push:blackbox:module \
-              ansible-aws
-      - name: Push Blackbox "aws" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:push:blackbox:module \
-              aws
-      - name: Push Blackbox "chef" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:push:blackbox:module \
-              chef
-      - name: Push Blackbox "docker" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:push:blackbox:module \
-              docker
-      - name: Push Blackbox "git" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:push:blackbox:module \
-              git
-      - name: Push Blackbox "kubernetes" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:push:blackbox:module \
-              kubernetes
-      - name: Push Blackbox "linux" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:push:blackbox:module \
-              linux
-      - name: Push Blackbox "puppet" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:push:blackbox:module \
-              puppet
-      - name: Push Blackbox "shell" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:push:blackbox:module \
-              shell
-      - name: Push Blackbox "terraform" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:push:blackbox:module \
-              terraform
-      - name: Push Blackbox "terraform-aws" module
-        run: |
-          make \
-            --file=Makefile.workflow \
-            github:push:blackbox:module \
-              terraform-aws
+      # - name: Push Blackbox "ansible-aws" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:push:blackbox:module \
+      #         ansible-aws
+      # - name: Push Blackbox "aws" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:push:blackbox:module \
+      #         aws
+      # - name: Push Blackbox "chef" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:push:blackbox:module \
+      #         chef
+      # - name: Push Blackbox "docker" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:push:blackbox:module \
+      #         docker
+      # - name: Push Blackbox "git" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:push:blackbox:module \
+      #         git
+      # - name: Push Blackbox "kubernetes" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:push:blackbox:module \
+      #         kubernetes
+      # - name: Push Blackbox "linux" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:push:blackbox:module \
+      #         linux
+      # - name: Push Blackbox "puppet" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:push:blackbox:module \
+      #         puppet
+      # - name: Push Blackbox "shell" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:push:blackbox:module \
+      #         shell
+      # - name: Push Blackbox "terraform" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:push:blackbox:module \
+      #         terraform
+      # - name: Push Blackbox "terraform-aws" module
+      #   run: |
+      #     make \
+      #       --file=Makefile.workflow \
+      #       github:push:blackbox:module \
+      #         terraform-aws

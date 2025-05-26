@@ -11,11 +11,11 @@ ifneq ($(value SHELL),$(shell echo $$BASH))
   $(error current shell executable is not supported. GNU Bash 4.3 or above is required)
 endif
 
-BLACKBOX:=134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2204:$(shell basename $(abspath $(firstword $(MAKEFILE_LIST))/../../../))
+BLACKBOX:=134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2404:$(shell basename $(abspath $(firstword $(MAKEFILE_LIST))/../../../))
 BLACKBOX_USER:=1000:1000
 BLACKBOX_USER_NAME:=ubuntu
 BLACKBOX_USER_HOME:=/home/$(BLACKBOX_USER_NAME)
-BLACKBOX_VERSION:=2204
+BLACKBOX_VERSION:=2404
 
 build:
 	docker buildx build --network=host $(foreach arg, $(filter BLACKBOX%,$(sort $(.VARIABLES))),--build-arg="$(arg)=$($(arg))") --progress="plain" --tag="$(BLACKBOX)" .
