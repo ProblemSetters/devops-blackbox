@@ -36,11 +36,15 @@ blackbox.framework.module.abstract.setup.provision() {
     return
   fi
 
-  blackbox.framework.inventory.provision docker-ce && {
-    usermod -a -G docker "$BLACKBOX_USER_NAME"
-    service docker start && {
-      blackbox.framework.inventory.ecr.login
-    }
+  # Install Docker only if it is not yet available in the system (e.g. pre-installed on Ubuntu 24.04 images)
+  if ! command -v docker >/dev/null 2>&1; then
+    blackbox.framework.inventory.provision docker-ce
+  fi
+
+  # Ensure the invoking user can operate Docker and the daemon is running, then perform ECR login
+  usermod -a -G docker "$BLACKBOX_USER_NAME"
+  service docker start && {
+    blackbox.framework.inventory.ecr.login
   }
 
   blackbox.framework.inventory.install.file /usr/local/bin/solve 0 0 0755 </blackbox/framework/module/abstract/setup/provision/rootfs/usr/local/bin/solve

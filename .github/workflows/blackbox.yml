@@ -47,12 +47,12 @@ jobs:
       #       --file=Makefile.workflow \
       #       github:build:blackbox:module \
       #         ansible-aws
-      # - name: Build Blackbox "aws" module
-      #   run: |
-      #     make \
-      #       --file=Makefile.workflow \
-      #       github:build:blackbox:module \
-      #         aws
+      - name: Build Blackbox "aws" module
+        run: |
+          make \
+            --file=Makefile.workflow \
+            github:build:blackbox:module \
+              aws
       # - name: Build Blackbox "chef" module
       #   run: |
       #     make \
@@ -124,12 +124,12 @@ jobs:
       #       --file=Makefile.workflow \
       #       github:push:blackbox:module \
       #         ansible-aws
-      # - name: Push Blackbox "aws" module
-      #   run: |
-      #     make \
-      #       --file=Makefile.workflow \
-      #       github:push:blackbox:module \
-      #         aws
+      - name: Push Blackbox "aws" module
+        run: |
+          make \
+            --file=Makefile.workflow \
+            github:push:blackbox:module \
+              aws
       # - name: Push Blackbox "chef" module
       #   run: |
       #     make \
