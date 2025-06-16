@@ -28,6 +28,9 @@ blackbox.framework.inventory.kafka() {
   if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
     false
 
+    cp /blackbox/framework/inventory/kafka/rootfs/etc/systemd/system/zookeeper.service /etc/systemd/system/
+    cp /blackbox/framework/inventory/kafka/rootfs/etc/systemd/system/kafka.service /etc/systemd/system/
+
     return
   fi
 
@@ -36,7 +39,7 @@ blackbox.framework.inventory.kafka() {
   fi
 
   DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common openjdk-17-jre-headless wget && {
-    wget -S --output-document="/tmp/kafka.tgz" --no-verbose https://dlcdn.apache.org/kafka/3.9.0/kafka_2.12-3.9.0.tgz && {
+    wget -S --output-document="/tmp/kafka.tgz" --no-verbose https://dlcdn.apache.org/kafka/3.9.1/kafka_2.12-3.9.1.tgz && {
       mkdir /usr/local/kafka
       tar -zxvf /tmp/kafka.tgz --directory=/usr/local/kafka --strip-components=1
       rm /tmp/kafka.tgz
