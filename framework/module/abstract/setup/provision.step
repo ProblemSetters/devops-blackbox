@@ -42,8 +42,15 @@ blackbox.framework.module.abstract.setup.provision() {
   fi
 
   # Ensure the invoking user can operate Docker and the daemon is running, then perform ECR login
-  usermod -a -G docker "$BLACKBOX_USER_NAME"
-  service docker start && {
+  # Add the invoking user to the "docker" group only if it is not yet a member
+  if ! id -nG "$BLACKBOX_USER_NAME" | grep -qw docker; then
+    usermod -a -G docker "$BLACKBOX_USER_NAME"
+  fi
+
+  # Start Docker only if the daemon is not already running, then perform ECR login
+  if ! pgrep -x dockerd >/dev/null 2>&1; then
+    service docker start
+  fi && {
     blackbox.framework.inventory.ecr.login
   }
 
