@@ -28,6 +28,14 @@ blackbox.framework.inventory.k3s() {
   if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
     false
 
+    cp /blackbox/framework/inventory/k3s/rootfs/etc/init.d/k3s /etc/init.d && {
+      chmod +x /etc/init.d/k3s
+    }
+    cp /blackbox/framework/inventory/k3s/rootfs/usr/local/bin/kubectl /usr/local/bin/ && {
+      chmod +x /usr/local/bin/kubectl
+    }
+    update-rc.d k3s defaults
+
     return
   fi
 
@@ -36,7 +44,7 @@ blackbox.framework.inventory.k3s() {
   fi
 
   DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common wget && {
-    wget -S --directory-prefix="/usr/local/bin/" --no-verbose "https://github.com/k3s-io/k3s/releases/download/v1.27.3%2Bk3s1/k3s" && {
+    wget -S --directory-prefix="/usr/local/bin/" --no-verbose "https://github.com/k3s-io/k3s/releases/download/v1.33.1%2Bk3s1/k3s" && {
       chmod +x /usr/local/bin/k3s
     }
     cp /blackbox/framework/inventory/k3s/rootfs/etc/init.d/k3s /etc/init.d && {

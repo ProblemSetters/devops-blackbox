@@ -28,6 +28,8 @@ blackbox.framework.inventory.jenkins() {
   if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
     false
 
+    install -m 0644 -D /blackbox/framework/inventory/jenkins/rootfs/etc/systemd/system/jenkins.service.d/override.conf /etc/systemd/system/jenkins.service.d/override.conf
+
     return
   fi
 
