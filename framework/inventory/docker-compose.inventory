@@ -39,7 +39,7 @@ blackbox.framework.inventory.docker-compose() {
     local requirements="docker-compose"
 
     for requirement in ${requirements[*]}; do
-      pip install "$requirement"
+      pip install --break-system-packages "$requirement"
     done
 
     if (( ${#with_packages[@]} )); then

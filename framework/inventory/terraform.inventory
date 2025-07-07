@@ -38,6 +38,9 @@ blackbox.framework.inventory.terraform() {
   DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common gpg-agent wget && {
     wget -S --output-document="/dev/stdout" --no-verbose https://apt.releases.hashicorp.com/gpg | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=true apt-key add -
     add-apt-repository -y "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-    DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends "$package_name" "${with_packages[@]}"
+
+    local version=1.12.0-1
+
+    DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends terraform="$version" "${with_packages[@]}"
   }
 }
