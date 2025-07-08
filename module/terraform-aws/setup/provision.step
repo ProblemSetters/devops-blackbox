@@ -13,9 +13,10 @@ blackbox.module.terraform-aws.setup.provision() {
 
   blackbox.framework.inventory.install.file main.tf </blackbox/module/terraform-aws/setup/provision/rootfs/home/%/%/main.tf
   blackbox.framework.inventory.install.file script.sh </blackbox/module/terraform-aws/setup/provision/rootfs/home/%/%/script.sh
+  blackbox.framework.inventory.install.file versions.tf </blackbox/module/terraform-aws/setup/provision/rootfs/home/%/%/versions.tf
 
   blackbox.framework.inventory.provision localstack && {
-    sleep 30
+    sleep 10
   }
 
   tee -a /etc/hosts < <(printf "127.0.0.1\teu-central-1.hackerrankaws.local\n")
