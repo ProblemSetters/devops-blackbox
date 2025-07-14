@@ -62,13 +62,11 @@ blackbox.framework.inventory() {
         blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
       }
 
-      install -o "$owner" -g "$group" -m 0775 -d "$(dirname "$destination")" && {
-        if [ -n "$source" ]; then
-          install -o "$owner" -g "$group" -m "$mode" /dev/stdin "$destination" <<<"$source"
-        else
-          install -o "$owner" -g "$group" -m "$mode" /dev/null "$destination"
-        fi
-      }
+      if [ -n "$source" ]; then
+        install -o "$owner" -g "$group" -m "$mode" -D /dev/stdin "$destination" <<<"$source"
+      else
+        install -o "$owner" -g "$group" -m "$mode" -D /dev/null "$destination"
+      fi
     }
   }; blackbox.framework.inventory.install
 

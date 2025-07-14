@@ -55,8 +55,5 @@ blackbox.module.jenkins-stdl.check.evaluate.score() {
     {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
-
-    # blackbox.framework.inventory.install.file "$BLACKBOX_CHECK_EVALUATE_SCORE_CALCULATE_CACHE" </dev/null
-    touch "$BLACKBOX_CHECK_EVALUATE_SCORE_CALCULATE_CACHE"
   } && blackbox.module.jenkins-stdl.check.evaluate.score.__init "$@"
 }
