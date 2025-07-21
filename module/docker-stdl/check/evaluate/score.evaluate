@@ -55,7 +55,5 @@ blackbox.module.docker-stdl.check.evaluate.score() {
     {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
-
-    blackbox.framework.inventory.install.file "$BLACKBOX_CHECK_EVALUATE_SCORE_CALCULATE_CACHE" </dev/null
   } && blackbox.module.docker-stdl.check.evaluate.score.__init "$@"
 }
