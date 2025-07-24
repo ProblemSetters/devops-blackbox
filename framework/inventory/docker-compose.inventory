@@ -35,13 +35,7 @@ blackbox.framework.inventory.docker-compose() {
     apt update
   fi
 
-  DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends python3-pip && {
-    local requirements="docker-compose"
-
-    for requirement in ${requirements[*]}; do
-      pip install --break-system-packages "$requirement"
-    done
-
+  DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends docker-compose-plugin && {
     if (( ${#with_packages[@]} )); then
       dpkg-query -W "${with_packages[@]}" 2>&1
 
