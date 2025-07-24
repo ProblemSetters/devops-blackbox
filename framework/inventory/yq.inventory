@@ -36,7 +36,7 @@ blackbox.framework.inventory.yq() {
   fi
 
   DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common wget && {
-    wget -S --output-document="/usr/local/bin/yq" --no-verbose "https://github.com/mikefarah/yq/releases/download/v4.45.4/yq_linux_amd64" && {
+    wget -S --output-document="/usr/local/bin/yq" --no-verbose "https://github.com/mikefarah/yq/releases/download/3.3.2/yq_linux_amd64" && {
       chmod +x /usr/local/bin/yq
     }
 
