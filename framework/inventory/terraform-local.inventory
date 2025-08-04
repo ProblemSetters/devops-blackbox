@@ -36,7 +36,7 @@ blackbox.framework.inventory.terraform-local() {
   fi
 
   DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends python3-pip && {
-    pip install --break-system-packages terraform-local==0.21.0
+    pip install --break-system-packages terraform-local==0.24.1
 
     mv /usr/bin/terraform /usr/bin/tf && {
       ln -s /usr/local/bin/tflocal /usr/bin/terraform && {
