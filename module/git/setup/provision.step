@@ -8,7 +8,8 @@ blackbox.module.git.setup.provision() {
   : <<< blackbox.framework.module.abstract.setup.provision:step
 
   blackbox.framework.inventory.provision git
-  sudo -u "$BLACKBOX_USER_NAME" git init && {
+  sudo -u "$BLACKBOX_USER_NAME" git init
+  {
     sudo -u "$BLACKBOX_USER_NAME" git config --global --add safe.directory "$BLACKBOX_USER_QUESTION_DIR"
     sudo -u "$BLACKBOX_USER_NAME" git remote add origin "$BLACKBOX_USER_QUESTION_DIR"
     sudo -u "$BLACKBOX_USER_NAME" git config --global --list
