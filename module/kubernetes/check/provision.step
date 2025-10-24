@@ -7,14 +7,11 @@
 blackbox.module.kubernetes.check.provision() {
   : <<< blackbox.framework.module.abstract.check.provision:step
 
-  docker exec -i "$BLACKBOX_SPAWN" service docker start && {
-    docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; blackbox.framework.inventory.ecr.login"
-  }
+  docker exec -i "$BLACKBOX_SPAWN" service docker start
+  docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; blackbox.framework.inventory.ecr.login"
 
-  docker exec -i "$BLACKBOX_SPAWN" service k3s start && {
-    sleep 30 # TODO: implement healthcheck
-    docker exec -i "$BLACKBOX_SPAWN" kubectl create secret generic ecr --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson && {
-      kubectl describe secrets/ecr
-    }
-  }
+  docker exec -i "$BLACKBOX_SPAWN" service k3s start
+  sleep 30 # TODO: implement healthcheck
+  docker exec -i "$BLACKBOX_SPAWN" kubectl create secret generic ecr --from-file=.dockerconfigjson=/root/.docker/config.json --type=kubernetes.io/dockerconfigjson
+  docker exec -i "$BLACKBOX_SPAWN" kubectl describe secrets/ecr
 }
