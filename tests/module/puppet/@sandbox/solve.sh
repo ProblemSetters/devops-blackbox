@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+cat <<SOLUTION >/home/ubuntu/test/manifest.pp
+file { '/home/ubuntu/test/solve.assert':
+  ensure => file,
+  content => "ANY\n"
+}
+SOLUTION
+
+pushd /home/ubuntu/test && {
+  sudo solve
+}
+
+exit 0

@@ -32,6 +32,8 @@ blackbox.module.ceph-stdl.setup.provision() {
     microceph.ceph status
   }
 
+  blackbox.framework.inventory.provision awscli
+
   rm -f /usr/local/bin/solve
 
   if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
