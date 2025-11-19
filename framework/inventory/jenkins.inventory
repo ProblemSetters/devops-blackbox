@@ -41,10 +41,10 @@ blackbox.framework.inventory.jenkins() {
     wget -S --output-document="/usr/share/keyrings/jenkins-keyring.asc" --no-verbose https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
     tee /etc/apt/sources.list.d/jenkins.list <<<"deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
 
-    local version=2.492.2
+    local version=2.528.2
 
     apt update
-    DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends openjdk-17-jre-headless jenkins="$version" "${with_packages[@]}" && {
+    DEBIAN_FRONTEND=noninteractive apt install -y openjdk-21-jre-headless jenkins="$version" "${with_packages[@]}" && {
       install -m 0644 -D /blackbox/framework/inventory/jenkins/rootfs/etc/systemd/system/jenkins.service.d/override.conf /etc/systemd/system/jenkins.service.d/override.conf
     }
   }
