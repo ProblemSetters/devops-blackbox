@@ -29,7 +29,7 @@ blackbox.framework.inventory.awscli() {
     fi
 
     DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common gpg-agent wget less && {
-      wget -S --output-document="/tmp/awscli.zip" --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.11.25.zip && {
+      wget -S --output-document="/tmp/awscli.zip" --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.27.33.zip && {
         rm -rf /usr/local/aws-cli/
 
         unzip -q /tmp/awscli.zip -d /tmp && {
