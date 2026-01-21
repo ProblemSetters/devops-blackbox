@@ -23,7 +23,10 @@ blackbox.module.jenkins-stdl.setup.provision() {
     return
   fi
 
-  blackbox.framework.inventory.provision jenkins && {
+  blackbox.framework.inventory.provision jenkins
+
+  {
+    systemctl stop jenkins
     systemctl daemon-reload
     systemctl start jenkins
   }

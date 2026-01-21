@@ -2,6 +2,24 @@
 override blackbox/:=*
 
 ifeq ($(origin .FEATURES),undefined)
+  $(error `make` executable version `$(MAKE_VERSION)` is not supported. GNU Make 4.3 or above is required)
+endif
+
+ifeq ($(words $(MAKEFILE_LIST)),1)
+  $(error `Makefile` should be included, direct usage is not allowed)
+endif
+
+ifeq ($(shell which docker),)
+  $(error `docker` executable is required)
+endif
+
+override SHELL:=/usr/bin/env bash -e +o pipefail
+
+ifeq ($(shell echo $$BASH),)
+  $(error current shell executable is not supported. GNU Bash 5.1 or above is required)
+endif
+
+ifeq ($(origin .FEATURES),undefined)
   $(error `make` executable version "$(MAKE_VERSION)" is not supported. GNU Make 3.82 or above is required)
 endif
 
@@ -11,60 +29,45 @@ ifneq ($(value SHELL),$(shell echo $$BASH))
   $(error current shell executable is not supported. GNU Bash 4.3 or above is required)
 endif
 
-ifeq ($(words $(MAKEFILE_LIST)),1)
-  $(error `Makefile.vagrant` should be included, direct usage is not allowed)
-endif
+override blackbox/host/blackbox/dir:=$(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+override blackbox/host/test/dir:=$(abspath $(dir $(firstword $(MAKEFILE_LIST))))
+override blackbox/spawn/username:=ubuntu
+override blackbox/spawn/test/dir:=/test
 
-BLACKBOX_FLAG__DEBUG_MODE:=no
-BLACKBOX_FLAG__STEP_PROVISION:=yes
-BLACKBOX_FLAG__STEP_BUILD:=yes
-BLACKBOX_FLAG__STEP_EVALUATE:=yes
-
-ifneq ($(BLACKBOX_DIR),$(abspath $(dir $(lastword $(MAKEFILE_LIST)))))
-  $(error `BLACKBOX_DIR` configuration is not valid)
-endif
-
-BLACKBOX_HOST:=blackbox-$(shell basename $(PWD) | cut -c 1-36)
-BLACKBOX_HOST_USER_QUESTION_DIR=$(call blackbox/pwd)
-BLACKBOX_USER_NAME:=ubuntu
-BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_HOME)/$(shell basename $(call blackbox/pwd))
-VAGRANT_VAGRANTFILE=$(BLACKBOX_DIR)/Vagrantfile
-
-define blackbox/pwd=
-$(abspath $(dir $(firstword $(MAKEFILE_LIST)))/$(1))
-endef
-
-export BLACKBOX_HOST
-export BLACKBOX_HOST_USER_QUESTION_DIR
-export BLACKBOX_USER_QUESTION_DIR
-export VAGRANT_VAGRANTFILE
+export BLACKBOX_HOST_TEST_DIR=$(blackbox/host/test/dir)
+export BLACKBOX_FLAG__DEBUG_MODE=no
+export VAGRANT_VAGRANTFILE=$(blackbox/host/blackbox/dir)/Vagrantfile
 
 debug: ;@:
 	$(eval BLACKBOX_FLAG__DEBUG_MODE:=yes)
-	$(foreach variable,BLACKBOX_FLAG__DEBUG_MODE BLACKBOX_FLAG__STEP_PROVISION BLACKBOX_FLAG__STEP_BUILD BLACKBOX_FLAG__STEP_EVALUATE,$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
+	$(foreach variable,BLACKBOX_FLAG__DEBUG_MODE,$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
 	$(info $(shell printf "\033[0;37m%s\033[0m" \\))
 	$(foreach variable,$(filter-out BLACKBOX_FLAG__%,$(filter BLACKBOX_%,$(sort $(.VARIABLES)))),$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
 	$(if $(and $(filter-out $(words $(MAKECMDGOALS)),0),$(filter-out $(words $(MAKECMDGOALS)),1)),$(info $(shell printf "\033[0;37m%s\033[0m" --)))
 
-all: uninstall install setup solve check
+all: install setup save check
+	$(MAKE) restore solve check
 
 install:
 	vagrant up
 
 setup:
-	vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION) BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_QUESTION_DIR) BLACKBOX_VERSION=$(BLACKBOX_VERSION) bash $(BLACKBOX_USER_QUESTION_DIR)/setup.sh"
+	vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) bash $(blackbox/spawn/test/dir)/setup.sh"
 
 solve:
-	vagrant ssh --command="sudo -u $(BLACKBOX_USER_NAME) -H bash $(BLACKBOX_USER_QUESTION_DIR)/solve.sh"
+	vagrant ssh --command="sudo -i -u $(blackbox/spawn/username) bash $(blackbox/spawn/test/dir)/solve.sh"
 
 check:
-	vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION) BLACKBOX_FLAG__STEP_BUILD=$(BLACKBOX_FLAG__STEP_BUILD) BLACKBOX_FLAG__STEP_EVALUATE=$(BLACKBOX_FLAG__STEP_EVALUATE) BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_QUESTION_DIR) BLACKBOX_VERSION=$(BLACKBOX_VERSION) bash $(BLACKBOX_USER_QUESTION_DIR)/check.sh"
+	vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) bash $(blackbox/spawn/test/dir)/check.sh" | tee >(awk '/Partial Credit/ { if (!reset) { reset = 1; next }; total_score += $$3; ok += ($$3 > 0); failed += ($$3 == 0) } END { printf("\nSuccess: %d\nFail: %d\nTotal: %d\n--\nTotal Credit: %d\n", ok, failed, ok + failed, total_score) }')
 
 check\:evaluate:
-	$(MAKE) BLACKBOX_FLAG__STEP_PROVISION=no BLACKBOX_FLAG__STEP_BUILD=no BLACKBOX_FLAG__STEP_EVALUATE=yes check
+	vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=no BLACKBOX_FLAG__STEP_PROVISION=no BLACKBOX_FLAG__STEP_BUILD=no BLACKBOX_FLAG__STEP_EVALUATE=yes bash $(blackbox/spawn/test/dir)/check.sh" | tee >(awk '/Partial Credit/ { if (!reset) { reset = 1; next }; total_score += $$3; ok += ($$3 > 0); failed += ($$3 == 0) } END { printf("\nSuccess: %d\nFail: %d\nTotal: %d\n--\nTotal Credit: %d\n", ok, failed, ok + failed, total_score) }')
 
 shell:
-	vagrant ssh --command="sudo su - $(BLACKBOX_USER_NAME)"
+	vagrant ssh --command="sudo su - $(blackbox/spawn/username)"
+
+shell\:spawn:
+	vagrant ssh --command="sudo docker exec -it -w /home/ubuntu/test blackbox-spawn bash"
 
 save:
 	vagrant snapshot save current
@@ -72,7 +75,7 @@ save:
 restore:
 	vagrant snapshot restore current
 
-delete:
+prune:
 	vagrant snapshot delete current
 
 hr:
@@ -84,7 +87,3 @@ gh:
 uninstall:
 	vagrant destroy -f
 	rm -rf .vagrant
-
-ifeq ($(filter debug,$(MAKECMDGOALS)),)
-.SILENT:
-endif
