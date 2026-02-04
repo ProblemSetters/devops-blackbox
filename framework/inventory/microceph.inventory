@@ -25,6 +25,11 @@ blackbox.framework.inventory.microceph() {
 
   sed "s/\x1b\[[0-9;]*m//g" <(dpkg-query -W "$package_name" "${with_packages[@]}" 2>&1)
 
+  {
+    # preinstalled setup fix: the existing jenkins installation is outdated for Ubuntu 24.04
+    snap remove microceph
+  }
+
   if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
     false
 
@@ -43,8 +48,6 @@ blackbox.framework.inventory.microceph() {
 
   {
     rm -rf /etc/ceph
-    # preinstalled setup fix
-    snap restart microceph.daemon
     ln -s /var/snap/microceph/current/conf /etc/ceph
   }
 }
