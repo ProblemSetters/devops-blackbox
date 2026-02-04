@@ -25,10 +25,13 @@ blackbox.framework.inventory.jenkins() {
 
   sed "s/\x1b\[[0-9;]*m//g" <(dpkg-query -W "$package_name" "${with_packages[@]}" 2>&1)
 
+  {
+    # preinstalled setup fix: the existing jenkins installation is outdated for Ubuntu 24.04
+    apt remove --purge jenkins
+  }
+
   if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
     false
-
-    install -m 0644 -D /blackbox/framework/inventory/jenkins/rootfs/etc/systemd/system/jenkins.service.d/override.conf /etc/systemd/system/jenkins.service.d/override.conf
 
     return
   fi
@@ -38,14 +41,12 @@ blackbox.framework.inventory.jenkins() {
   fi
 
   DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common wget && {
-    wget -S --output-document="/usr/share/keyrings/jenkins-keyring.asc" --no-verbose https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+    wget -S --output-document="/usr/share/keyrings/jenkins-keyring.asc" --no-verbose https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
     tee /etc/apt/sources.list.d/jenkins.list <<<"deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
 
     local version=2.528.2
 
     apt update
-    DEBIAN_FRONTEND=noninteractive apt install -y openjdk-21-jre-headless jenkins="$version" "${with_packages[@]}" && {
-      install -m 0644 -D /blackbox/framework/inventory/jenkins/rootfs/etc/systemd/system/jenkins.service.d/override.conf /etc/systemd/system/jenkins.service.d/override.conf
-    }
+    DEBIAN_FRONTEND=noninteractive apt install -y openjdk-21-jre-headless jenkins="$version" "${with_packages[@]}"
   }
 }

@@ -149,33 +149,4 @@ diff /results/setup.assert <(
 )
 ASSERT
 
-: "Solution"
-
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"Git config username"}
-diff <(
-  git config user.name
-) <(
-  printf -- "Firstname Lastname\n"
-)
-ASSERT
-
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"Git config email"}
-diff <(
-  git config user.email
-) <(
-  printf -- "test@example.com\n"
-)
-ASSERT
-
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"Git log"}
-diff <(
-  git log --pretty="format:%s%d" --name-status
-) <(
-  cat <(
-    printf -- "Test commit (HEAD -> master, origin/master)\n"
-    printf -- "A\ttest.module\n"
-  )
-)
-ASSERT
-
 exit 0

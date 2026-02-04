@@ -43,6 +43,8 @@ blackbox.framework.inventory.microceph() {
 
   {
     rm -rf /etc/ceph
+    # preinstalled setup fix
+    snap restart microceph.daemon
     ln -s /var/snap/microceph/current/conf /etc/ceph
   }
 }
