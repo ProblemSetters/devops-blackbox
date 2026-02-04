@@ -27,7 +27,7 @@ blackbox.framework.inventory.jenkins() {
 
   {
     # preinstalled setup fix: the existing jenkins installation is outdated for Ubuntu 24.04
-    apt remove --purge jenkins
+    apt remove -y --purge jenkins
   }
 
   if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
