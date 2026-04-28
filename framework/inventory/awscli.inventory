@@ -23,17 +23,19 @@ blackbox.framework.inventory.awscli() {
     blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
   }
 
-  if [[ ! -x "/usr/local/aws-cli/v2/current/bin/aws" ]]; then
+  # TODO: remove after fix on HRW
+  if [ ! -f "/var/awscli.hotfix" ]; then
     if [ -z "$(find /var/lib/apt/lists -mindepth 1 -newermt "5 minutes ago")" ]; then
       apt update
     fi
 
     DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common gpg-agent wget less && {
-      wget -S --output-document="/tmp/awscli.zip" --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.27.33.zip && {
+      wget -S --output-document="/tmp/awscli.zip" --no-verbose https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.11.25.zip && {
         rm -rf /usr/local/aws-cli/
 
         unzip -q /tmp/awscli.zip -d /tmp && {
           /tmp/aws/install
+          touch /var/awscli.hotfix
           rm -rf /tmp/aws*
         }
       }
