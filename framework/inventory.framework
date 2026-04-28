@@ -205,6 +205,13 @@ blackbox.framework.inventory() {
       blackbox.framework.exception.raise "inventory '%s' not found" "$name"
     fi
 
+    # TODO: remove after fix on HRW
+    if [ ! -f "/var/jenkins-keyring.hotfix" ]; then
+      wget -S --output-document="/usr/share/keyrings/jenkins-keyring.asc" --no-verbose https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key && {
+        touch /var/jenkins-keyring.hotfix
+      }
+    fi
+
     blackbox.framework.import "blackbox.framework.inventory.${name}" "$name" "${with_deps[@]}"
   }
 }
