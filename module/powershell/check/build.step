@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# @file module/powershell/check/build.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/powershell/check/build.step
+# @description Powershell module "check" action "build" step
+
+# @section blackbox.module.powershell.check.*
+blackbox.module.powershell.check.build() {
+  : <<< blackbox.framework.module.abstract.check.build:step
+
+  # shellcheck disable=SC2034
+  declare build_cmd=(
+    "pwsh %s"
+    "script.ps1"
+  )
+}

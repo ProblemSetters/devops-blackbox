@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+printf "\033[0;34m[%s]\033[0m\n" "SOLVE"
+printf '\033[0;37m%s < "%s/%s"\033[0m\n' "$(which solve)" "$(pwd)" script.ps1
+printf "\033[0;37m--\033[0m\n"
+
+if [ ! -e ./script.ps1 ]; then
+  printf "\033[0;31mexception: *** %s.\033[0m\n" "solution \`script.ps1\` is missing. Are you in question directory?"
+  printf "\033[0;33m^^\033[0m\n"
+  kill $$
+fi
+
+(pwsh script.ps1)
+
+exit 0

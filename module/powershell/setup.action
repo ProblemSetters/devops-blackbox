@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/powershell/setup.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/powershell/setup.action
+# @description Powershell module "setup" action
+
+# @section blackbox.module.powershell.*
+blackbox.module.powershell.setup() {
+  : <<< blackbox.framework.module.abstract.setup:action
+}
