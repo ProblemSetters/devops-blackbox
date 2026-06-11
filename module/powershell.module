@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/powershell.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/powershell.module
+# @description Powershell module
+
+# @section blackbox.module.*
+blackbox.module.powershell() {
+  : <<< blackbox.framework.module.abstract
+}

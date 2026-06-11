@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/powershell/check/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/powershell/check/provision.step
+# @description Powershell module "check" action "provision" step
+
+# @section blackbox.module.powershell.check.*
+blackbox.module.powershell.check.provision() {
+  : <<< blackbox.framework.module.abstract.check.provision:step
+}

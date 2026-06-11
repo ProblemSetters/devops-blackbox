@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/powershell/check/evaluate.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/powershell/check/evaluate.step
+# @description Powershell module "check" action "evaluate" step
+
+# @section blackbox.module.powershell.check.*
+blackbox.module.powershell.check.evaluate() {
+  : <<< blackbox.framework.module.abstract.check.evaluate:step
+}

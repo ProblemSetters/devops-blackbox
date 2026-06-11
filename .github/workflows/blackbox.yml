@@ -83,6 +83,12 @@ jobs:
             --file=Makefile.workflow \
             github:build:blackbox:module \
               linux
+      - name: Build Blackbox "powershell" module
+        run: |
+          make \
+            --file=Makefile.workflow \
+            github:build:blackbox:module \
+              powershell
       - name: Build Blackbox "puppet" module
         run: |
           make \
@@ -160,6 +166,12 @@ jobs:
             --file=Makefile.workflow \
             github:push:blackbox:module \
               linux
+      - name: Push Blackbox "powershell" module
+        run: |
+          make \
+            --file=Makefile.workflow \
+            github:push:blackbox:module \
+              powershell
       - name: Push Blackbox "puppet" module
         run: |
           make \

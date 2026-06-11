@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# @file module/powershell/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/powershell/setup/provision.step
+# @description Powershell module "setup" action "provision" step
+
+# @section blackbox.module.powershell.setup.*
+blackbox.module.powershell.setup.provision() {
+  : <<< blackbox.framework.module.abstract.setup.provision:step
+
+  blackbox.framework.inventory.install.file /usr/local/bin/solve 0 0 0755 </blackbox/module/powershell/setup/provision/rootfs/usr/local/bin/solve
+
+  blackbox.framework.inventory.provision powershell
+
+  {
+    blackbox.framework.inventory.install.file script.ps1 </blackbox/module/powershell/setup/provision/rootfs/home/%/%/script.ps1
+  }
+}

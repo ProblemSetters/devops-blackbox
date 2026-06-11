@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# @file framework/inventory/puppet-agent.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/framework/inventory/powershell.inventory
+# @description Inventory "powershell"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "powershell" inventory
+#
+# @arg $1 readonly,type=string,default=powershell Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "powershell" inventory
+#  blackbox.framework.inventory.provision powershell
+#
+# @see blackbox.framework.inventory.provision
+blackbox.framework.inventory.powershell() {
+  typeset package_name=$1
+  typeset -a with_packages=("${@:2}")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  sed "s/\x1b\[[0-9;]*m//g" <(dpkg-query -W "$package_name" "${with_packages[@]}" 2>&1)
+
+  if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
+    false
+
+    return
+  fi
+
+  if [ -z "$(find /var/lib/apt/lists -mindepth 1 -newermt "5 minutes ago")" ]; then
+    apt update
+  fi
+
+  DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends software-properties-common gpg-agent wget && {
+    wget -S --output-document="/tmp/powershell.deb" --no-verbose https://github.com/PowerShell/PowerShell/releases/download/v7.6.2/powershell_7.6.2-1.deb_amd64.deb && {
+      DEBIAN_FRONTEND=noninteractive apt install -y /tmp/powershell.deb && {
+        rm -f /tmp/powershell.deb
+      }
+    }
+
+    apt update
+    DEBIAN_FRONTEND=noninteractive apt install -y "$package_name" "${with_packages[@]}"
+  }
+}
