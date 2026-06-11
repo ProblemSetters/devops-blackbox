@@ -90,7 +90,7 @@ diff <(
     aws --version 2>&1
   )
 ) <(
-  printf -- "aws-cli/2.27.33\n"
+  printf -- "aws-cli/2.11.25\n"
 )
 ASSERT
 
