@@ -40,7 +40,16 @@ set -o errexit
   test -f /home/ubuntu/test/solve.assert
 }
 
-test ! -f /usr/local/bin/solve
+test -f /usr/local/bin/solve
+ASSERT
+
+cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"script.ps1"}
+set -o errexit
+{
+  test -f /home/ubuntu/test/solve.assert
+}
+
+test -f script.ps1
 ASSERT
 
 cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"Docker binary"}
@@ -52,13 +61,13 @@ set -o errexit
 docker info
 ASSERT
 
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"Git binary"}
+cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"Docker buildx plugin"}
 set -o errexit
 {
   test -f /home/ubuntu/test/solve.assert
 }
 
-git --version
+docker buildx version
 ASSERT
 
 cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"AWS Cli binary"}
@@ -76,13 +85,13 @@ diff <(
 )
 ASSERT
 
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,".git"}
+cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"powershell binary"}
 set -o errexit
 {
   test -f /home/ubuntu/test/solve.assert
 }
 
-test -d .git
+pwsh --version
 ASSERT
 
 cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"ubuntu@134148934511.dkr.ecr.us-east-1.amazonaws.com"}
@@ -147,6 +156,12 @@ set -o errexit
 diff /results/setup.assert <(
   printf -- "ONCE\n"
 )
+ASSERT
+
+: "Solution"
+
+cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"Solution"}
+test -f /home/ubuntu/test/solve.assert
 ASSERT
 
 exit 0

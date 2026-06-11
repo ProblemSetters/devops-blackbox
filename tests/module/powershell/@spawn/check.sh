@@ -2,15 +2,21 @@
 cat <<<"Partial Credit: 0"
 
 BLACKBOX_PROVISION_WITH_OPTS() {
+  mkdir -p /results/{setup,check}/{BLACKBOX_PROVISION_WITH_OPTS,BLACKBOX_BUILD_WITH_OPTS}
   cat >>/results/check/BLACKBOX_PROVISION_WITH_OPTS.assert <<<"ONCE"
-  blackbox.framework.inventory.provision jq
+  cat >>/etc/environment <<<"ASSERT_ENV_VARIABLE=ONCE"
+  blackbox.framework.inventory.heap.allocate && {
+    cat >>file.heap <<<"ONCE"
+    blackbox.framework.inventory.heap.release
+  }
 }
 
 BLACKBOX_BUILD_WITH_OPTS() {
-  cat >>/results/check/BLACKBOX_BUILD_WITH_OPTS.assert <<<"NEVER"
+  cat >>/results/check/BLACKBOX_BUILD_WITH_OPTS.assert <<<"ONCE"
+  blackbox.framework.inventory.provision jq
 }
 
-. /blackbox/blackbox docker-stdl check "test"
+. /blackbox/blackbox powershell check "test"
 
 cat <<COLLECTION | blackbox.expect.artifact.collection
 printenv
@@ -111,84 +117,22 @@ ASSERT
 
 : "Module setup"
 
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"/usr/local/bin/solve"}
+cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"script.ps1"}
 set -o errexit
 {
   test -f /home/ubuntu/test/solve.assert
 }
 
-test ! -f /usr/local/bin/solve
+test -f script.ps1
 ASSERT
 
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"script.sh"}
+cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"powershell binary"}
 set -o errexit
 {
   test -f /home/ubuntu/test/solve.assert
 }
 
-test ! -f script.sh
-ASSERT
-
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"Docker binary"}
-set -o errexit
-{
-  test -f /home/ubuntu/test/solve.assert
-}
-
-docker info
-ASSERT
-
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"Docker buildx plugin"}
-set -o errexit
-{
-  test -f /home/ubuntu/test/solve.assert
-}
-
-docker buildx version
-ASSERT
-
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"AWS Cli binary"}
-set -o errexit
-{
-  test -f /home/ubuntu/test/solve.assert
-}
-
-diff <(
-  awk '{ print \$1 }' <(
-    aws --version 2>&1
-  )
-) <(
-  printf -- "aws-cli/2.11.25\n"
-)
-ASSERT
-
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"ubuntu@134148934511.dkr.ecr.us-east-1.amazonaws.com"}
-set -o errexit
-{
-  test -f /home/ubuntu/test/solve.assert
-}
-
-jq -e '.auths."134148934511.dkr.ecr.us-east-1.amazonaws.com"' /home/ubuntu/.docker/config.json
-ASSERT
-
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"root@134148934511.dkr.ecr.us-east-1.amazonaws.com"}
-set -o errexit
-{
-  test -f /home/ubuntu/test/solve.assert
-}
-
-jq -e '.auths."134148934511.dkr.ecr.us-east-1.amazonaws.com"' /root/.docker/config.json
-ASSERT
-
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"setup@BLACKBOX_PROVISION_WITH_OPTS"}
-set -o errexit
-{
-  test -f /home/ubuntu/test/solve.assert
-}
-
-diff /results/setup/BLACKBOX_PROVISION_WITH_OPTS.assert <(
-  printf -- "ONCE\n"
-)
+pwsh --version
 ASSERT
 
 cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"environment variable"}
@@ -204,15 +148,6 @@ diff <(
 )
 ASSERT
 
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"Docker pulled image"}
-set -o errexit
-{
-  test -f /home/ubuntu/test/solve.assert
-}
-
-docker image inspect 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/busybox:latest
-ASSERT
-
 cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"heap"}
 set -o errexit
 {
@@ -224,21 +159,10 @@ diff "${BLACKBOX_HEAP_DIR}/file.heap" <(
 )
 ASSERT
 
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"inline"}
-set -o errexit
-{
-  test -f /home/ubuntu/test/solve.assert
-}
-
-diff /results/setup.assert <(
-  printf -- "ONCE\n"
-)
-ASSERT
-
 : "Solution"
 
-cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"Docker pulled image"}
-docker image inspect 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/nginx:latest
+cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"Solution"}
+test -f /home/ubuntu/test/solve.assert
 ASSERT
 
 : "Module check"
@@ -267,7 +191,7 @@ set -o errexit
   test -f /home/ubuntu/test/solve.assert
 }
 
-test ! -f /results/check/BLACKBOX_BUILD_WITH_OPTS.assert
+test -f /results/check/BLACKBOX_BUILD_WITH_OPTS.assert
 ASSERT
 
 cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"build log"}
@@ -276,7 +200,7 @@ set -o errexit
   test -f /home/ubuntu/test/solve.assert
 }
 
-test ! -f "$BLACKBOX_BUILD_LOG"
+test -f "$BLACKBOX_BUILD_LOG"
 ASSERT
 
 cat <<ASSERT | blackbox.expect.shell.success % {%s,%s,"artifacts collection"}
