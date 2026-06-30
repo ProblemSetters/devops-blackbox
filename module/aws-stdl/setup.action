@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/aws-stdl/setup.action
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/aws-stdl/setup.action
+# @description aws-stdl module "setup" action
+
+# @section blackbox.module.aws-stdl.*
+blackbox.module.aws-stdl.setup() {
+  : <<< blackbox.framework.module.abstract.setup:action
+}

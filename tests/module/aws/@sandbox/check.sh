@@ -5,7 +5,7 @@ BLACKBOX_PROVISION_WITH_OPTS() {
   blackbox.framework.inventory.provision jq
 }
 
-. /blackbox/blackbox linux-stdl check "test"
+. /blackbox/blackbox aws check "test"
 
 cat <<COLLECTION | blackbox.expect.artifact.collection
 printenv

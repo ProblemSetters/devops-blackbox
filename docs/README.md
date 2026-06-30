@@ -39,6 +39,8 @@ Main executable
 * **BLACKBOX_FLAG__STEP_BUILD** (type=enum<yes|no>): Build step flag, indicates whether the "build" step is included or excluded (for development process only)
 * **BLACKBOX_FLAG__STEP_EVALUATE** (type=enum<yes|no>): Evaluate step flag, indicates whether the "evaluate" step is included or excluded (for development process only)
 * **BLACKBOX_PROVISION_WITH_OPTS** (type=function,default=auto): Provision hook definition, a function that implements an additional set of instructions that must be executed during the "provision" step
+* **BLACKBOX_HEAP_WITH_OPTS** (type=function,default=auto): Heap hook definition, a function that implements an additional set of heap instructions that might be executed during the "provision" step step
+* **BLACKBOX_SNAPSHOT_WITH_OPTS** (type=function,default=auto): Snapshot hook definition, a function that implements an additional set of snapshot instructions that might be executed during the "provision" step step
 * **BLACKBOX_BUILD_WITH_OPTS** (type=function,default=auto): Build hook definition, a function that implements an additional set of instructions that must be executed during the "build" step
 * **BLACKBOX_DIR** (readonly,type=string,default=auto): Path to the Blackbox installation directory (sets automatically, do not override)
 * **BLACKBOX_SPAWN** (readonly,type=string,default=auto): Name of the docker container in which the question is being evaluated (sets automatically, do not override)
@@ -49,6 +51,7 @@ Main executable
 * **BLACKBOX_VERSION** (readonly,type=string,default=auto): [DEPRECATED] Version of the Blackbox to use (sets automatically, do not override)
 * **BLACKBOX_HEAP_DIR** (readonly,type=path,default=auto): Path to the question "heap" directory, a place where question assets might be generated (sets automatically, do not override)
 * **BLACKBOX_STORAGE_DIR** (readonly,type=path,default=auto): Path to the question "artifacts" directory, a place where question artifacts will be generated (sets automatically, do not override)
+* **BLACKBOX_SNAPSHOT_DIR** (readonly,type=path,default=auto): Path to the question "snapshot" directory, a place where question snapshot will be generated (sets automatically, do not override)
 * **BLACKBOX_BUILD_LOG** (readonly,type=path,default=auto): Path to the build log (sets automatically, do not override)
 * **BLACKBOX_BUILD_STREAM_DISPLAY_LINES** (readonly,type=integer,default=auto): Number of output lines before trim and ellipsis
 

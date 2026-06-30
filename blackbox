@@ -14,6 +14,8 @@
 # @set BLACKBOX_FLAG__STEP_BUILD type=enum<yes|no> Build step flag, indicates whether the "build" step is included or excluded (for development process only)
 # @set BLACKBOX_FLAG__STEP_EVALUATE type=enum<yes|no> Evaluate step flag, indicates whether the "evaluate" step is included or excluded (for development process only)
 # @set BLACKBOX_PROVISION_WITH_OPTS type=function,default=auto Provision hook definition, a function that implements an additional set of instructions that must be executed during the "provision" step
+# @set BLACKBOX_HEAP_WITH_OPTS type=function,default=auto Heap hook definition, a function that implements an additional set of heap instructions that might be executed during the "provision" step step
+# @set BLACKBOX_SNAPSHOT_WITH_OPTS type=function,default=auto Snapshot hook definition, a function that implements an additional set of snapshot instructions that might be executed during the "provision" step step
 # @set BLACKBOX_BUILD_WITH_OPTS type=function,default=auto Build hook definition, a function that implements an additional set of instructions that must be executed during the "build" step
 #
 # @set BLACKBOX_DIR readonly,type=string,default=auto Path to the Blackbox installation directory (sets automatically, do not override)
@@ -25,6 +27,7 @@
 # @set BLACKBOX_VERSION readonly,type=string,default=auto [DEPRECATED] Version of the Blackbox to use (sets automatically, do not override)
 # @set BLACKBOX_HEAP_DIR readonly,type=path,default=auto Path to the question "heap" directory, a place where question assets might be generated (sets automatically, do not override)
 # @set BLACKBOX_STORAGE_DIR readonly,type=path,default=auto Path to the question "artifacts" directory, a place where question artifacts will be generated (sets automatically, do not override)
+# @set BLACKBOX_SNAPSHOT_DIR readonly,type=path,default=auto Path to the question "snapshot" directory, a place where question snapshot will be generated (sets automatically, do not override)
 # @set BLACKBOX_BUILD_LOG readonly,type=path,default=auto Path to the build log (sets automatically, do not override)
 # @set BLACKBOX_BUILD_STREAM_DISPLAY_LINES readonly,type=integer,default=auto Number of output lines before trim and ellipsis
 #
@@ -62,10 +65,15 @@ blackbox() {
   # shellcheck disable=SC2155
   export BLACKBOX_PROVISION_WITH_OPTS=$(sed "s/\({\);/\1/g; s/\(;\)\{2\}/\1/g" <(awk 'ORS="; "' <(sed '1,2d; $d; s/[[:space:]]$//g; s/^[[:space:]]\+//g' <(declare -f BLACKBOX_PROVISION_WITH_OPTS))))
   # shellcheck disable=SC2155
+  export BLACKBOX_SNAPSHOT_WITH_OPTS=$(sed "s/\({\);/\1/g; s/\(;\)\{2\}/\1/g" <(awk 'ORS="; "' <(sed '1,2d; $d; s/[[:space:]]$//g; s/^[[:space:]]\+//g' <(declare -f BLACKBOX_SNAPSHOT_WITH_OPTS))))
+  # shellcheck disable=SC2155
+  export BLACKBOX_HEAP_WITH_OPTS=$(sed "s/\({\);/\1/g; s/\(;\)\{2\}/\1/g" <(awk 'ORS="; "' <(sed '1,2d; $d; s/[[:space:]]$//g; s/^[[:space:]]\+//g' <(declare -f BLACKBOX_HEAP_WITH_OPTS))))
+  # shellcheck disable=SC2155
   export BLACKBOX_BUILD_WITH_OPTS=$(sed "s/\({\);/\1/g; s/\(;\)\{2\}/\1/g" <(awk 'ORS="; "' <(sed '1,2d; $d; s/[[:space:]]$//g; s/^[[:space:]]\+//g' <(declare -f BLACKBOX_BUILD_WITH_OPTS))))
 
-  export BLACKBOX_HEAP_DIR="/tmp/${3}"
+  export BLACKBOX_HEAP_DIR="/tmp/data"
   export BLACKBOX_STORAGE_DIR="/var/save/${3}"
+  export BLACKBOX_SNAPSHOT_DIR="${BLACKBOX_STORAGE_DIR}/.snapshot"
   export BLACKBOX_BUILD_LOG="${BLACKBOX_STORAGE_DIR}/build.log"
   export BLACKBOX_BUILD_STREAM_DISPLAY_LINES=255
 
@@ -220,8 +228,8 @@ blackbox() {
       declare header=$(</dev/stdin)
 
       typeset entrypoint=$1
-      typeset args=("$2")
-      typeset opts=("$3")
+      typeset -a args=("$2")
+      typeset -a opts=("$3")
 
       if [ -n "${args[*]}" ]; then
         args=("$(sed ':a;N;$!ba;s/\n/\t/g; s/[[:space:]]\+/ /g' <<<"${args[*]/#/ < }")")
@@ -271,7 +279,7 @@ blackbox() {
 
     if [ ! -e "$BLACKBOX_DIR" ]; then
       wget -S --output-document="/tmp/blackbox.zip" "https://codeload.github.com/ProblemSetters/devops-blackbox/zip/refs/heads/${BLACKBOX_VERSION}" && {
-        unzip /tmp/blackbox.zip -x "devops-blackbox-2404/.github/*" "devops-blackbox-2404/docs/*" "devops-blackbox-2404/tests/*" "devops-blackbox-2404/.gitignore" "devops-blackbox-2404/Makefile.*" "devops-blackbox-2404/README.md" "devops-blackbox-2404/Vagrantfile" -d /tmp && {
+        unzip /tmp/blackbox.zip -x "devops-blackbox-2404/.github/*" "devops-blackbox-2404/docs/*" "devops-blackbox-2404/tests/*" "devops-blackbox-2404/.editorconfig" "devops-blackbox-2404/.gitignore" "devops-blackbox-2404/Makefile.*" "devops-blackbox-2404/README.md" "devops-blackbox-2404/Vagrantfile" -d /tmp && {
           mv "/tmp/devops-blackbox-${BLACKBOX_VERSION}" "$BLACKBOX_DIR"
           rm -rf /tmp/*blackbox*
         }
@@ -288,7 +296,7 @@ blackbox() {
     fi
 
     blackbox.framework.inventory.install.directory "$BLACKBOX_USER_QUESTION_DIR" && {
-      pushd "$BLACKBOX_USER_QUESTION_DIR" && {
+      pushd "$BLACKBOX_USER_QUESTION_DIR" &>/dev/null && {
         blackbox.framework.module.load "$module_name" "${module_args[@]}"
       }
     }

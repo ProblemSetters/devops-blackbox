@@ -12,6 +12,12 @@ Inventory handler
 * [blackbox.framework.inventory.install.file](#blackboxframeworkinventoryinstallfile)
 * [blackbox.framework.inventory.heap.allocate](#blackboxframeworkinventoryheapallocate)
 * [blackbox.framework.inventory.heap.release](#blackboxframeworkinventoryheaprelease)
+* [blackbox.framework.inventory.snapshot.path](#blackboxframeworkinventorysnapshotpath)
+* [blackbox.framework.inventory.snapshot.push](#blackboxframeworkinventorysnapshotpush)
+* [blackbox.framework.inventory.snapshot.pull](#blackboxframeworkinventorysnapshotpull)
+* [blackbox.framework.inventory.snapshot.digest](#blackboxframeworkinventorysnapshotdigest)
+* [blackbox.framework.inventory.snapshot.verify](#blackboxframeworkinventorysnapshotverify)
+* [blackbox.framework.inventory.snapshot.__init](#blackboxframeworkinventorysnapshotinit)
 * [blackbox.framework.inventory.ecr.login](#blackboxframeworkinventoryecrlogin)
 * [blackbox.framework.inventory.ecr.logout](#blackboxframeworkinventoryecrlogout)
 * [blackbox.framework.inventory.provision](#blackboxframeworkinventoryprovision)
@@ -97,6 +103,87 @@ _Function has no arguments._
 #### See also
 
 * [blackbox.framework.inventory.heap.allocate](#blackboxframeworkinventoryheapallocate)
+
+## blackbox.framework.inventory.snapshot.*
+
+### blackbox.framework.inventory.snapshot.path
+
+#### Example
+
+```bash
+# Gets a snapshot path of file at the specified path
+blackbox.framework.inventory.snapshot.path cat /path/to/filename
+# Gets a snapshot path of DynamoDB table
+blackbox.framework.inventory.snapshot.path aws dynamodb scan --table-name UserSteps --query "Items[]"
+```
+
+#### Arguments
+
+* **$1** (type=source): Source
+
+### blackbox.framework.inventory.snapshot.push
+
+#### Example
+
+```bash
+# Pushes a snapshot of file at the specified path
+blackbox.framework.inventory.snapshot.push cat /path/to/filename
+# Pushes a snapshot of DynamoDB table
+blackbox.framework.inventory.snapshot.push aws dynamodb scan --table-name UserSteps --query "Items[]"
+```
+
+#### Arguments
+
+* **$1** (type=source): Source
+
+### blackbox.framework.inventory.snapshot.pull
+
+#### Example
+
+```bash
+# Pulls a snapshot of file at the specified path
+blackbox.framework.inventory.snapshot.pull cat /path/to/filename
+# Pulls a snapshot of DynamoDB table
+blackbox.framework.inventory.snapshot.pull aws dynamodb scan --table-name UserSteps --query "Items[]"
+```
+
+#### Arguments
+
+* **$1** (type=source): Source
+
+### blackbox.framework.inventory.snapshot.digest
+
+#### Example
+
+```bash
+# Gets a snapshot digest path of file at the specified path
+blackbox.framework.inventory.snapshot.digest cat /path/to/filename
+# Gets a snapshot digest path of DynamoDB table
+blackbox.framework.inventory.snapshot.digest aws dynamodb scan --table-name UserSteps --query "Items[]"
+```
+
+#### Arguments
+
+* **$1** (type=source): Source
+
+### blackbox.framework.inventory.snapshot.verify
+
+#### Example
+
+```bash
+# Verifies a snapshot of file at the specified path
+blackbox.framework.inventory.snapshot.verify cat /path/to/filename
+# Verifies a snapshot of DynamoDB table
+blackbox.framework.inventory.snapshot.verify aws dynamodb scan --table-name UserSteps --query "Items[]"
+```
+
+#### Arguments
+
+* **$1** (type=source): Source
+
+### blackbox.framework.inventory.snapshot.__init
+
+_Function has no arguments._
 
 ## blackbox.framework.inventory.ecr.*
 

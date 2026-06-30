@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# @file module/aws-stdl/check/evaluate/expect.evaluate
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/aws-stdl/check/evaluate/expect.evaluate
+# @description Step "evaluate" expectant
+
+# @section blackbox.module.aws-stdl.check.evaluate.*
+blackbox.module.aws-stdl.check.evaluate.expect() {
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.artifact"
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.file"
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.shell"
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.snapshot"
+}
