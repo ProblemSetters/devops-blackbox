@@ -1,11 +1,22 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-24.04"
   config.vm.hostname = "taskserver"
-  config.vm.synced_folder ".", "/vagrant", disabled: true
-  if ENV["BLACKBOX_FLAG__DEBUG_MODE"] == "yes"
-    config.vm.synced_folder ENV["BLACKBOX_DIR"], "/blackbox", mount_options: ["uid=0", "gid=0", "ro"]
+
+  config.vm.define ENV["VAGRANT_SPAWN_ID"] do |machine|
+    config.vm.provider "virtualbox" do |vb|
+      vb.name = ENV["VAGRANT_SPAWN_ID"]
+      vb.cpus = ENV["VAGRANT_CPU_LIMIT"]
+      vb.memory = ENV["VAGRANT_MEMORY_LIMIT"]
+    end
   end
-  config.vm.synced_folder ENV["BLACKBOX_HOST_TEST_DIR"], "/test", mount_options: ["uid=0", "gid=0", "ro"]
+
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  if ENV["VAGRANT_DEBUG"] == "yes"
+    config.vm.synced_folder ENV["VAGRANT_HOST_BLACKBOX_PATH"], ENV["VAGRANT_SPAWN_BLACKBOX_PATH"], mount_options: ["uid=0", "gid=0", "ro"]
+  end
+
+  config.vm.synced_folder ENV["VAGRANT_HOST_QUESTION_PATH"], ENV["VAGRANT_SPAWN_QUESTION_PATH"], mount_options: ["uid=0", "gid=0", "ro"]
   config.vm.provision "shell", inline: <<-SHELL
     apt update && {
       DEBIAN_FRONTEND=noninteractive apt install -y unzip

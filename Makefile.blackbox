@@ -2,94 +2,105 @@
 override blackbox/:=*
 
 ifeq ($(origin .FEATURES),undefined)
-  $(error `make` executable version "$(MAKE_VERSION)" is not supported. GNU Make 3.82 or above is required)
-endif
-
-override SHELL:=/bin/bash
-
-ifneq ($(value SHELL),$(shell echo $$BASH))
-  $(error current shell executable is not supported. GNU Bash 4.3 or above is required)
+  $(error `make` executable version `$(MAKE_VERSION)` is not supported. GNU Make 4.3 or above is required)
 endif
 
 ifeq ($(words $(MAKEFILE_LIST)),1)
-  $(error `Makefile.blackbox` should be included, direct usage is not allowed)
+  $(error `Makefile` should be included, direct usage is not allowed)
 endif
 
-BLACKBOX_FLAG__DEBUG_MODE:=no
+ifeq ($(shell which gawk),)
+  $(error `gawk` executable is required)
+endif
+
+ifeq ($(shell which vagrant),)
+  $(error `vagrant` executable is required)
+endif
+
+override SHELL:=/usr/bin/env bash -e +o pipefail
+
+ifeq ($(shell echo $$BASH),)
+  $(error current shell executable is not supported. GNU Bash 5.1 or above is required)
+endif
+
+override blackbox/debug:=$(if $(filter debug,$(MAKECMDGOALS)),yes,no)
+override blackbox/host/blackbox/path:=$(abspath $(dir $(lastword $(MAKEFILE_LIST))))
+override blackbox/host/question/path:=$(abspath $(dir $(firstword $(MAKEFILE_LIST))))
+override blackbox/spawn/blackbox/path:=/blackbox
+override blackbox/spawn/question/path:=/question
+override blackbox/spawn/id:=blackbox-$(shell basename $(blackbox/host/question/path) | cut --characters="1-36")
+override blackbox/spawn/cpu/limit=$(if $(filter yes,$(blackbox/debug)),$(shell nproc),4)
+override blackbox/spawn/memory/limit=$(if $(filter yes,$(blackbox/debug)),$(shell awk '/MemTotal/ { printf "%.0f\n", $$2 / 1024 }' /proc/meminfo),4096)
+override blackbox/spawn/disk/limit:=20G
+override blackbox/spawn/username:=ubuntu
+
+export VAGRANT_DEBUG=$(blackbox/debug)
+export VAGRANT_HOST_BLACKBOX_PATH=$(blackbox/host/blackbox/path)
+export VAGRANT_HOST_QUESTION_PATH=$(blackbox/host/question/path)
+export VAGRANT_SPAWN_ID=$(blackbox/spawn/id)
+export VAGRANT_SPAWN_BLACKBOX_PATH=$(blackbox/spawn/blackbox/path)
+export VAGRANT_SPAWN_QUESTION_PATH=$(blackbox/spawn/question/path)
+export VAGRANT_CPU_LIMIT=$(blackbox/spawn/cpu/limit)
+export VAGRANT_MEMORY_LIMIT=$(blackbox/spawn/memory/limit)
+export VAGRANT_VAGRANTFILE=$(blackbox/host/blackbox/path)/Vagrantfile
+
+BLACKBOX_FLAG__DEBUG_MODE=$(blackbox/debug)
 BLACKBOX_FLAG__STEP_PROVISION:=yes
 BLACKBOX_FLAG__STEP_BUILD:=yes
 BLACKBOX_FLAG__STEP_EVALUATE:=yes
 
-ifneq ($(BLACKBOX_DIR),$(abspath $(dir $(lastword $(MAKEFILE_LIST)))))
-  $(error `BLACKBOX_DIR` configuration is not valid)
-endif
-
-BLACKBOX_HOST:=blackbox-$(shell basename $(PWD) | cut -c 1-36)
-BLACKBOX_SPAWN:=blackbox-spawn-$(shell basename $(PWD) | cut -c 1-36)
-BLACKBOX_USER?=$(shell id -u):$(shell id -g)
-BLACKBOX_USER_NAME:=ubuntu
-BLACKBOX_USER_HOME:=/home/$(BLACKBOX_USER_NAME)
-BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_HOME)/$(shell basename $(call blackbox/pwd))
-BLACKBOX_VERSION:=2404
-
-BLACKBOX_AWS_DEFAULT_REGION:="us-east-1"
-BLACKBOX_AWS_ACCESS_KEY_ID:=$(shell base64 -d <(base64 -d <<<"UVV0SlFWSTJUemRIU2s1WVdVSk1RVXBGTlRNSwo="))
-BLACKBOX_AWS_SECRET_ACCESS_KEY:=$(shell base64 -d <(base64 -d <<<"UVVaNFZUVXJWMEZoYml0eWVWUnpVSGhuY1ZWTk56VXlPVlp5Umt0Q1JFTkxRMHBFY3pKSFV3bz0K"))
-
-define blackbox/pwd=
-$(abspath $(dir $(firstword $(MAKEFILE_LIST)))/$(1))
-endef
-
 debug: ;@:
-	$(eval BLACKBOX_FLAG__DEBUG_MODE:=yes)
-	$(foreach variable,BLACKBOX_FLAG__DEBUG_MODE BLACKBOX_FLAG__STEP_PROVISION BLACKBOX_FLAG__STEP_BUILD BLACKBOX_FLAG__STEP_EVALUATE,$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
+	$(foreach variable,$(filter blackbox/%,$(sort $(.VARIABLES))),$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
 	$(info $(shell printf "\033[0;37m%s\033[0m" \\))
-	$(foreach variable,$(filter-out BLACKBOX_FLAG__%,$(filter BLACKBOX_%,$(sort $(.VARIABLES)))),$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
+	$(foreach variable,$(filter VAGRANT_%,$(sort $(.VARIABLES))),$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
+	$(info $(shell printf "\033[0;37m%s\033[0m" \\))
+	$(foreach variable,BLACKBOX_FLAG__DEBUG_MODE BLACKBOX_FLAG__STEP_PROVISION BLACKBOX_FLAG__STEP_BUILD BLACKBOX_FLAG__STEP_EVALUATE,$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
 	$(if $(and $(filter-out $(words $(MAKECMDGOALS)),0),$(filter-out $(words $(MAKECMDGOALS)),1)),$(info $(shell printf "\033[0;37m%s\033[0m" --)))
 
-all: uninstall install setup solve check
+all: uninstall install setup save solve check restore check
+
+up: uninstall install setup save
+
+100: restore solve check
+
+0: restore check
 
 install:
-	docker login --username AWS --password-stdin 134148934511.dkr.ecr.us-east-1.amazonaws.com < <(docker run -it --env="AWS_DEFAULT_REGION=$(BLACKBOX_AWS_DEFAULT_REGION)" --env="AWS_ACCESS_KEY_ID=$(BLACKBOX_AWS_ACCESS_KEY_ID)" --env="AWS_SECRET_ACCESS_KEY=$(BLACKBOX_AWS_SECRET_ACCESS_KEY)" --rm amazon/aws-cli:2.11.25 ecr get-login-password)
-	cat <(echo FROM 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2404:abstract) <(echo RUN groupadd docker) | docker buildx build --build-arg="BLACKBOX_USER=$(BLACKBOX_USER)" --build-arg="BLACKBOX_USER_NAME=$(BLACKBOX_USER_NAME)" --build-arg="BLACKBOX_USER_HOME=$(BLACKBOX_USER_HOME)" --build-arg="BLACKBOX_VERSION=$(BLACKBOX_VERSION)" --network="host" --progress="plain" --tag="blackbox:$(BLACKBOX_HOST)" -
-	docker run -di --group-add docker --hostname="blackbox" --name="$(BLACKBOX_HOST)" --privileged --cgroupns=host $(if $(filter debug,$(MAKECMDGOALS)),--volume="$(BLACKBOX_DIR):/blackbox:ro") --volume="$(call blackbox/pwd)/setup.sh:$(BLACKBOX_USER_HOME)/setup.sh:ro" --volume="$(call blackbox/pwd)/check.sh:$(BLACKBOX_USER_HOME)/check.sh:ro" --volume="$(call blackbox/pwd)/solve.sh:$(BLACKBOX_USER_HOME)/solve.sh:ro" --volume="$(call blackbox/pwd)/evaluate.sh:$(BLACKBOX_USER_HOME)/evaluate.sh:ro" blackbox:$(BLACKBOX_HOST) >/dev/null
+	vagrant --no-color up $(blackbox/spawn/id)
+	vagrant --no-color snapshot save -f $(blackbox/spawn/id) install
+
+reinstall:
+	vagrant --no-color snapshot restore $(blackbox/spawn/id) install
 
 setup:
-	docker exec -it --env="BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE)" --env="BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION)" --env="BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_QUESTION_DIR)" --env="BLACKBOX_VERSION=$(BLACKBOX_VERSION)" $(BLACKBOX_HOST) $(SHELL) setup.sh
+	vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) bash $(blackbox/spawn/question/path)/setup.sh" $(blackbox/spawn/id)
+
+save:
+	vagrant --no-color snapshot save -f $(blackbox/spawn/id) latest
+
+restore:
+	vagrant --no-color snapshot restore $(blackbox/spawn/id) latest
 
 solve:
-	docker exec -it --user="$(BLACKBOX_USER)" $(BLACKBOX_HOST) $(SHELL) solve.sh
-	docker exec -it -w $(BLACKBOX_USER_QUESTION_DIR) --user="$(BLACKBOX_USER)" $(BLACKBOX_HOST) $(SHELL) -c "source /blackbox/blackbox &>/dev/null; solve"
-
-evaluate:
-	docker exec -it $(BLACKBOX_HOST) $(SHELL) evaluate.sh
+	vagrant ssh --command="sudo bash $(blackbox/spawn/question/path)/solve.sh" $(blackbox/spawn/id)
 
 check:
-	docker exec -it --env="BLACKBOX_SPAWN=$(BLACKBOX_SPAWN)" --env="BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_QUESTION_DIR)" --env="BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE)" --env="BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION)" --env="BLACKBOX_FLAG__STEP_BUILD=$(BLACKBOX_FLAG__STEP_BUILD)" --env="BLACKBOX_FLAG__STEP_EVALUATE=$(BLACKBOX_FLAG__STEP_EVALUATE)" --env="BLACKBOX_VERSION=$(BLACKBOX_VERSION)" $(BLACKBOX_HOST) $(SHELL) check.sh
+	vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION) BLACKBOX_FLAG__STEP_BUILD=$(BLACKBOX_FLAG__STEP_BUILD) BLACKBOX_FLAG__STEP_EVALUATE=$(BLACKBOX_FLAG__STEP_EVALUATE) bash $(blackbox/spawn/question/path)/check.sh" $(blackbox/spawn/id) | tee >(awk '/Partial Credit/ { if (!reset) { reset = 1; next }; total_score += $$3; ok += ($$3 > 0); failed += ($$3 == 0) } END { printf("\n--\nSuccess: %d\nFail: %d\n\nTotal: %d\n--\n\nTotal Credit: %d\n", ok, failed, ok + failed, total_score) }')
 
 check\:evaluate:
-	$(MAKE) BLACKBOX_FLAG__STEP_PROVISION=no BLACKBOX_FLAG__STEP_BUILD=no BLACKBOX_FLAG__STEP_EVALUATE=yes check
+	$(eval BLACKBOX_FLAG__STEP_PROVISION:=no)
+	$(eval BLACKBOX_FLAG__STEP_BUILD:=no)
+	$(MAKE) check
 
 shell:
-	docker exec -it -w $(BLACKBOX_USER_QUESTION_DIR) --user="$(BLACKBOX_USER)" $(BLACKBOX_HOST) $(SHELL)
-
-hr:
-	cat <(xargs -r xdg-open 2>/dev/null < <(grep -o 'https://www.hackerrank.com.*' README.md))
-
-gh:
-	cat <(xargs -r xdg-open 2>/dev/null < <(grep -o 'https://github.com.*' README.md))
-
-shell\:spawn:
-	docker exec -it $(BLACKBOX_HOST) $(SHELL) -c "docker exec -it -w $(BLACKBOX_USER_QUESTION_DIR) $(BLACKBOX_SPAWN) $(SHELL)"
+	vagrant ssh $(blackbox/spawn/id) --command="sudo su - $(blackbox/spawn/username)"
 
 uninstall:
-	xargs -r docker rm -f >/dev/null < <(docker ps -aq -f "name=$(BLACKBOX_HOST)")
-	docker rmi blackbox:$(BLACKBOX_HOST) 2>/dev/null || true
+	vagrant destroy -f
+	rm -rf .vagrant
 
-prune:
-	xargs -r docker stop >/dev/null < <(docker ps -aq -f "name=blackbox-")
-	docker system prune -a --volumes
+gh:
+	grep -o "https://github.com.*" "$(blackbox/host/question/path)/README.md" | xargs -r xdg-open &>/dev/null
 
-ifeq ($(filter debug,$(MAKECMDGOALS)),)
-.SILENT:
-endif
+hr:
+	grep -o "https://www.hackerrank.com.*" "$(blackbox/host/question/path)/README.md" | xargs -r xdg-open &>/dev/null

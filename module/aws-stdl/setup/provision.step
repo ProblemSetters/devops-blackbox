@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# @file module/aws-stdl/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/aws-stdl/setup/provision.step
+# @description aws-stdl module "setup" action "provision" step
+
+# @section blackbox.module.aws-stdl.setup.*
+blackbox.module.aws-stdl.setup.provision() {
+  : <<< blackbox.framework.module.abstract.setup.provision:step
+
+  blackbox.framework.inventory.provision localstack && {
+    sleep 30
+  }
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  rm -fv /usr/local/bin/solve
+
+  tee -a /etc/hosts < <(printf "127.0.0.1\teu-central-1.hackerrankaws.local\n")
+  tee -a /etc/environment < <(printf "AWS_ENDPOINT_URL=%s\n" "eu-central-1.hackerrankaws.local")
+}

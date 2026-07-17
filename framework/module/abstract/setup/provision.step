@@ -36,21 +36,12 @@ blackbox.framework.module.abstract.setup.provision() {
     return
   fi
 
-  # Install Docker only if it is not yet available in the system (e.g. pre-installed on Ubuntu 24.04 images)
-  if ! command -v docker >/dev/null 2>&1; then
-    blackbox.framework.inventory.provision docker-ce
-  fi
+  {
+    blackbox.framework.inventory.provision docker-ce && {
+      usermod -a -G docker "$BLACKBOX_USER_NAME"
+      systemctl start docker
+    }
 
-  # Ensure the invoking user can operate Docker and the daemon is running, then perform ECR login
-  # Add the invoking user to the "docker" group only if it is not yet a member
-  if ! id -nG "$BLACKBOX_USER_NAME" | grep -qw docker; then
-    usermod -a -G docker "$BLACKBOX_USER_NAME"
-  fi
-
-  # Start Docker only if the daemon is not already running, then perform ECR login
-  if ! pgrep -x dockerd >/dev/null 2>&1; then
-    service docker start
-  fi && {
     blackbox.framework.inventory.ecr.login
   }
 
@@ -58,13 +49,101 @@ blackbox.framework.module.abstract.setup.provision() {
 
   : <<< blackbox.module.*.setup.provision
 
+  {
+    shopt -os allexport
+    . /etc/environment
+    shopt -ou allexport
+  }
+
   if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
     (
       printf "\n"
+
+      {
+        blackbox.framework.trace "BLACKBOX_PROVISION_WITH_OPTS" "$BLACKBOX_PROVISION_WITH_OPTS" <<<""
+      }
+
       printf "\033[0;36m** BLACKBOX_PROVISION_WITH_OPTS:\033[0m {...}\n"
+      printf "\033[0;37m%s\033[0m\n" "$(sed '1d; s/;$//g' <(declare -f BLACKBOX_PROVISION_WITH_OPTS))"
       printf "\033[0;37m--\033[0m\n"
-      cat -n <(eval "$BLACKBOX_PROVISION_WITH_OPTS")
+      cat -n <(eval "$(sed "1d" <(declare -f BLACKBOX_PROVISION_WITH_OPTS))")
       printf "\033[0;37m--\033[0m\n"
+      printf "\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+  fi
+
+  if [ -n "$BLACKBOX_HEAP_WITH_OPTS" ]; then
+    (
+      printf "\n"
+
+      {
+        blackbox.framework.trace "BLACKBOX_HEAP_WITH_OPTS" "$BLACKBOX_HEAP_WITH_OPTS" <<<""
+      }
+
+      printf "\033[0;36m** BLACKBOX_HEAP_WITH_OPTS:\033[0m {...}\n"
+      printf "\033[0;37m%s\033[0m\n" "$(sed '1d; s/;$//g' <(declare -f BLACKBOX_HEAP_WITH_OPTS))"
+      printf "\033[0;37m--\033[0m\n"
+      blackbox.framework.inventory.heap.allocate && {
+        cat -n <(eval "$(sed "1d" <(declare -f BLACKBOX_HEAP_WITH_OPTS))")
+        blackbox.framework.inventory.heap.release
+      }
+      printf "\033[0;37m--\033[0m\n"
+      printf "\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+  fi
+
+  if [ -n "$BLACKBOX_SNAPSHOT_WITH_OPTS" ]; then
+    (
+      {
+        blackbox.framework.trace "BLACKBOX_SNAPSHOT_WITH_OPTS" "$BLACKBOX_SNAPSHOT_WITH_OPTS" <<<""
+      }
+
+      printf "\033[0;36m** BLACKBOX_SNAPSHOT_WITH_OPTS:\033[0m {...}\n"
+      printf "\033[0;37m%s\033[0m\n" "$(sed '1d; s/;$//g' <(declare -f BLACKBOX_SNAPSHOT_WITH_OPTS))"
+      printf "\033[0;37m--\033[0m\n"
+
+      {
+        # bashsupport disable=BP2001
+        readarray -t collection < <(sed '1,2d; $d; s/^[[:space:]]\+//g; s/;$//g' <(declare -f BLACKBOX_SNAPSHOT_WITH_OPTS))
+
+        # bashsupport disable=BP2001
+        for option in "${collection[@]}"; do
+          {
+            blackbox.framework.trace "blackbox.framework.inventory.snapshot.push" "$option" <<<""
+          }
+
+          blackbox.framework.inventory.snapshot.push "$option"
+
+          {
+            blackbox.framework.trace "blackbox.framework.inventory.snapshot.digest" "$option" <<<""
+          }
+
+          # shellcheck disable=SC2155
+          local snapshot_digest=$(blackbox.framework.inventory.snapshot.digest "$option" 2>&1)
+
+          {
+            blackbox.framework.trace "blackbox.framework.inventory.snapshot.pull" "$option" <<<""
+          }
+
+          # shellcheck disable=SC2155
+          local snapshot_stream=$(cat -n <(blackbox.framework.inventory.snapshot.pull "$option" 2>&1))
+
+          printf "\033[0;37m--\033[0m\n"
+          printf "\033[0;37m%s\033[0m\n" "$(<"$snapshot_digest")"
+          printf "\033[0;37m--\033[0m\n"
+
+          if [ "$(wc -l <<<"$snapshot_stream")" -gt "$BLACKBOX_BUILD_STREAM_DISPLAY_LINES" ]; then
+            head -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$snapshot_stream"
+            printf "        ...\n"
+            tail -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$snapshot_stream"
+          else
+            cat -n <<<"${snapshot_stream:-"-empty-"}"
+          fi
+
+          printf "\033[0;37m--\033[0m\n"
+          printf "\n"
+        done
+      }
     ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
   fi
 }

@@ -42,8 +42,12 @@ blackbox.framework.inventory.awscli() {
     }
   fi
 
-  rm /usr/local/bin/aws
-  cp /blackbox/framework/inventory/awscli/rootfs/usr/local/bin/aws /usr/local/bin/ && {
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  rm -v /usr/local/bin/aws
+  cp -v /blackbox/framework/inventory/awscli/rootfs/usr/local/bin/aws /usr/local/bin/ && {
     chmod +x /usr/local/bin/aws
   }
 

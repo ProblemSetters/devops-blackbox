@@ -93,7 +93,7 @@ blackbox.framework.inventory() {
 
       blackbox.framework.inventory.install.directory "$BLACKBOX_HEAP_DIR" && {
         # shellcheck disable=SC2164
-        pushd "$BLACKBOX_HEAP_DIR"
+        pushd "$BLACKBOX_HEAP_DIR" &>/dev/null
       }
     }
 
@@ -115,10 +115,136 @@ blackbox.framework.inventory() {
         blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
       }
 
+      {
+        find . -type d -exec chown ubuntu: {} + -exec chmod 0775 {} +
+        find . -type f -printf "%P\n" -exec chown ubuntu: {} + -exec chmod 0664 {} +
+      }
+
       # shellcheck disable=SC2164
-      popd
+      popd &>/dev/null
     }
   }; blackbox.framework.inventory.heap
+
+  blackbox.framework.inventory.snapshot() {
+    # @section blackbox.framework.inventory.snapshot.*
+
+    # Gets a path to snapshot of the resource's state to verify its immutability.
+    #
+    # @arg $1 type=source Source
+    #
+    # @example
+    #  # Gets a snapshot path of file at the specified path
+    #  blackbox.framework.inventory.snapshot.path cat /path/to/filename
+    #  # Gets a snapshot path of DynamoDB table
+    #  blackbox.framework.inventory.snapshot.path aws dynamodb scan --table-name UserSteps --query "Items[]"
+    function blackbox.framework.inventory.snapshot.path() {
+      typeset -a source=("${@}")
+
+      local snapshot="${BLACKBOX_SNAPSHOT_DIR}/${source[*]//[^A-Za-z0-9]/_}.snapshot"
+
+      cat <<<"$snapshot"
+    }
+
+    # Pushes a snapshot of the resource's state to verify its immutability.
+    #
+    # @arg $1 type=source Source
+    #
+    # @example
+    #  # Pushes a snapshot of file at the specified path
+    #  blackbox.framework.inventory.snapshot.push cat /path/to/filename
+    #  # Pushes a snapshot of DynamoDB table
+    #  blackbox.framework.inventory.snapshot.push aws dynamodb scan --table-name UserSteps --query "Items[]"
+    function blackbox.framework.inventory.snapshot.push() {
+      typeset -a source=("${@}")
+
+      # shellcheck disable=SC2155
+      local snapshot=$(blackbox.framework.inventory.snapshot.path "${source[*]}")
+      # shellcheck disable=SC2155
+      local digest=$(blackbox.framework.inventory.snapshot.digest "${source[*]}")
+
+      {
+        shopt -os allexport
+        . /etc/environment
+        shopt -ou allexport
+      }
+
+      sed "s/\x1b\[[0-9;]*m//g" <(eval "${source[*]}") >"$snapshot"
+      sha1sum --tag "$snapshot" >"$digest"
+    }
+
+    # Pulls a snapshot of the resource's state to verify its immutability.
+    #
+    # @arg $1 type=source Source
+    #
+    # @example
+    #  # Pulls a snapshot of file at the specified path
+    #  blackbox.framework.inventory.snapshot.pull cat /path/to/filename
+    #  # Pulls a snapshot of DynamoDB table
+    #  blackbox.framework.inventory.snapshot.pull aws dynamodb scan --table-name UserSteps --query "Items[]"
+    function blackbox.framework.inventory.snapshot.pull() {
+      typeset -a source=("${@}")
+
+      if (! blackbox.framework.inventory.snapshot.verify "${source[*]}" >/dev/null); then
+        false
+
+        return
+      fi
+
+      # shellcheck disable=SC2155
+      local snapshot=$(blackbox.framework.inventory.snapshot.path "${source[*]}")
+
+      cat "$snapshot"
+    }
+
+    # Gets a path to snapshot digest of the resource's state to verify its immutability.
+    #
+    # @arg $1 type=source Source
+    #
+    # @example
+    #  # Gets a snapshot digest path of file at the specified path
+    #  blackbox.framework.inventory.snapshot.digest cat /path/to/filename
+    #  # Gets a snapshot digest path of DynamoDB table
+    #  blackbox.framework.inventory.snapshot.digest aws dynamodb scan --table-name UserSteps --query "Items[]"
+    function blackbox.framework.inventory.snapshot.digest() {
+      typeset -a source=("${@}")
+
+      # shellcheck disable=SC2155
+      local snapshot=$(blackbox.framework.inventory.snapshot.path "${source[*]}")
+      # shellcheck disable=SC2155
+      local digest="${snapshot}.digest"
+
+      cat <<<"$digest"
+    }
+
+    # Verifies a snapshot of the resource's state.
+    #
+    # @arg $1 type=source Source
+    #
+    # @example
+    #  # Verifies a snapshot of file at the specified path
+    #  blackbox.framework.inventory.snapshot.verify cat /path/to/filename
+    #  # Verifies a snapshot of DynamoDB table
+    #  blackbox.framework.inventory.snapshot.verify aws dynamodb scan --table-name UserSteps --query "Items[]"
+    function blackbox.framework.inventory.snapshot.verify() {
+      typeset -a source=("${@}")
+
+      # shellcheck disable=SC2155
+      local digest=$(blackbox.framework.inventory.snapshot.digest "${source[*]}")
+
+      sha1sum -c "$digest"
+    }
+
+    # Constructor
+    #
+    # @noargs
+    blackbox.framework.inventory.snapshot.__init() {
+      {
+        blackbox.framework.trace "${FUNCNAME[0]}" <<<""
+      }
+
+      blackbox.framework.inventory.install.directory "$BLACKBOX_SNAPSHOT_DIR" 0 0
+    } && blackbox.framework.inventory.snapshot.__init
+  }; blackbox.framework.inventory.snapshot
 
   blackbox.framework.inventory.ecr() {
     # @section blackbox.framework.inventory.ecr.*

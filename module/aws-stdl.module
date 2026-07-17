@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/aws-stdl.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/aws-stdl.module
+# @description aws-stdl module
+
+# @section blackbox.module.*
+blackbox.module.aws-stdl() {
+  : <<< blackbox.framework.module.abstract
+}
