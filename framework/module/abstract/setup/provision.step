@@ -137,7 +137,7 @@ blackbox.framework.module.abstract.setup.provision() {
             printf "        ...\n"
             tail -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$snapshot_stream"
           else
-            cat -n <<<"${snapshot_stream:-"-empty-"}"
+            cat <<<"${snapshot_stream:-"-empty-"}"
           fi
 
           printf "\033[0;37m--\033[0m\n"

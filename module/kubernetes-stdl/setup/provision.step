@@ -20,5 +20,9 @@ blackbox.module.kubernetes-stdl.setup.provision() {
     kubectl describe secrets/ecr
   }
 
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
   rm -f /usr/local/bin/solve
 }
