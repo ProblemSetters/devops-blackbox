@@ -27,22 +27,32 @@ blackbox.module.kubernetes-stdl.check.evaluate.expect.artifact() {
     # shellcheck disable=SC2155
     declare assert=$(</dev/stdin)
 
+    printf "\n"
+
     {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
 
-    readarray -t collection <<<"${assert[*]}"
+    eval "$(printf "function blackbox.expect.artifact.collection.__() {\n%s\n}" "$assert")"
 
-    for artifact in "${!collection[@]}"; do
-      local artifact_cache="${BLACKBOX_STORAGE_DIR}/${collection[$artifact]//[^A-Za-z0-9]/_}.artifact"
+    # bashsupport disable=BP2001
+    readarray -t collection < <(sed '1,2d; $d; s/^[[:space:]]\+//g; s/;$//g' <(declare -f blackbox.expect.artifact.collection.__))
+
+    # bashsupport disable=BP2001
+    for artifact in "${collection[@]}"; do
+      {
+        blackbox.framework.trace "${FUNCNAME[0]}" "$artifact" <<<""
+      }
+
+      local artifact_cache="${BLACKBOX_STORAGE_DIR}/${artifact//[^A-Za-z0-9]/_}.artifact"
       # shellcheck disable=SC2155
-      local artifact_stream=$(cat -n <(tee "$artifact_cache" < <("$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${collection[$artifact]}")))
+      local artifact_stream=$(cat -n <(tee "$artifact_cache" < <("$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${artifact}")))
 
       sed -i "s/\x1b\[[0-9;]*m//g" "$artifact_cache"
 
       (
-        printf "\033[0;35m** ARTIFACT:\033[0m %s \033[0;37m> %s (%d bytes)\033[0m\n" "${collection[$artifact]//[^A-Za-z0-9]/_}.artifact" "$artifact_cache" "$(stat -c "%s" "$artifact_cache")"
-        printf "\033[0;37m%s\033[0m\n" "${collection[$artifact]}"
+        printf "\033[0;35m** ARTIFACT:\033[0m %s \033[0;37m> %s (%d bytes)\033[0m\n" "${artifact//[^A-Za-z0-9]/_}.artifact" "$artifact_cache" "$(stat -c "%s" "$artifact_cache")"
+        printf "\033[0;37m%s\033[0m\n" "$artifact"
         printf "\033[0;37m--\033[0m\n"
 
         if [ "$(wc -l <<<"$artifact_stream")" -gt "$BLACKBOX_BUILD_STREAM_DISPLAY_LINES" ]; then
@@ -54,10 +64,7 @@ blackbox.module.kubernetes-stdl.check.evaluate.expect.artifact() {
         fi
 
         printf "\033[0;37m--\033[0m\n"
-
-        if [ "$artifact" -lt "$((${#collection[@]} - 1))" ]; then
-          printf "\n"
-        fi
+        printf "\n"
       ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
     done
   }

@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# @file module/kubernetes-stdl/check/evaluate/expect/snapshot.expect
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/kubernetes-stdl/check/evaluate/expect/snapshot.expect
+# @description snapshot collection expectant
+
+# @section blackbox.module.kubernetes-stdl.check.evaluate.expect.*
+blackbox.module.kubernetes-stdl.check.evaluate.expect.snapshot() {
+  # @section blackbox.module.kubernetes-stdl.check.evaluate.expect.snapshot.*
+
+  # Expects a list of snapshots to collect
+  #
+  # @stdin Assert expression
+  #
+  # @noargs
+  #
+  # @stdout Formatted assert
+  #
+  # @example
+  #   # Collect a list of snapshots
+  #   cat <<ASSERT | blackbox.expect.snapshot.collection
+  #     cat /path/to/filename
+  #   ASSERT
+  function blackbox.module.kubernetes-stdl.check.evaluate.expect.snapshot.collection() {
+    # shellcheck disable=SC2155
+    declare assert=$(</dev/stdin)
+
+    printf "\n"
+
+    {
+      blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+    }
+
+    eval "$(printf "function blackbox.expect.snapshot.collection.__() {\n%s\n}" "$assert")"
+
+    # bashsupport disable=BP2001
+    readarray -t collection < <(sed '1,2d; $d; s/^[[:space:]]\+//g; s/;$//g' <(declare -f blackbox.expect.snapshot.collection.__))
+
+    # bashsupport disable=BP2001
+    for snapshot in "${collection[@]}"; do
+      {
+        blackbox.framework.trace "${FUNCNAME[0]}" "$snapshot" <<<""
+      }
+
+      # shellcheck disable=SC2155
+      local snapshot_path=$(blackbox.framework.inventory.snapshot.path "$snapshot")
+      # shellcheck disable=SC2155
+      local snapshot_digest=$(blackbox.framework.inventory.snapshot.digest "$snapshot")
+      # shellcheck disable=SC2155
+      local snapshot_verification_status=$(blackbox.framework.inventory.snapshot.verify "$snapshot" 2>/dev/null)
+      # shellcheck disable=SC2155
+      local snapshot_stream=$(cat -n <(blackbox.framework.inventory.snapshot.pull "$snapshot" 2>&1))
+
+      (
+        printf "\033[0;34m** SNAPSHOT:\033[0m %s \033[0;37m< %s (%d bytes)\033[0m\n" "$(<"$snapshot_digest")" "$snapshot_path" "$(stat -c "%s" "$snapshot_path")"
+        printf "\033[0;37m%s\033[0m\n" "$(printf "{\n    %s\n}" "$snapshot")"
+        printf "\033[0;37m--\033[0m\n"
+        printf "\033[0;37m%s\033[0m\n" "$snapshot_verification_status"
+        printf "\033[0;37m--\033[0m\n"
+
+        if [ "$(wc -l <<<"$snapshot_stream")" -gt "$BLACKBOX_BUILD_STREAM_DISPLAY_LINES" ]; then
+          printf "\033[0;38m%s\n" "$(head -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$snapshot_stream")"
+          printf "\033[0;37m        ...\033[0m\n"
+          printf "\033[0;38m%s\033[0m\n" "$(tail -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$snapshot_stream")"
+        else
+          printf "\033[0;38m%s\033[0m\n" "$snapshot_stream"
+        fi
+
+        printf "\033[0;37m--\033[0m\n"
+        printf "\n"
+      ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+    done
+  }
+}

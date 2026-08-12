@@ -12,4 +12,5 @@ blackbox.module.kubernetes-stdl.check.evaluate.expect() {
   blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.artifact"
   blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.file"
   blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.shell"
+  blackbox.framework.import "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.snapshot"
 }
