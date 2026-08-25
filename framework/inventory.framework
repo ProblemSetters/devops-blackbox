@@ -249,6 +249,69 @@ blackbox.framework.inventory() {
   blackbox.framework.inventory.ecr() {
     # @section blackbox.framework.inventory.ecr.*
 
+    # Reads an ECR docker-login password published by vm-agent (interviewstreet/vm-agent#73)
+    #
+    # vm-agent refreshes ECR credentials out-of-band and atomically publishes them
+    # (write-to-temp-file, then rename) under BLACKBOX_ECR_TOKEN_DIR, so a reader here
+    #
+    # @arg $1 type=enum<private-password|public-password> Token file name
+    #
+    # @exitcode 0 If a non-empty token was read
+    # @exitcode 1 If no token appeared within BLACKBOX_ECR_TOKEN_WAIT_SECONDS
+    function blackbox.framework.inventory.ecr.token.read() {
+      typeset -r name=$1
+      typeset -r dir="${BLACKBOX_ECR_TOKEN_DIR:-/run/hackerrank/devops-ecr}"
+      typeset -ri wait_seconds="${BLACKBOX_ECR_TOKEN_WAIT_SECONDS:-60}"
+      typeset -ri interval_seconds=2
+      typeset -i waited=0
+      typeset token
+
+      while (( waited <= wait_seconds )); do
+        if token=$(cat "${dir}/${name}" 2>/dev/null) && [ -n "$token" ]; then
+          printf "%s" "$token"
+          return 0
+        fi
+
+        sleep "$interval_seconds"
+        waited=$(( waited + interval_seconds ))
+      done
+
+      printf "error: *** ECR token '%s/%s' was not published by vm-agent within %ss\n" "$dir" "$name" "$wait_seconds" >&2
+      return 1
+    }
+
+    # Logs in to a Docker registry using a vm-agent-published ECR password
+    #
+    # Retries with a freshly re-read token if the login itself fails, guarding against
+    #
+    # @arg $1 type=string Registry
+    # @arg $2 type=enum<private-password|public-password> Token file name
+    #
+    # @exitcode 0 If both logins succeeded
+    # @exitcode 1 If no token could be read, or every login attempt failed
+    function blackbox.framework.inventory.ecr.token.login() {
+      typeset -r registry=$1
+      typeset -r name=$2
+      typeset -ri attempts=3
+      typeset -i attempt
+      typeset token
+
+      for (( attempt=1; attempt<=attempts; attempt++ )); do
+        token=$(blackbox.framework.inventory.ecr.token.read "$name") || return 1
+
+        if docker login --username AWS --password-stdin "$registry" <<<"$token" \
+          && sudo -u "$BLACKBOX_USER_NAME" docker login --username AWS --password-stdin "$registry" <<<"$token"; then
+          return 0
+        fi
+
+        printf "warn: *** docker login to '%s' failed (attempt %s/%s), retrying with a freshly read token\n" "$registry" "$attempt" "$attempts" >&2
+        sleep 2
+      done
+
+      printf "error: *** docker login to '%s' failed after %s attempts\n" "$registry" "$attempts" >&2
+      return 1
+    }
+
     # Logs in to Amazon ECR
     #
     # @noargs
@@ -263,27 +326,12 @@ blackbox.framework.inventory() {
         blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
       }
 
-      blackbox.framework.inventory.provision awscli
       (
-        export AWS_DEFAULT_REGION="us-east-1"
-        # shellcheck disable=SC2155
-        export AWS_ACCESS_KEY_ID=$(base64 -d <(base64 -d <<<"UVV0SlFWSTJUemRIU2s1WVZGbEtOVFJNU1U4PQo="))
-        # shellcheck disable=SC2155
-        export AWS_SECRET_ACCESS_KEY=$(base64 -d <(base64 -d <<<"YVZWNlRtcExlWEpJWVhOeE5UUjVUR05QTlZSbFRraEhlVWxsYzJOMVkxRkJSazVqWTJJeFpRPT0K"))
-
-        # shellcheck disable=SC2155
-        local ECR_PASSWORD=$(/usr/local/aws-cli/v2/current/bin/aws ecr get-login-password --region "$AWS_DEFAULT_REGION")
-
-        docker login --username AWS --password-stdin 134148934511.dkr.ecr.us-east-1.amazonaws.com <<<"$ECR_PASSWORD"
-        sudo -u "$BLACKBOX_USER_NAME" docker login --username AWS --password-stdin 134148934511.dkr.ecr.us-east-1.amazonaws.com <<<"$ECR_PASSWORD"
+        blackbox.framework.inventory.ecr.token.login 134148934511.dkr.ecr.us-east-1.amazonaws.com private-password
 
         {
           # TODO: for backwards compatibility with public ECR repositories, and should be removed when all questions are moved to private ECR repositories
-          # shellcheck disable=SC2155
-          local ECR_PASSWORD_PUBLIC=$(/usr/local/aws-cli/v2/current/bin/aws ecr-public get-login-password --region "$AWS_DEFAULT_REGION")
-
-          docker login --username AWS --password-stdin public.ecr.aws/b0k9n8x8 <<<"$ECR_PASSWORD_PUBLIC"
-          sudo -u "$BLACKBOX_USER_NAME" docker login --username AWS --password-stdin public.ecr.aws/b0k9n8x8 <<<"$ECR_PASSWORD_PUBLIC"
+          blackbox.framework.inventory.ecr.token.login public.ecr.aws/b0k9n8x8 public-password
         }
       ) 2>&1 # ¯\_(ツ)_/¯
     }

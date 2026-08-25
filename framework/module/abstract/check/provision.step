@@ -43,9 +43,9 @@ blackbox.framework.module.abstract.check.provision() {
   fi
 
   if ( grep -q '^init$' <(ps -p 1 -o comm=) ); then
-    docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --privileged --cgroupns=host --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" "134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2404:${BLACKBOX_MODULE_NAME}"
+    docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --privileged --cgroupns=host --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" --volume="${BLACKBOX_ECR_TOKEN_DIR:-/run/hackerrank/devops-ecr}:${BLACKBOX_ECR_TOKEN_DIR:-/run/hackerrank/devops-ecr}:ro" "134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2404:${BLACKBOX_MODULE_NAME}"
   else
-    docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --privileged --cgroupns=host --volume="${BLACKBOX_DIR}:${BLACKBOX_DIR}:ro" --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" "134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2404:${BLACKBOX_MODULE_NAME}"
+    docker run -di --hostname="$BLACKBOX_SPAWN" --name="$BLACKBOX_SPAWN" --privileged --cgroupns=host --volume="${BLACKBOX_DIR}:${BLACKBOX_DIR}:ro" --volume="${BLACKBOX_USER_QUESTION_DIR}:${BLACKBOX_USER_QUESTION_DIR}:rw" --volume="${BLACKBOX_STORAGE_DIR}:${BLACKBOX_STORAGE_DIR}:ro" --volume="${BLACKBOX_ECR_TOKEN_DIR:-/run/hackerrank/devops-ecr}:${BLACKBOX_ECR_TOKEN_DIR:-/run/hackerrank/devops-ecr}:ro" "134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2404:${BLACKBOX_MODULE_NAME}"
   fi
 
   : <<< blackbox.module.*.check.provision
