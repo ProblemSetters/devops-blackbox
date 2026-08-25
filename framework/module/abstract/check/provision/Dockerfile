@@ -98,7 +98,7 @@ ONBUILD RUN printenv \
             wget \
               -S \
               --output-document="/tmp/blackbox.zip" \
-              "https://codeload.github.com/ProblemSetters/devops-blackbox/zip/refs/heads/${BLACKBOX_VERSION}"; \
+              "https://codeload.github.com/dhairya-hackerrank/devops-blackbox/zip/refs/heads/${BLACKBOX_VERSION}"; \
             unzip \
               /tmp/blackbox.zip \
               -x \

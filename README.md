@@ -73,7 +73,7 @@ BLACKBOX_PROVISION_WITH_OPTS() {
 }
 
 # shellcheck disable=SC1090
-. <(cat /blackbox/blackbox 2>/dev/null || wget -qO- --no-cache "https://raw.githubusercontent.com/ProblemSetters/devops-blackbox/master/blackbox" || printf "echo 'error: *** blackbox is not available'; exit 1") MODULE_NAME setup "QUESTION_GIT_REPOSITORY_NAME"
+. <(cat /blackbox/blackbox 2>/dev/null || wget -qO- --no-cache "https://raw.githubusercontent.com/dhairya-hackerrank/devops-blackbox/master/blackbox" || printf "echo 'error: *** blackbox is not available'; exit 1") MODULE_NAME setup "QUESTION_GIT_REPOSITORY_NAME"
 
 # something to execute in post-provision step might be here
 

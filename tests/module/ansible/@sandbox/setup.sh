@@ -9,7 +9,7 @@ BLACKBOX_PROVISION_WITH_OPTS() {
   }
 }
 
-. <(cat /blackbox/blackbox 2>/dev/null || wget -qO- --no-cache "https://raw.githubusercontent.com/ProblemSetters/devops-blackbox/2404/blackbox" || printf "echo 'error: *** blackbox is not available'; exit 1") ansible setup "test"
+. <(cat /blackbox/blackbox 2>/dev/null || wget -qO- --no-cache "https://raw.githubusercontent.com/dhairya-hackerrank/devops-blackbox/2404/blackbox" || printf "echo 'error: *** blackbox is not available'; exit 1") ansible setup "test"
 
 cat >>/results/setup.assert <<<"ONCE"
 

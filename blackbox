@@ -283,7 +283,7 @@ blackbox() {
     }
 
     if [ ! -e "$BLACKBOX_DIR" ]; then
-      wget -S --output-document="/tmp/blackbox.zip" "https://codeload.github.com/ProblemSetters/devops-blackbox/zip/refs/heads/${BLACKBOX_VERSION}" && {
+      wget -S --output-document="/tmp/blackbox.zip" "https://codeload.github.com/dhairya-hackerrank/devops-blackbox/zip/refs/heads/${BLACKBOX_VERSION}" && {
         unzip /tmp/blackbox.zip -x "devops-blackbox-2404/.github/*" "devops-blackbox-2404/docs/*" "devops-blackbox-2404/tests/*" "devops-blackbox-2404/.editorconfig" "devops-blackbox-2404/.gitignore" "devops-blackbox-2404/Makefile.*" "devops-blackbox-2404/README.md" "devops-blackbox-2404/Vagrantfile" -d /tmp && {
           mv "/tmp/devops-blackbox-${BLACKBOX_VERSION}" "$BLACKBOX_DIR"
           rm -rf /tmp/*blackbox*
