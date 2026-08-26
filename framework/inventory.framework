@@ -249,10 +249,12 @@ blackbox.framework.inventory() {
   blackbox.framework.inventory.ecr() {
     # @section blackbox.framework.inventory.ecr.*
 
-    # Reads an ECR docker-login password published by vm-agent (interviewstreet/vm-agent#73)
+    # Reads an ECR docker-login password published to BLACKBOX_ECR_TOKEN_DIR
     #
-    # vm-agent refreshes ECR credentials out-of-band and atomically publishes them
-    # (write-to-temp-file, then rename) under BLACKBOX_ECR_TOKEN_DIR, so a reader here
+    # Credentials are refreshed out-of-band and atomically published
+    # (write-to-temp-file, then rename), so a reader here always sees either
+    # a complete previous token or a complete new one, never a partial file:
+    # no locking is needed on this side for that race.
     #
     # @arg $1 type=enum<private-password|public-password> Token file name
     #
@@ -276,11 +278,11 @@ blackbox.framework.inventory() {
         waited=$(( waited + interval_seconds ))
       done
 
-      printf "error: *** ECR token '%s/%s' was not published by vm-agent within %ss\n" "$dir" "$name" "$wait_seconds" >&2
+      printf "error: *** ECR token '%s/%s' was not published within %ss\n" "$dir" "$name" "$wait_seconds" >&2
       return 1
     }
 
-    # Logs in to a Docker registry using a vm-agent-published ECR password
+    # Logs in to a Docker registry using an ECR password published to BLACKBOX_ECR_TOKEN_DIR
     #
     # Retries with a freshly re-read token if the login itself fails, guarding against
     #
@@ -326,6 +328,7 @@ blackbox.framework.inventory() {
         blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
       }
 
+      blackbox.framework.inventory.provision awscli
       (
         blackbox.framework.inventory.ecr.token.login 134148934511.dkr.ecr.us-east-1.amazonaws.com private-password
 
