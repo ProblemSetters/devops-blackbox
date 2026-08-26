@@ -298,6 +298,16 @@ blackbox.framework.inventory() {
       typeset -i attempt
       typeset token
 
+      {
+        # Discard whatever credential is already stored for this registry, for
+        # both users. The machine image bakes a `docker login` at build time and
+        # its ECR token is hours or days stale, so leaving it in place lets a
+        # failed handoff read as "Your authorization token has expired" on the
+        # pull instead of the real cause. vm-agent's files are the only source.
+        docker logout "$registry" &>/dev/null
+        sudo -u "$BLACKBOX_USER_NAME" docker logout "$registry" &>/dev/null
+      }
+
       for (( attempt=1; attempt<=attempts; attempt++ )); do
         token=$(blackbox.framework.inventory.ecr.token.read "$name") || return 1
 
