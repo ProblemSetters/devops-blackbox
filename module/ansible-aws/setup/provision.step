@@ -28,7 +28,4 @@ blackbox.module.ansible-aws.setup.provision() {
   {
     tee -a /etc/environment < <(printf "ANSIBLE_COLLECTIONS_PATH=%s\n" "/usr/share/ansible/ansible_collections")
   }
-
-  tee -a /etc/hosts < <(printf "127.0.0.1\teu-central-1.hackerrankaws.local\n")
-  tee -a /etc/environment < <(printf "AWS_ENDPOINT_URL=%s\n" "eu-central-1.hackerrankaws.local")
 }

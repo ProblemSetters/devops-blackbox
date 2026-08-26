@@ -24,4 +24,21 @@ blackbox.framework.inventory.localstack() {
   }
 
   docker run -di -p 4566:4566 --cgroupns=host "134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/${package_name}:2.1.0-slim"
+
+  {
+    # AWS CLI v2 reads AWS_ENDPOINT_URL itself, so it has to be a full URL. A bare
+    # hostname only ever resolved through the shim the "awscli" inventory installs,
+    # which none of the aws modules provision, so the real CLI rejected it with
+    # "Invalid endpoint". Region and credentials are validated by botocore before
+    # the endpoint is even looked at; localstack accepts any values.
+    typeset -r endpoint_host=eu-central-1.hackerrankaws.local
+
+    grep -q "^AWS_ENDPOINT_URL=" /etc/environment || {
+      tee -a /etc/hosts < <(printf "127.0.0.1\t%s\n" "$endpoint_host")
+      tee -a /etc/environment < <(printf "AWS_ENDPOINT_URL=http://%s:4566\n" "$endpoint_host")
+      tee -a /etc/environment < <(printf "AWS_DEFAULT_REGION=%s\n" "eu-central-1")
+      tee -a /etc/environment < <(printf "AWS_ACCESS_KEY_ID=A%sIA%s%s%s\n" "$(head -c 1 <(tr -dc SK </dev/urandom))" "$(head -c 1 <(tr -dc IJ </dev/urandom))" "$(head -c 14 <(tr -dc A-Z2-7 </dev/urandom))" "$(head -c 1 <(tr -dc AQ </dev/urandom))")
+      tee -a /etc/environment < <(printf "AWS_SECRET_ACCESS_KEY=%s\n" "$(head -c 40 <(tr -dc A-Za-z0-9+/ </dev/urandom))")
+    }
+  }
 }
