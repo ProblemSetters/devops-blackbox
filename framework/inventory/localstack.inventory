@@ -39,6 +39,14 @@ blackbox.framework.inventory.localstack() {
       tee -a /etc/environment < <(printf "AWS_DEFAULT_REGION=%s\n" "eu-central-1")
       tee -a /etc/environment < <(printf "AWS_ACCESS_KEY_ID=A%sIA%s%s%s\n" "$(head -c 1 <(tr -dc SK </dev/urandom))" "$(head -c 1 <(tr -dc IJ </dev/urandom))" "$(head -c 14 <(tr -dc A-Z2-7 </dev/urandom))" "$(head -c 1 <(tr -dc AQ </dev/urandom))")
       tee -a /etc/environment < <(printf "AWS_SECRET_ACCESS_KEY=%s\n" "$(head -c 40 <(tr -dc A-Za-z0-9+/ </dev/urandom))")
+
+      # AWS CLI 2.23+ sends a CRC32 checksum as a trailing header over
+      # aws-chunked encoding by default, which localstack 2.1.0 rejects with
+      # "The value specified in the x-amz-trailer header is not supported",
+      # failing every PutObject. Older CLIs ignore both variables, so this is
+      # safe whichever CLI the image ships.
+      tee -a /etc/environment < <(printf "AWS_REQUEST_CHECKSUM_CALCULATION=%s\n" "when_required")
+      tee -a /etc/environment < <(printf "AWS_RESPONSE_CHECKSUM_VALIDATION=%s\n" "when_required")
     }
   }
 }
