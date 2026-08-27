@@ -18,6 +18,8 @@ Inventory handler
 * [blackbox.framework.inventory.snapshot.digest](#blackboxframeworkinventorysnapshotdigest)
 * [blackbox.framework.inventory.snapshot.verify](#blackboxframeworkinventorysnapshotverify)
 * [blackbox.framework.inventory.snapshot.__init](#blackboxframeworkinventorysnapshotinit)
+* [blackbox.framework.inventory.ecr.token.read](#blackboxframeworkinventoryecrtokenread)
+* [blackbox.framework.inventory.ecr.token.login](#blackboxframeworkinventoryecrtokenlogin)
 * [blackbox.framework.inventory.ecr.login](#blackboxframeworkinventoryecrlogin)
 * [blackbox.framework.inventory.ecr.logout](#blackboxframeworkinventoryecrlogout)
 * [blackbox.framework.inventory.provision](#blackboxframeworkinventoryprovision)
@@ -187,6 +189,51 @@ _Function has no arguments._
 
 ## blackbox.framework.inventory.ecr.*
 
+### blackbox.framework.inventory.ecr.token.read
+
+#### Example
+
+```bash
+# Read the private ECR password
+blackbox.framework.inventory.ecr.token.read private-password
+```
+
+#### Arguments
+
+* **$1** (type=enum<private-password|public-password>): Token file name
+
+#### Exit codes
+
+* **0**: If a non-empty token was read, which is printed to stdout
+* **1**: If no token appeared within "$BLACKBOX_ECR_TOKEN_WAIT_SECONDS"
+
+#### See also
+
+* [blackbox.framework.inventory.ecr.token.login](#blackboxframeworkinventoryecrtokenlogin)
+
+### blackbox.framework.inventory.ecr.token.login
+
+#### Example
+
+```bash
+# Log in to the private registry
+blackbox.framework.inventory.ecr.token.login 134148934511.dkr.ecr.us-east-1.amazonaws.com private-password
+```
+
+#### Arguments
+
+* **$1** (type=string): Registry
+* **$2** (type=enum<private-password|public-password>): Token file name
+
+#### Exit codes
+
+* **0**: If both the root and "$BLACKBOX_USER_NAME" logins succeeded
+* **1**: If no token could be read, or either login failed
+
+#### See also
+
+* [blackbox.framework.inventory.ecr.token.read](#blackboxframeworkinventoryecrtokenread)
+
 ### blackbox.framework.inventory.ecr.login
 
 #### Example
@@ -197,6 +244,11 @@ blackbox.framework.inventory.ecr.login
 ```
 
 _Function has no arguments._
+
+#### Exit codes
+
+* **0**: If the private registry login succeeded
+* **1**: If the private registry login failed
 
 #### See also
 
