@@ -52,7 +52,7 @@ blackbox() {
   # shellcheck disable=SC2155
   export BLACKBOX_USER_QUESTION_DIR=$(awk -v master="${BLACKBOX_USER_HOME}/${3}" -v user="" 'END { print ($0 == "systemd") ? master : user }' <(ps -p 1 -o comm=))
   # shellcheck disable=SC2155
-  export BLACKBOX_VERSION="2404"
+  export BLACKBOX_VERSION="2404-ecr"
 
   export BLACKBOX_ECR_TOKEN_DIR="${BLACKBOX_ECR_TOKEN_DIR:-/run/hackerrank/devops-ecr}"
   export BLACKBOX_ECR_TOKEN_WAIT_SECONDS="${BLACKBOX_ECR_TOKEN_WAIT_SECONDS:-30}"

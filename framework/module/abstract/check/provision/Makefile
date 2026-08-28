@@ -15,7 +15,7 @@ BLACKBOX:=134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2404:$(shell 
 BLACKBOX_USER:=1000:1000
 BLACKBOX_USER_NAME:=ubuntu
 BLACKBOX_USER_HOME:=/home/$(BLACKBOX_USER_NAME)
-BLACKBOX_VERSION:=2404
+BLACKBOX_VERSION:=2404-ecr
 
 build:
 	docker buildx build --network=host $(foreach arg, $(filter BLACKBOX%,$(sort $(.VARIABLES))),--build-arg="$(arg)=$($(arg))") --progress="plain" --tag="$(BLACKBOX)" .
