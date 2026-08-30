@@ -249,12 +249,7 @@ blackbox.framework.inventory() {
   blackbox.framework.inventory.ecr() {
     # @section blackbox.framework.inventory.ecr.*
 
-    # Reads an ECR docker-login password from the host credential handoff
-    #
-    # ECR credentials are refreshed out of band on the host and published atomically
-    # under "$BLACKBOX_ECR_TOKEN_DIR" (write to a temporary file, then rename), so a
-    # reader here never observes a partially written password. The publish can lag
-    # behind the start of a provision, hence the bounded wait.
+    # Reads an ECR docker-login password from the host credential handoff, with a bounded wait for the atomic publish under "$BLACKBOX_ECR_TOKEN_DIR"
     #
     # @arg $1 type=enum<private-password|public-password> Token file name
     #
@@ -289,14 +284,7 @@ blackbox.framework.inventory() {
       return 1
     }
 
-    # Logs in to a Docker registry with a password from the host credential handoff
-    #
-    # The token is read before any existing credential is dropped. The machine image
-    # bakes a "docker login" at build time whose token is hours or days stale, so it
-    # cannot be trusted once the handoff is the credential source, but discarding it
-    # before a fresh token is in hand would turn a missing handoff into
-    # "Your authorization token has expired" on a later pull, hiding the real cause.
-    # On a successful read the baked credential is dropped for both users.
+    # Logs in to a Docker registry with a password from the host credential handoff, dropping the stale baked-in credential only after a fresh token is read
     #
     # @arg $1 type=string Registry
     # @arg $2 type=enum<private-password|public-password> Token file name
@@ -342,10 +330,6 @@ blackbox.framework.inventory() {
         blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
       }
 
-      # TODO: the ECR login itself no longer needs the AWS CLI, but this call is what
-      # installs the localstack endpoint shim and the placeholder AWS_* environment the
-      # "aws", "aws-stdl", "ansible-aws" and "terraform-aws" modules rely on, and none of
-      # them provisions "awscli" itself. Remove once they declare the dependency.
       blackbox.framework.inventory.provision awscli
 
       (
