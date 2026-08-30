@@ -284,7 +284,7 @@ blackbox.framework.inventory() {
       return 1
     }
 
-    # Logs in to a Docker registry with a password from the host credential handoff, dropping the stale baked-in credential only after a fresh token is read
+    # Logs in to a Docker registry, for both root and "$BLACKBOX_USER_NAME", with a password from the host credential handoff
     #
     # @arg $1 type=string Registry
     # @arg $2 type=enum<private-password|public-password> Token file name
@@ -303,11 +303,6 @@ blackbox.framework.inventory() {
       typeset token
 
       token=$(blackbox.framework.inventory.ecr.token.read "$name") || return 1
-
-      {
-        docker logout "$registry" &>/dev/null
-        sudo -u "$BLACKBOX_USER_NAME" docker logout "$registry" &>/dev/null
-      }
 
       docker login --username AWS --password-stdin "$registry" <<<"$token" \
         && sudo -u "$BLACKBOX_USER_NAME" docker login --username AWS --password-stdin "$registry" <<<"$token"
