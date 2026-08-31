@@ -123,9 +123,61 @@ blackbox.framework.inventory() {
   blackbox.framework.inventory.ecr() {
     # @section blackbox.framework.inventory.ecr.*
 
+    # Reads an ECR docker-login password from the host credential handoff published under "$BLACKBOX_ECR_TOKEN_DIR"
+    #
+    # @arg $1 type=enum<private-password|public-password> Token file name
+    #
+    # @exitcode 0 If a non-empty token was read, which is printed to stdout
+    # @exitcode 1 If the token was missing or empty
+    #
+    # @example
+    #  # Read the private ECR password
+    #  blackbox.framework.inventory.ecr.token.read private-password
+    #
+    # @see blackbox.framework.inventory.ecr.token.login
+    function blackbox.framework.inventory.ecr.token.read() {
+      typeset -r name=$1
+      typeset token
+
+      if token=$(cat "${BLACKBOX_ECR_TOKEN_DIR}/${name}" 2>/dev/null) && [ -n "$token" ]; then
+        printf "%s" "$token"
+        return 0
+      fi
+
+      printf "error: *** ECR token '%s/%s' is not available\n" "$BLACKBOX_ECR_TOKEN_DIR" "$name" >&2
+      return 1
+    }
+
+    # Logs in to a Docker registry, for both root and "$BLACKBOX_USER_NAME", with a password from the host credential handoff
+    #
+    # @arg $1 type=string Registry
+    # @arg $2 type=enum<private-password|public-password> Token file name
+    #
+    # @exitcode 0 If both the root and "$BLACKBOX_USER_NAME" logins succeeded
+    # @exitcode 1 If no token could be read, or either login failed
+    #
+    # @example
+    #  # Log in to the private registry
+    #  blackbox.framework.inventory.ecr.token.login 134148934511.dkr.ecr.us-east-1.amazonaws.com private-password
+    #
+    # @see blackbox.framework.inventory.ecr.token.read
+    function blackbox.framework.inventory.ecr.token.login() {
+      typeset -r registry=$1
+      typeset -r name=$2
+      typeset token
+
+      token=$(blackbox.framework.inventory.ecr.token.read "$name") || return 1
+
+      docker login --username AWS --password-stdin "$registry" <<<"$token" \
+        && sudo -u "$BLACKBOX_USER_NAME" docker login --username AWS --password-stdin "$registry" <<<"$token"
+    }
+
     # Logs in to Amazon ECR
     #
     # @noargs
+    #
+    # @exitcode 0 If the private registry login succeeded
+    # @exitcode 1 If the private registry login failed
     #
     # @example
     #  # Logs in to Amazon ECR
@@ -138,26 +190,15 @@ blackbox.framework.inventory() {
       }
 
       blackbox.framework.inventory.provision awscli
+
       (
-        export AWS_DEFAULT_REGION="us-east-1"
-        # shellcheck disable=SC2155
-        export AWS_ACCESS_KEY_ID=$(base64 -d <(base64 -d <<<"UVV0SlFWSTJUemRIU2s1WVdVSk1RVXBGTlRNSwo="))
-        # shellcheck disable=SC2155
-        export AWS_SECRET_ACCESS_KEY=$(base64 -d <(base64 -d <<<"UVVaNFZUVXJWMEZoYml0eWVWUnpVSGhuY1ZWTk56VXlPVlp5Umt0Q1JFTkxRMHBFY3pKSFV3bz0K"))
-
-        # shellcheck disable=SC2155
-        local ECR_PASSWORD=$(/usr/local/aws-cli/v2/current/bin/aws ecr get-login-password --region "$AWS_DEFAULT_REGION")
-
-        docker login --username AWS --password-stdin 134148934511.dkr.ecr.us-east-1.amazonaws.com <<<"$ECR_PASSWORD"
-        sudo -u "$BLACKBOX_USER_NAME" docker login --username AWS --password-stdin 134148934511.dkr.ecr.us-east-1.amazonaws.com <<<"$ECR_PASSWORD"
+        blackbox.framework.inventory.ecr.token.login 134148934511.dkr.ecr.us-east-1.amazonaws.com private-password || exit 1
 
         {
           # TODO: for backwards compatibility with public ECR repositories, and should be removed when all questions are moved to private ECR repositories
-          # shellcheck disable=SC2155
-          local ECR_PASSWORD_PUBLIC=$(/usr/local/aws-cli/v2/current/bin/aws ecr-public get-login-password --region "$AWS_DEFAULT_REGION")
-
-          docker login --username AWS --password-stdin public.ecr.aws/b0k9n8x8 <<<"$ECR_PASSWORD_PUBLIC"
-          sudo -u "$BLACKBOX_USER_NAME" docker login --username AWS --password-stdin public.ecr.aws/b0k9n8x8 <<<"$ECR_PASSWORD_PUBLIC"
+          blackbox.framework.inventory.ecr.token.login public.ecr.aws/b0k9n8x8 public-password || {
+            printf "warn: *** public ECR login failed, questions hosted on public repositories will not pull\n" >&2
+          }
         }
       ) 2>&1 # ¯\_(ツ)_/¯
     }
