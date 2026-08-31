@@ -55,7 +55,6 @@ blackbox() {
   export BLACKBOX_VERSION="2404"
 
   export BLACKBOX_ECR_TOKEN_DIR="${BLACKBOX_ECR_TOKEN_DIR:-/run/hackerrank/devops-ecr}"
-  export BLACKBOX_ECR_TOKEN_WAIT_SECONDS="${BLACKBOX_ECR_TOKEN_WAIT_SECONDS:-30}"
 
   export BLACKBOX_FLAG__DEBUG_MODE=${BLACKBOX_FLAG__DEBUG_MODE:-no}
   # shellcheck disable=SC2155

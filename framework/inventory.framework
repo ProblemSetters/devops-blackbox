@@ -249,12 +249,12 @@ blackbox.framework.inventory() {
   blackbox.framework.inventory.ecr() {
     # @section blackbox.framework.inventory.ecr.*
 
-    # Reads an ECR docker-login password from the host credential handoff, with a bounded wait for the atomic publish under "$BLACKBOX_ECR_TOKEN_DIR"
+    # Reads an ECR docker-login password from the host credential handoff published under "$BLACKBOX_ECR_TOKEN_DIR"
     #
     # @arg $1 type=enum<private-password|public-password> Token file name
     #
     # @exitcode 0 If a non-empty token was read, which is printed to stdout
-    # @exitcode 1 If no token appeared within "$BLACKBOX_ECR_TOKEN_WAIT_SECONDS"
+    # @exitcode 1 If the token was missing or empty
     #
     # @example
     #  # Read the private ECR password
@@ -263,24 +263,14 @@ blackbox.framework.inventory() {
     # @see blackbox.framework.inventory.ecr.token.login
     function blackbox.framework.inventory.ecr.token.read() {
       typeset -r name=$1
-      typeset -ri wait_seconds="$BLACKBOX_ECR_TOKEN_WAIT_SECONDS"
-      typeset -ri interval_seconds=2
-      typeset -i waited=0
       typeset token
 
-      while true; do
-        if token=$(cat "${BLACKBOX_ECR_TOKEN_DIR}/${name}" 2>/dev/null) && [ -n "$token" ]; then
-          printf "%s" "$token"
-          return 0
-        fi
+      if token=$(cat "${BLACKBOX_ECR_TOKEN_DIR}/${name}" 2>/dev/null) && [ -n "$token" ]; then
+        printf "%s" "$token"
+        return 0
+      fi
 
-        (( waited < wait_seconds )) || break
-
-        sleep "$interval_seconds"
-        waited=$(( waited + interval_seconds ))
-      done
-
-      printf "error: *** ECR token '%s/%s' was not available within %ss\n" "$BLACKBOX_ECR_TOKEN_DIR" "$name" "$wait_seconds" >&2
+      printf "error: *** ECR token '%s/%s' is not available\n" "$BLACKBOX_ECR_TOKEN_DIR" "$name" >&2
       return 1
     }
 

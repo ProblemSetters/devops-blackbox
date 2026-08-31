@@ -205,7 +205,7 @@ blackbox.framework.inventory.ecr.token.read private-password
 #### Exit codes
 
 * **0**: If a non-empty token was read, which is printed to stdout
-* **1**: If no token appeared within "$BLACKBOX_ECR_TOKEN_WAIT_SECONDS"
+* **1**: If the token was missing or empty
 
 #### See also
 
