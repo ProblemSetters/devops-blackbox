@@ -11,19 +11,6 @@ blackbox.module.ansible-aws.setup.provision() {
 
   blackbox.framework.inventory.provision localstack
 
-  # AWS CLI v2 reads AWS_ENDPOINT_URL itself, so it needs a full URL; localstack accepts any region and credentials.
-  grep -q "^AWS_ENDPOINT_URL=" /etc/environment || {
-    tee -a /etc/hosts < <(printf "127.0.0.1\teu-central-1.hackerrankaws.local\n")
-    tee -a /etc/environment < <(printf "AWS_ENDPOINT_URL=%s\n" "http://eu-central-1.hackerrankaws.local:4566")
-    tee -a /etc/environment < <(printf "AWS_DEFAULT_REGION=%s\n" "eu-central-1")
-    tee -a /etc/environment < <(printf "AWS_ACCESS_KEY_ID=A%sIA%s%s%s\n" "$(head -c 1 <(tr -dc SK </dev/urandom))" "$(head -c 1 <(tr -dc IJ </dev/urandom))" "$(head -c 14 <(tr -dc A-Z2-7 </dev/urandom))" "$(head -c 1 <(tr -dc AQ </dev/urandom))")
-    tee -a /etc/environment < <(printf "AWS_SECRET_ACCESS_KEY=%s\n" "$(head -c 40 <(tr -dc A-Za-z0-9+/ </dev/urandom))")
-
-    # localstack 2.1.0 rejects the CRC32 trailer that AWS CLI 2.23+ sends by default.
-    tee -a /etc/environment < <(printf "AWS_REQUEST_CHECKSUM_CALCULATION=%s\n" "when_required")
-    tee -a /etc/environment < <(printf "AWS_RESPONSE_CHECKSUM_VALIDATION=%s\n" "when_required")
-  }
-
   blackbox.framework.inventory.provision ansible && {
     blackbox.framework.inventory.install.file playbook.yml </blackbox/module/ansible-aws/setup/provision/rootfs/home/%/%/playbook.yml
   }
@@ -35,4 +22,7 @@ blackbox.module.ansible-aws.setup.provision() {
   ansible-galaxy collection install community.aws --force-with-deps --collections-path /usr/share/ansible && {
     tee -a /etc/environment < <(printf "ANSIBLE_COLLECTIONS_PATH=%s\n" "/usr/share/ansible/ansible_collections")
   }
+
+  tee -a /etc/hosts < <(printf "127.0.0.1\teu-central-1.hackerrankaws.local\n")
+  tee -a /etc/environment < <(printf "AWS_ENDPOINT_URL=%s\n" "eu-central-1.hackerrankaws.local")
 }

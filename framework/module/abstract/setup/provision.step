@@ -38,11 +38,10 @@ blackbox.framework.module.abstract.setup.provision() {
 
   blackbox.framework.inventory.provision docker-ce && {
     usermod -a -G docker "$BLACKBOX_USER_NAME"
-    service docker start
+    service docker start && {
+      blackbox.framework.inventory.ecr.login
+    }
   }
-
-  # Unconditional: the docker-ce inventory returns non-zero when docker is already baked in, so gating the login on it skipped every devops image.
-  blackbox.framework.inventory.ecr.login
 
   blackbox.framework.inventory.install.file /usr/local/bin/solve 0 0 0755 </blackbox/framework/module/abstract/setup/provision/rootfs/usr/local/bin/solve
 
