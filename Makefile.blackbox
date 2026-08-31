@@ -33,8 +33,6 @@ BLACKBOX_USER_QUESTION_DIR=$(BLACKBOX_USER_HOME)/$(shell basename $(call blackbo
 BLACKBOX_VERSION:=2204
 
 BLACKBOX_AWS_DEFAULT_REGION:="us-east-1"
-BLACKBOX_AWS_ACCESS_KEY_ID:=$(shell base64 -d <(base64 -d <<<"UVV0SlFWSTJUemRIU2s1WVZGbEtOVFJNU1U4PQo="))
-BLACKBOX_AWS_SECRET_ACCESS_KEY:=$(shell base64 -d <(base64 -d <<<"YVZWNlRtcExlWEpJWVhOeE5UUjVUR05QTlZSbFRraEhlVWxsYzJOMVkxRkJSazVqWTJJeFpRPT0K"))
 
 define blackbox/pwd=
 $(abspath $(dir $(firstword $(MAKEFILE_LIST)))/$(1))
@@ -50,7 +48,7 @@ debug: ;@:
 all: uninstall install setup solve check
 
 install:
-	docker login --username AWS --password-stdin 134148934511.dkr.ecr.us-east-1.amazonaws.com < <(docker run -it --env="AWS_DEFAULT_REGION=$(BLACKBOX_AWS_DEFAULT_REGION)" --env="AWS_ACCESS_KEY_ID=$(BLACKBOX_AWS_ACCESS_KEY_ID)" --env="AWS_SECRET_ACCESS_KEY=$(BLACKBOX_AWS_SECRET_ACCESS_KEY)" --rm amazon/aws-cli:2.11.25 ecr get-login-password)
+	docker login --username AWS --password-stdin 134148934511.dkr.ecr.us-east-1.amazonaws.com < <(aws ecr get-login-password --region "$(BLACKBOX_AWS_DEFAULT_REGION)")
 	cat <(echo FROM 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2204:abstract) <(echo RUN groupadd docker) | docker buildx build --build-arg="BLACKBOX_USER=$(BLACKBOX_USER)" --build-arg="BLACKBOX_USER_NAME=$(BLACKBOX_USER_NAME)" --build-arg="BLACKBOX_USER_HOME=$(BLACKBOX_USER_HOME)" --build-arg="BLACKBOX_VERSION=$(BLACKBOX_VERSION)" --network="host" --progress="plain" --tag="blackbox:$(BLACKBOX_HOST)" -
 	docker run -di --group-add docker --hostname="blackbox" --name="$(BLACKBOX_HOST)" --privileged --cgroupns=host $(if $(filter debug,$(MAKECMDGOALS)),--volume="$(BLACKBOX_DIR):/blackbox:ro") --volume="$(call blackbox/pwd)/setup.sh:$(BLACKBOX_USER_HOME)/setup.sh:ro" --volume="$(call blackbox/pwd)/check.sh:$(BLACKBOX_USER_HOME)/check.sh:ro" --volume="$(call blackbox/pwd)/solve.sh:$(BLACKBOX_USER_HOME)/solve.sh:ro" blackbox:$(BLACKBOX_HOST) >/dev/null
 
