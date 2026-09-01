@@ -44,7 +44,7 @@ blackbox.framework.inventory.microceph() {
     DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends ceph-common "${with_packages[@]}"
   }
 
-  snap install microceph
+  snap install microceph --channel="latest/stable"
 
   {
     rm -rf /etc/ceph
