@@ -27,7 +27,9 @@ blackbox.framework.inventory.microceph() {
 
   {
     # preinstalled setup fix: the existing jenkins installation is outdated for Ubuntu 24.04
-    snap remove microceph
+    rm /etc/ceph
+    snap remove --purge microceph
+    snap changes
   }
 
   if ( dpkg-query -L "$package_name" "${with_packages[@]}" &>/dev/null ); then
