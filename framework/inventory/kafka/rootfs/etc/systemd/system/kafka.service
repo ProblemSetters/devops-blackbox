@@ -1,13 +1,15 @@
 [Unit]
 Description=Apache Kafka Server
 Documentation=http://kafka.apache.org/documentation.html
-Requires=zookeeper.service
+Requires=network.target remote-fs.target
+After=network.target remote-fs.target
 
 [Service]
 Type=simple
-Environment="JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64"
+Environment="JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64"
 ExecStart=/usr/local/kafka/bin/kafka-server-start.sh /usr/local/kafka/config/server.properties
 ExecStop=/usr/local/kafka/bin/kafka-server-stop.sh
+Restart=on-abnormal
 
 [Install]
 WantedBy=multi-user.target

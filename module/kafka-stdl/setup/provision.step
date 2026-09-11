@@ -24,18 +24,110 @@ blackbox.module.kafka-stdl.setup.provision() {
   fi
 
   blackbox.framework.inventory.provision kafka && {
-    systemctl start kafka
+    xargs --replace="*" /usr/local/kafka/bin/kafka-storage.sh format --cluster-id="*" --config="/usr/local/kafka/config/server.properties" --standalone < <(
+      /usr/local/kafka/bin/kafka-storage.sh random-uuid
+    )
+
+    systemctl start kafka && {
+      sleep 10
+    }
   }
 
-  rm -f /usr/local/bin/solve
+  {
+    shopt -os allexport
+    . /etc/environment
+    shopt -ou allexport
+  }
 
   if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
     (
       printf "\n"
+
+      {
+        blackbox.framework.trace "BLACKBOX_PROVISION_WITH_OPTS" "$BLACKBOX_PROVISION_WITH_OPTS" <<<""
+      }
+
       printf "\033[0;36m** BLACKBOX_PROVISION_WITH_OPTS:\033[0m {...}\n"
+      printf "\033[0;37m%s\033[0m\n" "$(sed '1d; s/;$//g' <(declare -f BLACKBOX_PROVISION_WITH_OPTS))"
       printf "\033[0;37m--\033[0m\n"
-      cat -n <(eval "$BLACKBOX_PROVISION_WITH_OPTS")
+      cat -n <(eval "$(sed "1d" <(declare -f BLACKBOX_PROVISION_WITH_OPTS))")
       printf "\033[0;37m--\033[0m\n"
+      printf "\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+  fi
+
+  if [ -n "$BLACKBOX_HEAP_WITH_OPTS" ]; then
+    (
+      printf "\n"
+
+      {
+        blackbox.framework.trace "BLACKBOX_HEAP_WITH_OPTS" "$BLACKBOX_HEAP_WITH_OPTS" <<<""
+      }
+
+      printf "\033[0;36m** BLACKBOX_HEAP_WITH_OPTS:\033[0m {...}\n"
+      printf "\033[0;37m%s\033[0m\n" "$(sed '1d; s/;$//g' <(declare -f BLACKBOX_HEAP_WITH_OPTS))"
+      printf "\033[0;37m--\033[0m\n"
+      blackbox.framework.inventory.heap.allocate && {
+        cat -n <(eval "$(sed "1d" <(declare -f BLACKBOX_HEAP_WITH_OPTS))")
+        blackbox.framework.inventory.heap.release
+      }
+      printf "\033[0;37m--\033[0m\n"
+      printf "\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+  fi
+
+  if [ -n "$BLACKBOX_SNAPSHOT_WITH_OPTS" ]; then
+    (
+      {
+        blackbox.framework.trace "BLACKBOX_SNAPSHOT_WITH_OPTS" "$BLACKBOX_SNAPSHOT_WITH_OPTS" <<<""
+      }
+
+      printf "\033[0;36m** BLACKBOX_SNAPSHOT_WITH_OPTS:\033[0m {...}\n"
+      printf "\033[0;37m%s\033[0m\n" "$(sed '1d; s/;$//g' <(declare -f BLACKBOX_SNAPSHOT_WITH_OPTS))"
+      printf "\033[0;37m--\033[0m\n"
+
+      {
+        # bashsupport disable=BP2001
+        readarray -t collection < <(sed '1,2d; $d; s/^[[:space:]]\+//g; s/;$//g' <(declare -f BLACKBOX_SNAPSHOT_WITH_OPTS))
+
+        # bashsupport disable=BP2001
+        for option in "${collection[@]}"; do
+          {
+            blackbox.framework.trace "blackbox.framework.inventory.snapshot.push" "$option" <<<""
+          }
+
+          blackbox.framework.inventory.snapshot.push "$option"
+
+          {
+            blackbox.framework.trace "blackbox.framework.inventory.snapshot.digest" "$option" <<<""
+          }
+
+          # shellcheck disable=SC2155
+          local snapshot_digest=$(blackbox.framework.inventory.snapshot.digest "$option" 2>&1)
+
+          {
+            blackbox.framework.trace "blackbox.framework.inventory.snapshot.pull" "$option" <<<""
+          }
+
+          # shellcheck disable=SC2155
+          local snapshot_stream=$(cat -n <(blackbox.framework.inventory.snapshot.pull "$option" 2>&1))
+
+          printf "\033[0;37m--\033[0m\n"
+          printf "\033[0;37m%s\033[0m\n" "$(<"$snapshot_digest")"
+          printf "\033[0;37m--\033[0m\n"
+
+          if [ "$(wc -l <<<"$snapshot_stream")" -gt "$BLACKBOX_BUILD_STREAM_DISPLAY_LINES" ]; then
+            head -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$snapshot_stream"
+            printf "        ...\n"
+            tail -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$snapshot_stream"
+          else
+            cat <<<"${snapshot_stream:-"-empty-"}"
+          fi
+
+          printf "\033[0;37m--\033[0m\n"
+          printf "\n"
+        done
+      }
     ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
   fi
 }
