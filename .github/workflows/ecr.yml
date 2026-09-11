@@ -71,8 +71,8 @@ jobs:
           make \
             --file=Makefile.workflow \
             github:ecr:repository:charge \
-              gcc:15.2.0-alpine \
-              gcc:15.2.0-alpine
+              hr/gcc:15.2.0-alpine \
+              hr/gcc:15.2.0-alpine
       - name: Charge "134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/httpd"
         run: |
           make \
