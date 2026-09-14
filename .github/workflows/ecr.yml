@@ -63,6 +63,16 @@ jobs:
             github:ecr:repository:charge \
               public.ecr.aws/docker/library/gcc:latest@sha256:4e934397c1eaac263babffa0da20138052ec6098dd90830850eb168f38d55e87 \
               hr/gcc:latest
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:build \
+              hr/gcc/15.2.0-alpine \
+              hr/gcc:15.2.0-alpine
+          make \
+            --file=Makefile.workflow \
+            github:ecr:repository:charge \
+              hr/gcc:15.2.0-alpine \
+              hr/gcc:15.2.0-alpine
       - name: Charge "134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/httpd"
         run: |
           make \
