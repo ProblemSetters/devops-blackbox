@@ -24,5 +24,5 @@ blackbox.module.kubernetes-stdl.setup.provision() {
     blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
   }
 
-  rm -f /usr/local/bin/solve
+  rm -fv /usr/local/bin/solve
 }
