@@ -27,6 +27,11 @@ blackbox.module.git-stdl.check.evaluate() {
     "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.snapshot.collection"
   )
 
+  {
+    #TODO: possible movement to up
+    export HOME="/root"
+  }
+
   if ( blackbox.framework.flag.enabled STEP_EVALUATE ); then
     for namespace in "${from_namespace[@]}"; do
       # shellcheck disable=SC2155
