@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+# @file module/git-stdl/setup/provision.step
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/git-stdl/setup/provision.step
+# @description Git standalone module "setup" action "provision" step
+
+# @section blackbox.module.git-stdl.setup.*
+blackbox.module.git-stdl.setup.provision() {
+  # shellcheck disable=SC2034
+  typeset -a args=("$@")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<"provision"
+  }
+
+  if ( ! blackbox.framework.flag.enabled STEP_PROVISION ); then
+    (
+      printf "\033[0;36m** BLACKBOX_FLAG__STEP_PROVISION:\033[0m %s\n" "$BLACKBOX_FLAG__STEP_PROVISION"
+      printf "\033[0;37m--\033[0m\n"
+      cat -n <<<"BLACKBOX_FLAG__STEP_PROVISION=no"
+      printf "\033[0;37m--\033[0m\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+
+    return
+  fi
+
+  {
+    shopt -os allexport
+    . /etc/environment
+    shopt -ou allexport
+  }
+
+  blackbox.framework.inventory.provision git-daemon
+
+  {
+    systemctl daemon-reload
+    systemctl enable --now git-daemon
+  }
+
+  {
+    sudo -u git git init --bare -b main /srv/git/project.git
+  }
+
+  {
+    git config --system --add safe.directory "$BLACKBOX_USER_QUESTION_DIR"
+  }
+
+  rm -fv /usr/local/bin/solve
+
+  tee -a /etc/hosts < <(printf "127.0.0.1\trepository.local\n")
+
+  if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
+    (
+      printf "\n"
+
+      {
+        blackbox.framework.trace "BLACKBOX_PROVISION_WITH_OPTS" "$BLACKBOX_PROVISION_WITH_OPTS" <<<""
+      }
+
+      printf "\033[0;36m** BLACKBOX_PROVISION_WITH_OPTS:\033[0m {...}\n"
+      printf "\033[0;37m%s\033[0m\n" "$(sed '1d; s/;$//g' <(declare -f BLACKBOX_PROVISION_WITH_OPTS))"
+      printf "\033[0;37m--\033[0m\n"
+      cat -n <(eval "$(sed "1d" <(declare -f BLACKBOX_PROVISION_WITH_OPTS))")
+      printf "\033[0;37m--\033[0m\n"
+      printf "\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+  fi
+
+  if [ -n "$BLACKBOX_HEAP_WITH_OPTS" ]; then
+    (
+      printf "\n"
+
+      {
+        blackbox.framework.trace "BLACKBOX_HEAP_WITH_OPTS" "$BLACKBOX_HEAP_WITH_OPTS" <<<""
+      }
+
+      printf "\033[0;36m** BLACKBOX_HEAP_WITH_OPTS:\033[0m {...}\n"
+      printf "\033[0;37m%s\033[0m\n" "$(sed '1d; s/;$//g' <(declare -f BLACKBOX_HEAP_WITH_OPTS))"
+      printf "\033[0;37m--\033[0m\n"
+      blackbox.framework.inventory.heap.allocate && {
+        cat -n <(eval "$(sed "1d" <(declare -f BLACKBOX_HEAP_WITH_OPTS))")
+        blackbox.framework.inventory.heap.release
+      }
+      printf "\033[0;37m--\033[0m\n"
+      printf "\n"
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+  fi
+
+  if [ -n "$BLACKBOX_SNAPSHOT_WITH_OPTS" ]; then
+    (
+      {
+        blackbox.framework.trace "BLACKBOX_SNAPSHOT_WITH_OPTS" "$BLACKBOX_SNAPSHOT_WITH_OPTS" <<<""
+      }
+
+      printf "\033[0;36m** BLACKBOX_SNAPSHOT_WITH_OPTS:\033[0m {...}\n"
+      printf "\033[0;37m%s\033[0m\n" "$(sed '1d; s/;$//g' <(declare -f BLACKBOX_SNAPSHOT_WITH_OPTS))"
+      printf "\033[0;37m--\033[0m\n"
+
+      {
+        # bashsupport disable=BP2001
+        readarray -t collection < <(sed '1,2d; $d; s/^[[:space:]]\+//g; s/;$//g' <(declare -f BLACKBOX_SNAPSHOT_WITH_OPTS))
+
+        # bashsupport disable=BP2001
+        for option in "${collection[@]}"; do
+          {
+            blackbox.framework.trace "blackbox.framework.inventory.snapshot.push" "$option" <<<""
+          }
+
+          blackbox.framework.inventory.snapshot.push "$option"
+
+          {
+            blackbox.framework.trace "blackbox.framework.inventory.snapshot.digest" "$option" <<<""
+          }
+
+          # shellcheck disable=SC2155
+          local snapshot_digest=$(blackbox.framework.inventory.snapshot.digest "$option" 2>&1)
+
+          {
+            blackbox.framework.trace "blackbox.framework.inventory.snapshot.pull" "$option" <<<""
+          }
+
+          # shellcheck disable=SC2155
+          local snapshot_stream=$(cat -n <(blackbox.framework.inventory.snapshot.pull "$option" 2>&1))
+
+          printf "\033[0;37m--\033[0m\n"
+          printf "\033[0;37m%s\033[0m\n" "$(<"$snapshot_digest")"
+          printf "\033[0;37m--\033[0m\n"
+
+          if [ "$(wc -l <<<"$snapshot_stream")" -gt "$BLACKBOX_BUILD_STREAM_DISPLAY_LINES" ]; then
+            head -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$snapshot_stream"
+            printf "        ...\n"
+            tail -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$snapshot_stream"
+          else
+            cat <<<"${snapshot_stream:-"-empty-"}"
+          fi
+
+          printf "\033[0;37m--\033[0m\n"
+          printf "\n"
+        done
+      }
+    ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
+  fi
+}

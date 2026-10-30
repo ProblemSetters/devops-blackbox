@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# @file module/git-stdl.module
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/module/git-stdl.module
+# @description Git standalone module
+
+# @section blackbox.module.*
+blackbox.module.git-stdl() {
+  : <<< blackbox.framework.module.abstract
+}

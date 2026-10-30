@@ -9,7 +9,7 @@ Step "evaluate" score calculator
 ## Index
 
 * [blackbox.module.ceph-stdl.check.evaluate.score.calculate](#blackboxmoduleceph-stdlcheckevaluatescorecalculate)
-* [blackbox.module.ceph-stdl.check.evaluate.score.__init](#blackboxmoduleceph-stdlcheckevaluatescoreinit)
+* [blackbox.module.ceph-stdl.check.evaluate.score.__init](#blackboxmoduleceph-stdlcheckevaluatescore__init)
 
 ## blackbox.module.ceph-stdl.check.evaluate.score.*
 

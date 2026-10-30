@@ -9,7 +9,7 @@ Step "evaluate" score calculator
 ## Index
 
 * [blackbox.module.jenkins-stdl.check.evaluate.score.calculate](#blackboxmodulejenkins-stdlcheckevaluatescorecalculate)
-* [blackbox.module.jenkins-stdl.check.evaluate.score.__init](#blackboxmodulejenkins-stdlcheckevaluatescoreinit)
+* [blackbox.module.jenkins-stdl.check.evaluate.score.__init](#blackboxmodulejenkins-stdlcheckevaluatescore__init)
 
 ## blackbox.module.jenkins-stdl.check.evaluate.score.*
 

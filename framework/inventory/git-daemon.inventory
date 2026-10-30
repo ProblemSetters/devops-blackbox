@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# @file framework/inventory/git-daemon.inventory
+# @brief https://github.com/ProblemSetters/devops-blackbox/blob/2404/framework/inventory/git-daemon.inventory
+# @description Inventory "git-daemon"
+
+# @section blackbox.framework.inventory.*
+
+# Provisions the "git-daemon" inventory
+#
+# @arg $1 readonly,type=string,default=git-daemon Inventory name
+# @arg $2 type=...string Inventory additional packages
+#
+# @example
+#  # Provision the "git-daemon" inventory
+#  blackbox.framework.inventory.provision git-daemon
+#
+# @see blackbox.framework.inventory.provision
+blackbox.framework.inventory.git-daemon() {
+  typeset package_name=$1
+  typeset -a with_packages=("${@:2}")
+
+  {
+    blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
+  }
+
+  {
+    groupadd --system git
+    useradd --system -g git --home-dir /srv/git --shell /usr/sbin/nologin git
+  }
+
+  {
+    mkdir /srv/git
+    chown -R git: /srv/git
+  }
+
+  cp /blackbox/framework/inventory/git-daemon/rootfs/etc/systemd/system/git-daemon.service /etc/systemd/system/
+}

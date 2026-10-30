@@ -9,7 +9,7 @@ Step "evaluate" score calculator
 ## Index
 
 * [blackbox.module.redis-stdl.check.evaluate.score.calculate](#blackboxmoduleredis-stdlcheckevaluatescorecalculate)
-* [blackbox.module.redis-stdl.check.evaluate.score.__init](#blackboxmoduleredis-stdlcheckevaluatescoreinit)
+* [blackbox.module.redis-stdl.check.evaluate.score.__init](#blackboxmoduleredis-stdlcheckevaluatescore__init)
 
 ## blackbox.module.redis-stdl.check.evaluate.score.*
 

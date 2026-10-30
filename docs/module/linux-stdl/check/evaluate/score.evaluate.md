@@ -9,7 +9,7 @@ Step "evaluate" score calculator
 ## Index
 
 * [blackbox.module.linux-stdl.check.evaluate.score.calculate](#blackboxmodulelinux-stdlcheckevaluatescorecalculate)
-* [blackbox.module.linux-stdl.check.evaluate.score.__init](#blackboxmodulelinux-stdlcheckevaluatescoreinit)
+* [blackbox.module.linux-stdl.check.evaluate.score.__init](#blackboxmodulelinux-stdlcheckevaluatescore__init)
 
 ## blackbox.module.linux-stdl.check.evaluate.score.*
 

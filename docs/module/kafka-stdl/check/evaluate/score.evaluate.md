@@ -9,7 +9,7 @@ Step "evaluate" score calculator
 ## Index
 
 * [blackbox.module.kafka-stdl.check.evaluate.score.calculate](#blackboxmodulekafka-stdlcheckevaluatescorecalculate)
-* [blackbox.module.kafka-stdl.check.evaluate.score.__init](#blackboxmodulekafka-stdlcheckevaluatescoreinit)
+* [blackbox.module.kafka-stdl.check.evaluate.score.__init](#blackboxmodulekafka-stdlcheckevaluatescore__init)
 
 ## blackbox.module.kafka-stdl.check.evaluate.score.*
 

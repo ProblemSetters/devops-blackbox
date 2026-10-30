@@ -9,7 +9,7 @@ Step "evaluate" score calculator
 ## Index
 
 * [blackbox.module.docker-stdl.check.evaluate.score.calculate](#blackboxmoduledocker-stdlcheckevaluatescorecalculate)
-* [blackbox.module.docker-stdl.check.evaluate.score.__init](#blackboxmoduledocker-stdlcheckevaluatescoreinit)
+* [blackbox.module.docker-stdl.check.evaluate.score.__init](#blackboxmoduledocker-stdlcheckevaluatescore__init)
 
 ## blackbox.module.docker-stdl.check.evaluate.score.*
 

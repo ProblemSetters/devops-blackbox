@@ -5,10 +5,6 @@ ifeq ($(origin .FEATURES),undefined)
   $(error `make` executable version `$(MAKE_VERSION)` is not supported. GNU Make 4.3 or above is required)
 endif
 
-ifeq ($(words $(MAKEFILE_LIST)),1)
-  $(error `Makefile` should be included, direct usage is not allowed)
-endif
-
 ifeq ($(shell which gawk),)
   $(error `gawk` executable is required)
 endif
@@ -17,47 +13,76 @@ ifeq ($(shell which vagrant),)
   $(error `vagrant` executable is required)
 endif
 
-override SHELL:=/usr/bin/env bash -e +o pipefail
+ifeq ($(shell which xdg-open),)
+  $(error `xdg-open` executable is required)
+endif
+
+override SHELL:=/usr/bin/env bash
+override .SHELLFLAGS:=-eu -o pipefail -c
 
 ifeq ($(shell echo $$BASH),)
   $(error current shell executable is not supported. GNU Bash 5.1 or above is required)
 endif
 
-override blackbox/debug:=$(if $(filter debug,$(MAKECMDGOALS)),yes,no)
-override blackbox/host/blackbox/path:=$(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-override blackbox/host/question/path:=$(abspath $(dir $(firstword $(MAKEFILE_LIST))))
-override blackbox/spawn/blackbox/path:=/blackbox
-override blackbox/spawn/question/path:=/question
-override blackbox/spawn/id:=blackbox-$(shell basename $(blackbox/host/question/path) | cut --characters="1-36")
-override blackbox/spawn/cpu/limit=$(if $(filter yes,$(blackbox/debug)),$(shell nproc),4)
-override blackbox/spawn/memory/limit=$(if $(filter yes,$(blackbox/debug)),$(shell awk '/MemTotal/ { printf "%.0f\n", $$2 / 1024 }' /proc/meminfo),4096)
-override blackbox/spawn/disk/limit:=20G
-override blackbox/spawn/username:=ubuntu
+blackbox/debug:=$(if $(filter debug,$(MAKECMDGOALS)),yes,no)
+blackbox/@:=$(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+blackbox/state/@:=$(HOME)/.local/state/blackbox
+
+ifdef blackbox/question/
+  blackbox/question/@:=$(realpath $(dir $(firstword $(MAKEFILE_LIST))))
+else
+  blackbox/question/@:=$(or $(realpath $(filter /workspace/com.hackerrank/%,$(MAKECMDGOALS))),$(error question path is required))
+endif
+
+blackbox/question/*/@:=/question
+blackbox/question/*/blackbox/@:=/blackbox
+blackbox/question/*/id:=blackbox-$(notdir $(blackbox/question/@))
+blackbox/question/*/cpu/limit:=$(if $(filter yes,$(blackbox/debug)),$(shell nproc),4)
+blackbox/question/*/memory/limit:=4096
+blackbox/question/*/disk/limit:=20
+blackbox/question/*/shell/username:=ubuntu
+blackbox/question/*/vagrant/@:=$(blackbox/state/@)/$(blackbox/question/*/id)
+
+define blackbox/exec=
+mkdir -p $(blackbox/state/@)
+exec {__}<$(blackbox/state/@)/; \
+flock -n "$$__" || { printf -- "Error: parallel run detected.\n"; exit 1; }; \
+$(if $(blackbox/question/),,pushd $(blackbox/question/@);) \
+($(1)) 2>&1; \
+$(if $(blackbox/question/),,popd;) \
+exec {__}<&-
+endef
+
+define blackbox/question/*/check=
+vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION) BLACKBOX_FLAG__STEP_BUILD=$(BLACKBOX_FLAG__STEP_BUILD) BLACKBOX_FLAG__STEP_EVALUATE=$(BLACKBOX_FLAG__STEP_EVALUATE) bash $(blackbox/question/*/@)/check.sh" $(blackbox/question/*/id) 2>&1 | tee >(awk '/Partial Credit/ { if (!reset) { reset = 1; next }; total_score += $$3; ok += ($$3 > 0); failed += ($$3 == 0) } END { printf("\n--\nSuccess: %d\nFail: %d\n\nTotal: %d\n--\n\nTotal Credit: %d\n", ok, failed, ok + failed, total_score) }')
+endef
 
 export VAGRANT_DEBUG=$(blackbox/debug)
-export VAGRANT_HOST_BLACKBOX_PATH=$(blackbox/host/blackbox/path)
-export VAGRANT_HOST_QUESTION_PATH=$(blackbox/host/question/path)
-export VAGRANT_SPAWN_ID=$(blackbox/spawn/id)
-export VAGRANT_SPAWN_BLACKBOX_PATH=$(blackbox/spawn/blackbox/path)
-export VAGRANT_SPAWN_QUESTION_PATH=$(blackbox/spawn/question/path)
-export VAGRANT_CPU_LIMIT=$(blackbox/spawn/cpu/limit)
-export VAGRANT_MEMORY_LIMIT=$(blackbox/spawn/memory/limit)
-export VAGRANT_VAGRANTFILE=$(blackbox/host/blackbox/path)/Vagrantfile
+export VAGRANT_HOST_BLACKBOX_PATH=$(blackbox/@)
+export VAGRANT_HOST_QUESTION_PATH=$(blackbox/question/@)
+export VAGRANT_SPAWN_ID=$(blackbox/question/*/id)
+export VAGRANT_SPAWN_BLACKBOX_PATH=$(blackbox/question/*/blackbox/@)
+export VAGRANT_SPAWN_QUESTION_PATH=$(blackbox/question/*/@)
+export VAGRANT_CPU_LIMIT=$(blackbox/question/*/cpu/limit)
+export VAGRANT_MEMORY_LIMIT=$(blackbox/question/*/memory/limit)
+export VAGRANT_DISK_LIMIT=$(blackbox/question/*/disk/limit)
+export VAGRANT_DOTFILE_PATH=$(blackbox/question/*/vagrant/@)
+export VAGRANT_VAGRANTFILE=$(blackbox/@)/Vagrantfile
 
-BLACKBOX_FLAG__DEBUG_MODE=$(blackbox/debug)
-BLACKBOX_FLAG__STEP_PROVISION:=yes
-BLACKBOX_FLAG__STEP_BUILD:=yes
-BLACKBOX_FLAG__STEP_EVALUATE:=yes
+export BLACKBOX_FLAG__DEBUG_MODE=$(blackbox/debug)
+export BLACKBOX_FLAG__STEP_PROVISION?=yes
+export BLACKBOX_FLAG__STEP_BUILD?=yes
+export BLACKBOX_FLAG__STEP_EVALUATE:=yes
 
 debug: ;@:
-	$(foreach variable,$(filter blackbox/%,$(sort $(.VARIABLES))),$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
-	$(info $(shell printf "\033[0;37m%s\033[0m" \\))
-	$(foreach variable,$(filter VAGRANT_%,$(sort $(.VARIABLES))),$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
-	$(info $(shell printf "\033[0;37m%s\033[0m" \\))
-	$(foreach variable,BLACKBOX_FLAG__DEBUG_MODE BLACKBOX_FLAG__STEP_PROVISION BLACKBOX_FLAG__STEP_BUILD BLACKBOX_FLAG__STEP_EVALUATE,$(info $(shell printf "\033[0;37m%s = %s\033[0m" "$(variable)" "$($(variable))")))
-	$(if $(and $(filter-out $(words $(MAKECMDGOALS)),0),$(filter-out $(words $(MAKECMDGOALS)),1)),$(info $(shell printf "\033[0;37m%s\033[0m" --)))
-
-all: uninstall install setup save solve check restore check
+ifdef blackbox/question/
+	$(foreach variable,$(filter-out blackbox/question/*/check,$(filter-out blackbox/exec,$(filter blackbox/%,$(sort $(.VARIABLES))))),$(info $(shell printf -- '\033[0;37m%s = %s\033[0m' '$(variable)' "$(subst $$,\$$,$(value $(variable)))")))
+	$(info $(shell printf -- '\033[0;37m%s\033[0m' \\))
+	$(foreach variable,$(filter VAGRANT_%,$(sort $(.VARIABLES))),$(info $(shell printf -- '\033[0;37m%s = %s\033[0m' '$(variable)' "$(subst $$,\$$,$($(variable)))")))
+	$(info $(shell printf -- '\033[0;37m%s\033[0m' \\))
+	$(foreach variable,BLACKBOX_FLAG__DEBUG_MODE BLACKBOX_FLAG__STEP_PROVISION BLACKBOX_FLAG__STEP_BUILD BLACKBOX_FLAG__STEP_EVALUATE,$(info $(shell printf -- '\033[0;37m%s = %s\033[0m' '$(variable)' "$(subst $$,\$$,$($(variable)))")))
+	$(if $(and $(filter-out $(words $(MAKECMDGOALS)),0),$(filter-out $(words $(MAKECMDGOALS)),1)),$(info $(shell printf -- '\033[0;37m%s\033[0m' --)))
+endif
 
 up: uninstall install setup save
 
@@ -65,42 +90,61 @@ up: uninstall install setup save
 
 0: restore check
 
+status:
+	$(call blackbox/exec,vagrant status $(if $(blackbox/question/),,--machine-readable) $(blackbox/question/*/id))
+
 install:
-	vagrant --no-color up $(blackbox/spawn/id)
-	vagrant --no-color snapshot save -f $(blackbox/spawn/id) install
+	$(if $(filter-out not_created,$(shell sed -n 's/.*,state,\([^,]*\)$$/\1/p' < <(vagrant status --machine-readable $(blackbox/question/*/id)))),$(error question is running; run `make uninstall` first))
+	$(call blackbox/exec,vagrant up $(blackbox/question/*/id) && vagrant snapshot save -f $(blackbox/question/*/id) install)
 
 reinstall:
-	vagrant --no-color snapshot restore $(blackbox/spawn/id) install
+	$(call blackbox/exec,vagrant snapshot restore $(blackbox/question/*/id) install)
 
 setup:
-	vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) bash $(blackbox/spawn/question/path)/setup.sh" $(blackbox/spawn/id)
+	$(call blackbox/exec,vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) bash $(blackbox/question/*/@)/setup.sh" $(blackbox/question/*/id))
 
 save:
-	vagrant --no-color snapshot save -f $(blackbox/spawn/id) latest
+	$(call blackbox/exec,vagrant snapshot save -f $(blackbox/question/*/id) latest)
 
 restore:
-	vagrant --no-color snapshot restore $(blackbox/spawn/id) latest
+	$(call blackbox/exec,vagrant snapshot restore $(blackbox/question/*/id) latest)
 
 solve:
-	vagrant ssh --command="sudo bash $(blackbox/spawn/question/path)/solve.sh" $(blackbox/spawn/id)
+	$(call blackbox/exec,vagrant ssh --command="sudo -u $(blackbox/question/*/shell/username) bash $(blackbox/question/*/@)/solve.sh" $(blackbox/question/*/id))
 
 check:
-	vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION) BLACKBOX_FLAG__STEP_BUILD=$(BLACKBOX_FLAG__STEP_BUILD) BLACKBOX_FLAG__STEP_EVALUATE=$(BLACKBOX_FLAG__STEP_EVALUATE) bash $(blackbox/spawn/question/path)/check.sh" $(blackbox/spawn/id) | tee >(awk '/Partial Credit/ { if (!reset) { reset = 1; next }; total_score += $$3; ok += ($$3 > 0); failed += ($$3 == 0) } END { printf("\n--\nSuccess: %d\nFail: %d\n\nTotal: %d\n--\n\nTotal Credit: %d\n", ok, failed, ok + failed, total_score) }')
+	$(call blackbox/exec,$(call blackbox/question/*/check))
 
 check\:evaluate:
 	$(eval BLACKBOX_FLAG__STEP_PROVISION:=no)
 	$(eval BLACKBOX_FLAG__STEP_BUILD:=no)
-	$(MAKE) check
+	$(call blackbox/exec,$(call blackbox/question/*/check))
 
 shell:
-	vagrant ssh $(blackbox/spawn/id) --command="sudo su - $(blackbox/spawn/username)"
+	vagrant ssh $(blackbox/question/*/id) --command="sudo su - $(blackbox/question/*/shell/username)"
+
+shell\:exec:
+	$(call blackbox/exec,vagrant ssh $(blackbox/question/*/id) --command="sudo -u $(blackbox/question/*/shell/username) bash -s" </dev/stdin)
+
+ping:
+	$(call blackbox/exec,sleep 10 && printf -- "pong\n")
 
 uninstall:
-	vagrant destroy -f
-	rm -rf .vagrant
+	$(call blackbox/exec,vagrant destroy -f $(blackbox/question/*/id) && rm -rf $(blackbox/question/*/vagrant/@))
+
+prune: .confirm
+	rm -rf $(blackbox/state/@)
+
+.confirm:
+	@printf "Are you sure you want to continue? [y/N]: "; read confirmation && [ "$${confirmation:-N}" == "y" ]
+	@echo
 
 gh:
-	grep -o "https://github.com.*" "$(blackbox/host/question/path)/README.md" | xargs -r xdg-open &>/dev/null
+	xargs -r xdg-open &>/dev/null < <(grep -o "https://github.com.*" "$(blackbox/question/@)/README.md")
 
 hr:
-	grep -o "https://www.hackerrank.com.*" "$(blackbox/host/question/path)/README.md" | xargs -r xdg-open &>/dev/null
+	xargs -r xdg-open &>/dev/null < <(grep -o "https://www.hackerrank.com.*" "$(blackbox/question/@)/README.md")
+
+$(blackbox/question/@): ;@:
+
+.PHONY: debug status install reinstall setup save restore solve check check\:evaluate shell\:exec ping uninstall $(blackbox/question/@)
