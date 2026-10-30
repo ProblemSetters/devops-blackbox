@@ -41,6 +41,7 @@ blackbox.module.git-stdl.setup.provision() {
   }
 
   {
+    git config --system --add safe.directory "$BLACKBOX_HEAP_DIR"
     git config --system --add safe.directory "$BLACKBOX_USER_QUESTION_DIR"
   }
 
