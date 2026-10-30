@@ -17,7 +17,7 @@ Inventory handler
 * [blackbox.framework.inventory.snapshot.pull](#blackboxframeworkinventorysnapshotpull)
 * [blackbox.framework.inventory.snapshot.digest](#blackboxframeworkinventorysnapshotdigest)
 * [blackbox.framework.inventory.snapshot.verify](#blackboxframeworkinventorysnapshotverify)
-* [blackbox.framework.inventory.snapshot.__init](#blackboxframeworkinventorysnapshotinit)
+* [blackbox.framework.inventory.snapshot.__init](#blackboxframeworkinventorysnapshot__init)
 * [blackbox.framework.inventory.ecr.token.read](#blackboxframeworkinventoryecrtokenread)
 * [blackbox.framework.inventory.ecr.token.login](#blackboxframeworkinventoryecrtokenlogin)
 * [blackbox.framework.inventory.ecr.login](#blackboxframeworkinventoryecrlogin)

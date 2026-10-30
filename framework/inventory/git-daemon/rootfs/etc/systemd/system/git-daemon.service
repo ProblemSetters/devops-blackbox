@@ -1,0 +1,14 @@
+[Unit]
+Description=Start Git Daemon
+Documentation=https://git-scm.com/book/en/v2/Git-on-the-Server-Git-Daemon
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/git daemon --reuseaddr --base-path=/srv/git --export-all --enable=receive-pack /srv/git
+Restart=always
+RestartSec=500ms
+User=git
+Group=git
+
+[Install]
+WantedBy=multi-user.target

@@ -9,7 +9,7 @@ Step "evaluate" score calculator
 ## Index
 
 * [blackbox.module.kubernetes-stdl.check.evaluate.score.calculate](#blackboxmodulekubernetes-stdlcheckevaluatescorecalculate)
-* [blackbox.module.kubernetes-stdl.check.evaluate.score.__init](#blackboxmodulekubernetes-stdlcheckevaluatescoreinit)
+* [blackbox.module.kubernetes-stdl.check.evaluate.score.__init](#blackboxmodulekubernetes-stdlcheckevaluatescore__init)
 
 ## blackbox.module.kubernetes-stdl.check.evaluate.score.*
 

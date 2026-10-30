@@ -9,7 +9,7 @@ Step "evaluate" score calculator
 ## Index
 
 * [blackbox.module.aws-stdl.check.evaluate.score.calculate](#blackboxmoduleaws-stdlcheckevaluatescorecalculate)
-* [blackbox.module.aws-stdl.check.evaluate.score.__init](#blackboxmoduleaws-stdlcheckevaluatescoreinit)
+* [blackbox.module.aws-stdl.check.evaluate.score.__init](#blackboxmoduleaws-stdlcheckevaluatescore__init)
 
 ## blackbox.module.aws-stdl.check.evaluate.score.*
 

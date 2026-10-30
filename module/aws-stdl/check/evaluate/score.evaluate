@@ -6,7 +6,7 @@
 # @section blackbox.module.aws-stdl.check.evaluate.*
 blackbox.module.aws-stdl.check.evaluate.score() {
   # shellcheck disable=SC2155
-  export BLACKBOX_CHECK_EVALUATE_SCORE_CALCULATE_CACHE=$(mktemp calculate.cache.XXXXXXX)
+  export BLACKBOX_CHECK_EVALUATE_SCORE_CALCULATE_CACHE=$(mktemp --tmpdir="/tmp" calculate.cache.XXXXXXX)
   # @section blackbox.module.aws-stdl.check.evaluate.score.*
 
   # Calculates a score of question
