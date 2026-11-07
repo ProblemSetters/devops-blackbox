@@ -55,10 +55,10 @@ blackbox.framework.module.abstract.setup.provision() {
     shopt -ou allexport
   }
 
+  printf "\n"
+
   if [ -n "$BLACKBOX_PROVISION_WITH_OPTS" ]; then
     (
-      printf "\n"
-
       {
         blackbox.framework.trace "BLACKBOX_PROVISION_WITH_OPTS" "$BLACKBOX_PROVISION_WITH_OPTS" <<<""
       }
@@ -74,8 +74,6 @@ blackbox.framework.module.abstract.setup.provision() {
 
   if [ -n "$BLACKBOX_HEAP_WITH_OPTS" ]; then
     (
-      printf "\n"
-
       {
         blackbox.framework.trace "BLACKBOX_HEAP_WITH_OPTS" "$BLACKBOX_HEAP_WITH_OPTS" <<<""
       }
