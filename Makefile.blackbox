@@ -5,6 +5,10 @@ ifeq ($(origin .FEATURES),undefined)
   $(error `make` executable version `$(MAKE_VERSION)` is not supported. GNU Make 4.3 or above is required)
 endif
 
+ifndef HACKERRANK_TOOLS_BLACKBOX_DEVOPS_PATH
+  $(error `HACKERRANK_TOOLS_BLACKBOX_DEVOPS_PATH` variable is required)
+endif
+
 ifeq ($(shell which gawk),)
   $(error `gawk` executable is required)
 endif
@@ -26,22 +30,27 @@ endif
 
 blackbox/debug:=$(if $(filter debug,$(MAKECMDGOALS)),yes,no)
 blackbox/@:=$(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+blackbox/ecr/@:=$(blackbox/@)/.ecr
 blackbox/state/@:=$(HOME)/.local/state/blackbox
 
 ifdef blackbox/question/
   blackbox/question/@:=$(realpath $(dir $(firstword $(MAKEFILE_LIST))))
 else
-  blackbox/question/@:=$(or $(realpath $(filter /workspace/com.hackerrank/%,$(MAKECMDGOALS))),$(error question path is required))
+  blackbox/question/@:=$(if $(filter-out global-status,$(filter-out debug,$(MAKECMDGOALS))),$(or $(realpath $(filter /workspace/com.hackerrank/%,$(MAKECMDGOALS))),$(error question path is required)))
 endif
 
 blackbox/question/*/@:=/question
 blackbox/question/*/blackbox/@:=/blackbox
+blackbox/question/*/blackbox/ecr/@:=/run/hackerrank/devops-ecr
 blackbox/question/*/id:=blackbox-$(notdir $(blackbox/question/@))
-blackbox/question/*/cpu/limit:=$(if $(filter yes,$(blackbox/debug)),$(shell nproc),4)
+blackbox/question/*/cpu/limit:=$(if $(filter yes,$(blackbox/debug)),$(shell nproc | awk '{ print int($$1 / 2) }'),4)
 blackbox/question/*/memory/limit:=4096
-blackbox/question/*/disk/limit:=20
 blackbox/question/*/shell/username:=ubuntu
 blackbox/question/*/vagrant/@:=$(blackbox/state/@)/$(blackbox/question/*/id)
+
+define blackbox/global-status=
+$(addprefix question VM: ,$(or $(notdir $(wildcard $(blackbox/state/@)/blackbox-*)),none))
+endef
 
 define blackbox/exec=
 mkdir -p $(blackbox/state/@)
@@ -54,19 +63,20 @@ exec {__}<&-
 endef
 
 define blackbox/question/*/check=
-vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION) BLACKBOX_FLAG__STEP_BUILD=$(BLACKBOX_FLAG__STEP_BUILD) BLACKBOX_FLAG__STEP_EVALUATE=$(BLACKBOX_FLAG__STEP_EVALUATE) bash $(blackbox/question/*/@)/check.sh" $(blackbox/question/*/id) 2>&1 | tee >(awk '/Partial Credit/ { if (!reset) { reset = 1; next }; total_score += $$3; ok += ($$3 > 0); failed += ($$3 == 0) } END { printf("\n--\nSuccess: %d\nFail: %d\n\nTotal: %d\n--\n\nTotal Credit: %d\n", ok, failed, ok + failed, total_score) }')
+vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) BLACKBOX_FLAG__STEP_PROVISION=$(BLACKBOX_FLAG__STEP_PROVISION) BLACKBOX_FLAG__STEP_BUILD=$(BLACKBOX_FLAG__STEP_BUILD) BLACKBOX_FLAG__STEP_EVALUATE=$(BLACKBOX_FLAG__STEP_EVALUATE) TERM=xterm-256color bash $(blackbox/question/*/@)/check.sh" $(blackbox/question/*/id) 2>&1 | tee >(awk '/Partial Credit/ { if (!reset) { reset = 1; next }; total_score += $$3; ok += ($$3 > 0); failed += ($$3 == 0) } END { printf("--\nSuccess: %d\nFail: %d\n\nTotal: %d\n--\n\nTotal Credit: %d\n", ok, failed, ok + failed, total_score) }')
 endef
 
 export VAGRANT_DEBUG=$(blackbox/debug)
+export VAGRANT_DOTFILE_PATH=$(blackbox/question/*/vagrant/@)
+export VAGRANT_CPU_LIMIT=$(blackbox/question/*/cpu/limit)
+export VAGRANT_HOST_ECR_PATH=$(blackbox/ecr/@)
 export VAGRANT_HOST_BLACKBOX_PATH=$(blackbox/@)
 export VAGRANT_HOST_QUESTION_PATH=$(blackbox/question/@)
+export VAGRANT_MEMORY_LIMIT=$(blackbox/question/*/memory/limit)
 export VAGRANT_SPAWN_ID=$(blackbox/question/*/id)
 export VAGRANT_SPAWN_BLACKBOX_PATH=$(blackbox/question/*/blackbox/@)
+export VAGRANT_SPAWN_ECR_PATH=$(blackbox/question/*/blackbox/ecr/@)
 export VAGRANT_SPAWN_QUESTION_PATH=$(blackbox/question/*/@)
-export VAGRANT_CPU_LIMIT=$(blackbox/question/*/cpu/limit)
-export VAGRANT_MEMORY_LIMIT=$(blackbox/question/*/memory/limit)
-export VAGRANT_DISK_LIMIT=$(blackbox/question/*/disk/limit)
-export VAGRANT_DOTFILE_PATH=$(blackbox/question/*/vagrant/@)
 export VAGRANT_VAGRANTFILE=$(blackbox/@)/Vagrantfile
 
 export BLACKBOX_FLAG__DEBUG_MODE=$(blackbox/debug)
@@ -90,27 +100,31 @@ up: uninstall install setup save
 
 0: restore check
 
-status:
-	$(call blackbox/exec,vagrant status $(if $(blackbox/question/),,--machine-readable) $(blackbox/question/*/id))
+global-status:
+	echo $(call blackbox/global-status)
 
-install:
-	$(if $(filter-out not_created,$(shell sed -n 's/.*,state,\([^,]*\)$$/\1/p' < <(vagrant status --machine-readable $(blackbox/question/*/id)))),$(error question is running; run `make uninstall` first))
-	$(call blackbox/exec,vagrant up $(blackbox/question/*/id) && vagrant snapshot save -f $(blackbox/question/*/id) install)
+status:
+	$(call blackbox/exec,vagrant --color status $(if $(blackbox/question/),,--machine-readable) $(blackbox/question/*/id))
+
+install: .ecr
+	$(if $(filter-out question VM: none,$(call blackbox/global-status)),$(error question VM `$(shell basename $(wildcard $(blackbox/state/@)/blackbox-*))` is running; run `make uninstall` on it first))
+	$(call blackbox/exec,vagrant --color up $(blackbox/question/*/id) && vagrant --color snapshot save -f $(blackbox/question/*/id) "install")
 
 reinstall:
-	$(call blackbox/exec,vagrant snapshot restore $(blackbox/question/*/id) install)
+	$(call blackbox/exec,vagrant --color snapshot restore $(blackbox/question/*/id) "install")
 
 setup:
-	$(call blackbox/exec,vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) bash $(blackbox/question/*/@)/setup.sh" $(blackbox/question/*/id))
+	$(call blackbox/exec,vagrant ssh --command="sudo BLACKBOX_FLAG__DEBUG_MODE=$(BLACKBOX_FLAG__DEBUG_MODE) TERM=xterm-256color bash $(blackbox/question/*/@)/setup.sh" $(blackbox/question/*/id))
 
 save:
-	$(call blackbox/exec,vagrant snapshot save -f $(blackbox/question/*/id) latest)
+	$(call blackbox/exec,vagrant --color snapshot save -f $(blackbox/question/*/id) "latest")
 
 restore:
-	$(call blackbox/exec,vagrant snapshot restore $(blackbox/question/*/id) latest)
+	$(call blackbox/exec,vagrant --color snapshot restore $(blackbox/question/*/id) "latest")
 
 solve:
-	$(call blackbox/exec,vagrant ssh --command="sudo -u $(blackbox/question/*/shell/username) bash $(blackbox/question/*/@)/solve.sh" $(blackbox/question/*/id))
+	$(call blackbox/exec,vagrant ssh --command="sudo -u $(blackbox/question/*/shell/username) TERM=xterm-256color bash $(blackbox/question/*/@)/solve.sh" $(blackbox/question/*/id))
+	$(call blackbox/exec,vagrant ssh --command="sudo -u $(blackbox/question/*/shell/username) TERM=xterm-256color bash -c '[ ! -x /usr/local/bin/solve ] && exit; pushd /home/ubuntu/question; /usr/local/bin/solve'" $(blackbox/question/*/id))
 
 check:
 	$(call blackbox/exec,$(call blackbox/question/*/check))
@@ -121,19 +135,32 @@ check\:evaluate:
 	$(call blackbox/exec,$(call blackbox/question/*/check))
 
 shell:
-	vagrant ssh $(blackbox/question/*/id) --command="sudo su - $(blackbox/question/*/shell/username)"
+ifdef blackbox/question/
+	vagrant ssh --command="sudo su - $(blackbox/question/*/shell/username)" $(blackbox/question/*/id)
+else
+	$(call blackbox/exec,vagrant ssh --command="sudo -u $(blackbox/question/*/shell/username) bash -s" </dev/stdin)
+endif
 
-shell\:exec:
-	$(call blackbox/exec,vagrant ssh $(blackbox/question/*/id) --command="sudo -u $(blackbox/question/*/shell/username) bash -s" </dev/stdin)
+shell\:spawn:
+	vagrant ssh --command="docker exec -it blackbox-spawn $(SHELL)" $(blackbox/question/*/id)
 
 ping:
 	$(call blackbox/exec,sleep 10 && printf -- "pong\n")
 
+.ecr:
+	mkdir -p $(blackbox/ecr/@)
+ifeq ($(shell find $(blackbox/ecr/@) -maxdepth 0 -newermt "6 hours ago" 2>/dev/null),)
+	touch $(blackbox/ecr/@)
+	xargs printf -- "Private ECR token: %s**\n" < <(cut -c 1-7 <(tee $(blackbox/ecr/@)/private-password < <(docker run -i --rm --env-file="$(blackbox/@)/.env" amazon/aws-cli ecr get-login-password)))
+	xargs printf -- "Public ECR token: %s**\n" < <(cut -c 1-7 <(tee $(blackbox/ecr/@)/public-password < <(docker run -i --rm --env-file="$(blackbox/@)/.env" amazon/aws-cli ecr-public get-login-password)))
+endif
+
 uninstall:
-	$(call blackbox/exec,vagrant destroy -f $(blackbox/question/*/id) && rm -rf $(blackbox/question/*/vagrant/@))
+	$(call blackbox/exec,vagrant --color destroy -f $(blackbox/question/*/id) && rm -rfv $(blackbox/question/*/vagrant/@))
 
 prune: .confirm
-	rm -rf $(blackbox/state/@)
+	find $(blackbox/state/@) -mindepth 1 -maxdepth 1 -type d -exec rm -rfv {} +
+	rm -rfv $(blackbox/ecr/@)
 
 .confirm:
 	@printf "Are you sure you want to continue? [y/N]: "; read confirmation && [ "$${confirmation:-N}" == "y" ]
@@ -147,4 +174,6 @@ hr:
 
 $(blackbox/question/@): ;@:
 
-.PHONY: debug status install reinstall setup save restore solve check check\:evaluate shell\:exec ping uninstall $(blackbox/question/@)
+.PHONY: debug global-status status install setup save restore solve check check\:evaluate shell ping uninstall .ecr $(blackbox/question/@)
+
+.SILENT:

@@ -24,8 +24,6 @@ blackbox.module.docker-stdl.check.evaluate.expect.shell() {
     # shellcheck disable=SC2155
     declare assert=$(</dev/stdin)
 
-    printf "\n"
-
     {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
@@ -36,6 +34,7 @@ blackbox.module.docker-stdl.check.evaluate.expect.shell() {
       printf "\033[0;37m--\033[0m\n"
       printf "\033[0;37m%s\033[0m\n" "$(cat -n <("$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${assert}"))"
       printf "\033[0;37m--\033[0m\n"
+      printf "\n"
     ) | if (tput setaf &>/dev/null); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi
 
     kill $$
@@ -65,8 +64,6 @@ blackbox.module.docker-stdl.check.evaluate.expect.shell() {
     typeset message_true=$2
     typeset message_false=$3
     typeset message_args=("${@:4}")
-
-    printf "\n"
 
     {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
@@ -106,8 +103,6 @@ blackbox.module.docker-stdl.check.evaluate.expect.shell() {
     typeset message_false=$3
     typeset message_args=("${@:4}")
 
-    printf "\n"
-
     {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
@@ -145,8 +140,6 @@ blackbox.module.docker-stdl.check.evaluate.expect.shell() {
     typeset message_true=$2
     typeset message_false=$3
     typeset message_args=("${@:4}")
-
-    printf "\n"
 
     {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
@@ -186,13 +179,11 @@ blackbox.module.docker-stdl.check.evaluate.expect.shell() {
     typeset message_false=$3
     typeset message_args=("${@:4}")
 
-    printf "\n"
-
     {
       blackbox.framework.trace "${FUNCNAME[0]}" "$*" <<<""
     }
 
-    if ("$BASH" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}"); then
+    if ("$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" &>/dev/null <<<"source /blackbox/blackbox &>/dev/null; ${assert}"); then
       # shellcheck disable=SC2059
       blackbox.module.docker-stdl.check.evaluate.assert.true "$assert" "$score" "$(printf "$message_true" "${message_args[@]:-%s}")"
     else

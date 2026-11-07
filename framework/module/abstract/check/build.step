@@ -79,21 +79,26 @@ blackbox.framework.module.abstract.check.build() {
   ) | if ( tput setaf &>/dev/null ); then cat; else sed "s/\x1b\[[0-9;]*m//g"; fi | sed "s/Partial Credit/***/g"
 
   if [ -n "$BLACKBOX_BUILD_WITH_OPTS" ]; then
-    # shellcheck disable=SC2155
-    local build_with_opts_stream=$(cat -n <(tee -a "$BLACKBOX_BUILD_LOG" < <(sed "s/\x1b\[[0-9;]*m//g" <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin "$BLACKBOX_MODULE_NAME" "$BLACKBOX_MODULE_ACTION_NAME" "$BLACKBOX_QUESTION_ID" 2>&1 <<<"source /blackbox/blackbox &>/dev/null; ${BLACKBOX_BUILD_WITH_OPTS}"))))
-
     (
       printf "\n"
+
+      {
+        blackbox.framework.trace "BLACKBOX_BUILD_WITH_OPTS" "$BLACKBOX_BUILD_WITH_OPTS" <<<""
+      }
+
+      # shellcheck disable=SC2155
+      local build_with_opts_stream=$(cat -n <(tee -a "$BLACKBOX_BUILD_LOG" < <(sed "s/\x1b\[[0-9;]*m//g" <(docker exec -i -w "$BLACKBOX_USER_QUESTION_DIR" "$BLACKBOX_SPAWN" "$BASH" /dev/stdin 2>&1 < <(sed "1c\source /blackbox/blackbox &>/dev/null" <(declare -f BLACKBOX_BUILD_WITH_OPTS))))))
+
       printf "\033[0;36m** BLACKBOX_BUILD_WITH_OPTS:\033[0m {...} \033[0;37m> %s (%d bytes)\033[0m\n" "$BLACKBOX_BUILD_LOG" "$(stat -c "%s" "$BLACKBOX_BUILD_LOG")"
-      printf "\033[0;37m%s\033[0m\n" "$BLACKBOX_BUILD_WITH_OPTS"
+      printf "\033[0;37m%s\033[0m\n" "$(sed '1d; s/;$//g' <(declare -f BLACKBOX_BUILD_WITH_OPTS))"
       printf "\033[0;37m--\033[0m\n"
 
       if [ "$(wc -l <<<"$build_with_opts_stream")" -gt "$BLACKBOX_BUILD_STREAM_DISPLAY_LINES" ]; then
-        printf "\033[0;38m%s\n" "$(head -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$build_with_opts_stream")"
-        printf "\033[0;37m        ...\033[0m\n"
-        printf "\033[0;38m%s\033[0m\n" "$(tail -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$build_with_opts_stream")"
+        head -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$build_with_opts_stream"
+        printf "        ...\n"
+        tail -n "$(awk '{ printf "%.0f", sqrt($1); }' <<<"$BLACKBOX_BUILD_STREAM_DISPLAY_LINES")" <<<"$build_with_opts_stream"
       else
-        printf "\033[0;38m%s\033[0m\n" "$build_with_opts_stream"
+        cat <<<"${build_with_opts_stream:-"-empty-"}"
       fi
 
       printf "\033[0;37m--\033[0m\n"
