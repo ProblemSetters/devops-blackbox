@@ -2,7 +2,7 @@ FROM 134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/ubuntu:24.04
 
 COPY rootfs/ /
 
-ENV BLACKBOX=134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2404:test-abstract
+ENV BLACKBOX=134148934511.dkr.ecr.us-east-1.amazonaws.com/hr/blackbox_2404:abstract
 
 RUN apt \
       update \
