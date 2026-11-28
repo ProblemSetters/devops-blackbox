@@ -24,7 +24,10 @@ blackbox.module.docker-stdl.check.evaluate() {
     "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.shell.stderr"
     "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.shell.stdout"
     "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.shell.success"
+    "blackbox.module.${BLACKBOX_MODULE_NAME}.check.evaluate.expect.snapshot.collection"
   )
+
+  printf "\n"
 
   if ( blackbox.framework.flag.enabled STEP_EVALUATE ); then
     for namespace in "${from_namespace[@]}"; do

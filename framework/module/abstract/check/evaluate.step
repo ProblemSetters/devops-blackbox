@@ -37,6 +37,7 @@ blackbox.framework.module.abstract.check.evaluate() {
     blackbox.framework.module.abstract.check.evaluate.expect.shell.stderr
     blackbox.framework.module.abstract.check.evaluate.expect.shell.stdout
     blackbox.framework.module.abstract.check.evaluate.expect.shell.success
+    blackbox.framework.module.abstract.check.evaluate.expect.snapshot.collection
   )
 
   if ( blackbox.framework.flag.enabled STEP_EVALUATE ); then

@@ -5,10 +5,13 @@ Vagrant.configure("2") do |config|
 
   config.vm.define ENV["VAGRANT_SPAWN_ID"] do |machine|
     machine.vm.provider "libvirt" do |lv|
-      lv.default_prefix = ""
+      lv.cpu_mode = "host-passthrough"
       lv.cpus = ENV["VAGRANT_CPU_LIMIT"].to_i
+      lv.default_prefix = ""
+      lv.disk_driver :cache => "writeback"
+      lv.driver = "kvm"
+      lv.graphics_type = "none"
       lv.memory = ENV["VAGRANT_MEMORY_LIMIT"].to_i
-      lv.machine_virtual_size = ENV["VAGRANT_DISK_LIMIT"].to_i
       lv.memorybacking :access, :mode => "shared"
     end
 
@@ -25,6 +28,7 @@ Vagrant.configure("2") do |config|
     end
 
     machine.vm.synced_folder ENV["VAGRANT_HOST_QUESTION_PATH"], ENV["VAGRANT_SPAWN_QUESTION_PATH"], virtiofs
+    machine.vm.synced_folder ENV["VAGRANT_HOST_ECR_PATH"], ENV["VAGRANT_SPAWN_ECR_PATH"], virtiofs
   end
 
   config.vm.provision "shell", inline: <<-SHELL
